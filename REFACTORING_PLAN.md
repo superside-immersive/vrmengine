@@ -35,9 +35,13 @@ Migrate to ES Modules progressively. Remove legacy platform support. Never break
 
 ## Pending
 
-### 1B — Clean _SA.js of legacy branches
-- In `js/_SA.js` (5263 lines): remove all `if (use_Silverlight)` (~30 refs), `if (xul_mode)` (~20 refs), `ActiveXObject` checks
-- Expected reduction: ~500-800 lines
+### 1B — Clean _SA.js of legacy branches ✅
+- Removed `use_Silverlight` conditions (11 refs) — set to `true` constant for cross-file compat
+- Removed `use_Silverlight_only` assignments (3 refs) — set to `false` constant
+- Removed all `xul_mode` branches (8 refs): XUL_onload, xul_path, xul_transparent_mode, CSS Moz prefix, video format preference, HTA launch path
+- Removed `ActiveXObject` initialization block (Shell.Application, FSO, WScript.Shell)
+- Kept `oShell`, `Shell_OBJ`, `FSO_OBJ` variable declarations (referenced elsewhere)
+- 5258 → 5217 lines (−41 lines; original estimate overstated — branches were conditions on larger blocks, not large blocks themselves)
 
 ### 1C — Clean core.js and core_extra.js of legacy
 - In `js/core.js`: remove `ie9`, `ie8_mode`, `ie_64bit`, `xul_*` vars (lines 573-590)

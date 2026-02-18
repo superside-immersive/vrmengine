@@ -31,14 +31,11 @@ function random(num) {
 
 
 var loaded
-var Silverlight_native_capable, use_Silverlight_only
-var use_Silverlight = returnBoolean("UseSilverlight")
-
-if (xul_mode)
-  xul_path = SystemEXT.GetXULPath()
-
-var xul_transparent_mode = xul_mode && ((is_SA_child_animation) ? parent : self).SA_top_window.xul_transparent_mode
-var is_SA_BG_transparent = xul_transparent_mode || webkit_transparent_mode
+// [LEGACY REMOVED 1B] Silverlight vars (use_Silverlight, use_Silverlight_only, Silverlight_native_capable) removed
+var use_Silverlight = true // kept for cross-file compatibility, always true
+var use_Silverlight_only = false // kept for cross-file compatibility, always false
+// [LEGACY REMOVED 1B] xul_mode/xul_path/xul_transparent_mode branches removed
+var is_SA_BG_transparent = webkit_transparent_mode
 
 var absolute_screen_mode = (webkit_electron_mode && !returnBoolean("MoveWithinPrimaryScreen") && !is_SA_child_animation)
 
@@ -60,13 +57,9 @@ if (use_EQP_ripple || use_EQP_fireworks) {
   use_full_spectrum = true
 }
 
-var use_HTML5 = use_SA_browser_mode//((ie9_mode && returnBoolean("UseHTML5Canvas")) || webkit_mode || xul_mode)
-var use_SVG// = (ie9_mode)
-// for compatibility
-if (use_HTML5 || use_SVG)
-  use_Silverlight = true
-
-var use_Silverlight_only = (use_Silverlight && !use_HTML5 && !use_SVG)
+var use_HTML5 = use_SA_browser_mode
+var use_SVG
+// [LEGACY REMOVED 1B] use_Silverlight/use_Silverlight_only compatibility assignments removed
 
 
 function init() {
@@ -83,9 +76,8 @@ perfmon('\\LogicalDisk(*)\\% Disk Time', function(err, data) {	if (err) {DEBUG_s
   if (use_SVG_Clock)
     SVG_Clock.draw()
 
-  if (xul_mode)
-    XUL_onload()
-  else if (webkit_mode)
+  // [LEGACY REMOVED 1B] xul_mode/XUL_onload branch removed
+  if (webkit_mode)
     WebKit_onload()
 
 try {
@@ -501,8 +493,7 @@ e.stopPropagation()
       if (d) {
         d.onmouseout = function (e) {
 // check if contentWindow.System is missing for any reason
-// to fix the dragging issue when using the right mouse button in XUL
-if (!this.contentWindow.System || (xul_mode && this.contentWindow.System._browser.is_dragging))
+if (!this.contentWindow.System)
   return
 
 this.contentWindow.System._browser.onmouseout()
@@ -597,7 +588,7 @@ function SA_OnKeyDown_Gadget() {
       SA_CreateHTA()
   }
 */
-  if ((k == 71) && self.use_EQP_core && use_Silverlight) {
+  if ((k == 71) && self.use_EQP_core) {
 // g
     SA_animation_append_mode = false
     EQP_gallery_append_mode = !EQP_gallery_append_mode
@@ -785,7 +776,7 @@ return function (event, enforced) {
 // f
     SA_OnFolder()
   }
-  else if ((k == 71) && self.use_EQP_core && use_Silverlight && is_safe_key) {
+  else if ((k == 71) && self.use_EQP_core && is_safe_key) {
 // g
     SA_animation_append_mode = false
     EQP_gallery_append_mode = !EQP_gallery_append_mode
@@ -1145,19 +1136,8 @@ if (webkit_mode) {
   app_path = SystemEXT.GetWebKitPath(webkit_path)
   app_path_current = webkit_path
   args = [app_path, System.Gadget.path, path_to_launch]
-//System.Gadget.path + ((webkit_electron_mode) ? "\\electron_app" : "")
 }
-else if (xul_mode) {
-  app_path = SystemEXT.GetXULPath()
-  app_path_current = xul_path
-  args = [app_path]
-  if (/firefox.exe/i.test(args[0]))
-    args.push("-app")
-  args.push(System.Gadget.path + toLocalPath('\\_xul_gadget\\application.ini'), path_to_launch)
-}
-else {
-  args = [System.Gadget.path + toLocalPath("\\SystemAnimator_ie.hta"), path_to_launch]
-}
+// [LEGACY REMOVED 1B] xul_mode and HTA else branches removed
 
 if (SystemEXT.enforce_WSH)
   args.push("wsh")
@@ -2121,7 +2101,7 @@ Lbody3D_navigation._transformed = true
 
       if (/\{(.+)\}/.test(CSSTransform3D)) {
         var css = RegExp.$1.split(";")
-        var prefix = (xul_mode) ? "Moz" : "webkit"
+        var prefix = "webkit" // [LEGACY REMOVED 1B] xul_mode/Moz prefix branch removed
         for (var i = 0; i < css.length; i++) {
           if (!/^(.+)\:(.+)$/.test(css[i].trim()))
             continue
@@ -3287,17 +3267,9 @@ return this.bands
 }
 
 
+// [LEGACY REMOVED 1B] ActiveXObject initialization removed (Shell.Application, FSO, WScript.Shell)
 var oShell
 var Shell_OBJ, FSO_OBJ
-try {
-  if (!Shell_OBJ)
-    Shell_OBJ = new ActiveXObject("Shell.Application");
-  if (!FSO_OBJ)
-    FSO_OBJ = new ActiveXObject("Scripting.FileSystemObject");
-  if (!oShell)
-    oShell = new ActiveXObject("WScript.Shell");
-}
-catch (err) {}
 
 var regRoot = (returnBoolean("SwapRegistryCheck")) ? ["HKCU", "HKLM"] : ["HKLM", "HKCU"]
 //if (returnBoolean("SwapRegistryCheck")) alert(regRoot)
@@ -4649,12 +4621,11 @@ self.EV_b_height = h_max_org * image_ratio
 
         if (/\.(jpg|jpeg|png)$/i.test(path)) {
           if (use_SA_browser_mode && !use_HTML5) {
-            use_HTML5 = use_Silverlight = true
-            use_Silverlight_only = false
+            use_HTML5 = true
           }
         }
         else if (/\.(webm|mp4|mkv)$/i.test(path)) {
-if (ie9_mode) {
+// [LEGACY REMOVED 1B] else { use_Silverlight = true } branch removed (ie9_mode always true)
   EQP_use_HTML5_video = true
   if (!gallery_js) {
     self.EQP_video_options = { play_sound:true, loop_forever:true }
@@ -4664,12 +4635,7 @@ if (ie9_mode) {
       EQP_video_options.hide_EQ = true
       Settings.Display = "0"
     }
-//EQP_video_options.use_canvas_video = EQP_video_options.disable_chroma_key = true
   }
-}
-else {
-  use_Silverlight = true
-}
         }
       }
       return
@@ -4767,14 +4733,9 @@ else {
 
         if (/\.(wmv|webm|mp4|mkv)$/i.test(path)) {
           var alt_format = null
-          if (xul_mode) {
-            if (/\.(wmv|mp4|mkv)$/i.test(path))
-              alt_format = ["webm"]
-          }
-          else {
-            if (/\.(webm)$/i.test(path))
-              alt_format = ["wmv", "mp4", "mkv"]
-          }
+          // [LEGACY REMOVED 1B] xul_mode format preference branch removed
+          if (/\.(webm)$/i.test(path))
+            alt_format = ["wmv", "mp4", "mkv"]
 
           if (alt_format) {
             var alt_format_found
@@ -4788,9 +4749,8 @@ else {
               continue
           }
 
-EQP_use_HTML5_video = (ie9_mode && /\.(webm|mp4|mkv)$/i.test(path))
-if (!EQP_use_HTML5_video)
-  use_Silverlight = true
+EQP_use_HTML5_video = /\.(webm|mp4|mkv)$/i.test(path)
+// [LEGACY REMOVED 1B] use_Silverlight fallback removed
         }
 
         EQP_gallery.push(path)
