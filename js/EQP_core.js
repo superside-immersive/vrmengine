@@ -692,10 +692,5 @@ if (!_ps.use_HTML5 && !_g.gallery_obj._SL_bug_fixed) {
 
 
 // external scripts
-if (use_Silverlight && use_WMP) {
-  document.write('<script language="JavaScript" src="js/wmp.js"></scr'+'ipt>');
-}
-else {
-// ensure compatibility for no-Silverlight situation
-  use_WMP = false
-}
+// [LEGACY REMOVED] WMP/Silverlight support removed
+use_WMP = false

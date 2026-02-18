@@ -3570,17 +3570,12 @@ else
 
 
 // Silverlight
+// [LEGACY REMOVED] Silverlight support removed
 var EV_SL_init = function () {
   EQP_resize(((EQP_allow_resize) ? null : 1))
 }
 
-if (use_Silverlight) {
-  if (use_HTML5) {
-    document.write('<script language="JavaScript" src="js/html5.js"></scr'+'ipt>');
-    document.write('<script language="JavaScript" src="js/audio_BPM.js"></scr'+'ipt>');
-  }
-  else {
-    document.write('<script language="JavaScript" src="js/Silverlight.js"></scr'+'ipt>');
-    document.write('<script language="JavaScript" src="js/SA_silverlight.js"></scr'+'ipt>');
-  }
+if (use_HTML5) {
+  document.write('<script language="JavaScript" src="js/html5.js"></scr'+'ipt>');
+  document.write('<script language="JavaScript" src="js/audio_BPM.js"></scr'+'ipt>');
 }

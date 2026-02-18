@@ -1201,12 +1201,7 @@ if (!self.oHTA) {
   return
 }
 
-if (SystemEXT.enforce_WSH) {
-  setTimeout(function () { Shell_OBJ.ShellExecute(System.Environment.getEnvironmentVariable("SystemRoot") + "\\System32\\WScript.exe", '"SA_launcher.js" "' + encodeURIComponent(args.join("|")) + '"', System.Gadget.path + "\\js"); setTimeout(function () { SA_top_window.close() }, 0); }, 0)
-}
-else {
-  setTimeout(function () { Shell_OBJ.ShellExecute(System.Gadget.path + "\\js\\SA_launcher.js", encodeURIComponent(args.join("|"))); setTimeout(function () { SA_top_window.close() }, 0); }, 0)
-}
+// [LEGACY REMOVED] WSH/SA_launcher.js support removed
     }
     return
   }

@@ -403,12 +403,13 @@ canvas.width  = w_img
 canvas.height = h_img+16+tw
 
 var context = canvas.getContext("2d")
-context.drawImage(this._wood, 0,0,this._wood.width,this._wood.height, 0,0,w_img,h_img)
+context.fillStyle = "#000000"
+context.fillRect(0, 0, w_img, h_img)
 if (scale == 1)
   context.drawImage(img, 0,0)
 else
   context.drawImage(img, 0,0,iw,ih, 0,0,w_img,h_img)
-context.drawImage(this._wood, 0,0,this._wood.width,this._wood.height, 0,h_img+16,tw,tw)
+context.fillRect(0, h_img+16, tw, tw)
 
 this.texture.needsUpdate = true;
 

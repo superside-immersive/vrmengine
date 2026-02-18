@@ -1304,15 +1304,10 @@ resize()
 
 
 // Silverlight scripts
-if (use_Silverlight) {
-  if (use_HTML5) {
-    document.write('<script language="JavaScript" src="js/html5.js"></scr'+'ipt>');
-  }
-  else if (use_SVG) {
-    document.write('<script language="JavaScript" src="js/svg.js"></scr'+'ipt>');
-  }
-  else {
-    document.write('<script language="JavaScript" src="js/Silverlight.js"></scr'+'ipt>');
-    document.write('<script language="JavaScript" src="js/SA_silverlight.js"></scr'+'ipt>');
-  }
+// [LEGACY REMOVED] Silverlight support removed
+if (use_HTML5) {
+  document.write('<script language="JavaScript" src="js/html5.js"></scr'+'ipt>');
+}
+else if (use_SVG) {
+  document.write('<script language="JavaScript" src="js/svg.js"></scr'+'ipt>');
 }

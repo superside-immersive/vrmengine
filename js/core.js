@@ -629,10 +629,8 @@ Settings_default._custom_.Display = "-1"
   if (xul_mode) {
     xul_version = parseInt(RegExp.$1)
     ie9 = ie9_mode = ie8_mode = true
-    document.write(
-  '<script type="text/javascript" language="javascript" src="js/SA_xul.js"></scr'+'ipt>\n'
-+ '<script type="text/javascript" language="javascript" src="js/file_io.js"></scr'+'ipt>\n'
-    )
+    // [LEGACY REMOVED] SA_xul.js and file_io.js no longer loaded
+    console.warn('[SA] XUL mode detected but legacy XUL support has been removed')
     return
   }
 
