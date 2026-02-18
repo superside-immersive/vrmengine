@@ -854,3 +854,6 @@ Lchild_animation_parent.style.visibility = "inherit"
 };
 
 })();
+
+// Sync state to SA namespace after core_extra has set up its globals
+if (self.SA && SA.syncFromGlobals) SA.syncFromGlobals();

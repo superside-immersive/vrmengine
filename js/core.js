@@ -788,3 +788,6 @@ var use_inline_dialog = w3c_mode
 
 // misc
 Settings_default.EventToMonitor = (ie9) ? "FIXED_VALUE_50" : "CPU"
+
+// Sync detected platform state to SA namespace
+if (self.SA && SA.syncFromGlobals) SA.syncFromGlobals();
