@@ -364,25 +364,8 @@ if (typeof Object.assign != 'function') {
   })();
 }
 
-var HTA_use_GPU_acceleration
-function getHTAUseGPUAcceleration() {
-  //http://msdn.microsoft.com/en-us/library/ee330731(VS.85).aspx#gpu_rendering
-  var reg_root = ['HKLM', 'HKCU']
-  for (var i = 0; i < 2; i++) {
-    var root = reg_root[i]
-    try {
-      HTA_use_GPU_acceleration = oShell.RegRead(root + '\\SOFTWARE\\Microsoft\\Internet Explorer\\Main\\FeatureControl\\FEATURE_GPU_RENDERING\\mshta.exe')
-    }
-    catch (err) {}
-
-    if (HTA_use_GPU_acceleration <= 1)
-      break
-    HTA_use_GPU_acceleration = false
-  }
-
-  HTA_use_GPU_acceleration = !!HTA_use_GPU_acceleration
-  return HTA_use_GPU_acceleration
-}
+// [LEGACY REMOVED 1C] HTA_use_GPU_acceleration and getHTAUseGPUAcceleration() removed — HTA is dead
+var HTA_use_GPU_acceleration = false
 
 function electronRegisterCheck() {
   if (!webkit_electron_mode)
@@ -569,9 +552,8 @@ linux_mode = !browser_native_mode && linux_mode;
 var mac_mode = !browser_native_mode && /(macintosh|macintel|macppc|mac68k|macos)/i.test(navigator.userAgent);
 var save_settings_by_localStorage = WallpaperEngine_CEF_mode || mac_mode;
 
-// Silverlight 5 64-bit is supported only on Windows 7 and above
-var ie_64bit = (/MSIE.+Win64.+x64/i.test(navigator.userAgent) && !W7_or_above)
-//ie_64bit=true
+// [LEGACY REMOVED 1C] ie_64bit (MSIE Win64 check) — always false in modern browsers
+var ie_64bit = false
 
 var ie9, ie9_native
 var ie9_mode, ie8_mode

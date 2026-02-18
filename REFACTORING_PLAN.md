@@ -43,10 +43,10 @@ Migrate to ES Modules progressively. Remove legacy platform support. Never break
 - Kept `oShell`, `Shell_OBJ`, `FSO_OBJ` variable declarations (referenced elsewhere)
 - 5258 → 5217 lines (−41 lines; original estimate overstated — branches were conditions on larger blocks, not large blocks themselves)
 
-### 1C — Clean core.js and core_extra.js of legacy
-- In `js/core.js`: remove `ie9`, `ie8_mode`, `ie_64bit`, `xul_*` vars (lines 573-590)
-- In `js/core_extra.js`: remove `SA_HTA_folder` branches and HTA detection (~lines 40-200)
-- In `js/EQP_gallery.js`: remove remaining ~30 Silverlight refs
+### 1C — Clean core.js and core_extra.js of legacy ✅
+- **core.js** (792→773): Removed `ie_64bit` (always false), removed `getHTAUseGPUAcceleration()` function + `HTA_use_GPU_acceleration` var
+- **core_extra.js** (859→843): Removed `xul_mode`/`webkit_mode` re-declarations, removed `xul_mode` branch in SA_load_scripts, removed `oHTA.commandLine` HTA branch, removed `ie9_native`→`getHTAUseGPUAcceleration()` call, removed XUL event handler block, simplified `SA_top_window` to `self`
+- **EQP_gallery.js** (3582→3539): Simplified all `use_Silverlight` conditions (always true), removed `!use_Silverlight` dead branches, removed `use_Silverlight_only` dead code block (Silverlight dummy layer ~38 lines), kept SL_* API references for deeper cleanup later
 
 ### 2A — Create tracking folder structure
 - Create `js/tracking/`

@@ -12,17 +12,17 @@ var use_SA_browser_mode
 
 var PC_count_absolute = 0
 
-var xul_mode, webkit_mode
+// [LEGACY REMOVED 1C] xul_mode/webkit_mode re-declarations removed (already in core.js)
 
-var HTA_use_GPU_acceleration
+// [LEGACY REMOVED 1C] HTA_use_GPU_acceleration removed (HTA is dead)
 
 var oShell
 var Shell_OBJ, FSO_OBJ
 
 var is_SA_child_animation = parent && (parent != self) && !parent.is_chrome_window && parent.SA_child_animation_max;
 var SA_topmost_window = (is_SA_child_animation) ? parent : self;
-// obsolete, mainly for XUL mode only
-var SA_top_window = (xul_mode && !is_SA_child_animation) ? parent : self;
+// [LEGACY REMOVED 1C] SA_top_window xul_mode branch removed — always self
+var SA_top_window = self;
 
 var absolute_screen_mode
 
@@ -97,11 +97,7 @@ function SA_load_scripts() {
       for (var i = 0; i < p.length; i++)
         p[i] = decodeURIComponent(p[i])
     }
-    else if (xul_mode && !is_SA_child_animation) {
-      SA_HTA_folder = parent.SA_HTA_folder
-      if (parent.enforce_WSH)
-        SystemEXT.enforce_WSH = true
-    }
+    // [LEGACY REMOVED 1C] xul_mode branch removed
     else if (webkit_mode && !is_SA_child_animation) {
 //alert(webkit_electron_remote.process.argv.slice(0).join("\n\n"))
 // TEST mode for Electron
@@ -109,14 +105,7 @@ function SA_load_scripts() {
         p = (!WallpaperEngine_CEF_mode && webkit_nwjs_mode) ? require('nw.gui').App.argv : webkit_electron_remote.process.argv.slice(1)
 //console.log(p)
     }
-    else if (self.oHTA && oHTA.commandLine) {
-      var para = oHTA.commandLine
-      if (para && /\.hta"\s+(.+)/.test(para)) {
-        p = RegExp.$1.split('" "')
-        for (var i = 0, i_length = p.length; i < i_length; i++)
-          p[i] = p[i].replace(/"/g, "")
-      }
-    }
+    // [LEGACY REMOVED 1C] oHTA.commandLine HTA branch removed
 
     if (is_SA_child_animation)
       WallpaperEngine_mode = parent.WallpaperEngine_mode
@@ -372,8 +361,7 @@ catch (err) {}
 
     webkit_mode && WebKit_object._init2()
 
-    if (ie9_native)
-      getHTAUseGPUAcceleration()
+    // [LEGACY REMOVED 1C] ie9_native/getHTAUseGPUAcceleration call removed
   }
   else {
     var f_config
@@ -844,10 +832,7 @@ Lchild_animation_parent.style.visibility = "inherit"
     d.style.transition = "opacity 0.5s"
   d.src = url
 
-  // XUL only
-  if (xul_mode) {
-    d.onmousedown = d.onclick = d.ondblclick = d.onkeydown = d.onmousemove = function (e) { e.stopPropagation() }
-  }
+  // [LEGACY REMOVED 1C] xul_mode event handler block removed
 
   p.appendChild(d)
   return d

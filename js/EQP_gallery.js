@@ -52,7 +52,7 @@ function EQP_resize(scale, no_msg) {
 
 
   var scale_org = EQP_size_scale
-  if ((use_Silverlight && SL_ST_enabled) || self.EQ_Filter || use_CSS3_2D_Transforms)
+  if (SL_ST_enabled || self.EQ_Filter || use_CSS3_2D_Transforms)
     EQP_size_scale = 1
 
 
@@ -73,7 +73,8 @@ function EQP_resize(scale, no_msg) {
     main_c.style.visibility = (self.EQ_Filter) ? "hidden" : "inherit"
   }
 
-if (use_Silverlight) {
+// [LEGACY 1C] use_Silverlight always true
+if (true) {
   if (SL_loaded) {
     var ps = EQP_ps[0]
 
@@ -228,7 +229,7 @@ if (_img.use_GADGET_IMG) {
 }
 
 if (EQP_use_HTML5_video && (i == 0) && _img.is_video) {
-  if (!use_Silverlight || SL_loaded) {
+  if (SL_loaded) {
     var c, cs, cc, ccs
     var cp, cps
     cp = document.getElementById("V_Host_Parent")
@@ -265,7 +266,7 @@ if (EQP_use_HTML5_video && (i == 0) && _img.is_video) {
       ccs.zIndex = 1
       c.appendChild(cc)
 
-      var host = (use_Silverlight) ? SL_Host_Parent : main_c
+      var host = SL_Host_Parent // [LEGACY 1C] use_Silverlight always true
       host.appendChild(cp)
     }
 
@@ -503,8 +504,7 @@ v.currentTime = 0
   }, true)
       }
 
-      if (!use_Silverlight && !vo.hide_media_control)
-        vv.controls = true
+      // [LEGACY REMOVED 1C] !use_Silverlight media control branch removed (always false)
 
       if ((w3c_mode) && vo.SVG_filter)
         vv.style.filter = vo.SVG_filter()
@@ -759,16 +759,12 @@ if (_img.adjust_dimension_by_scale) {
     vs.posLeft = -clip[0] * scale_org
     vs.posTop  = -clip[1] * scale_org
 
-    if (use_Silverlight) {
+    if (true) { // [LEGACY 1C] use_Silverlight always true
       cs.posLeft = (_img.x_org - EQP_gallery_obj_active.x_offset) * scale_org
       cs.posTop  = (_img.y_org - EQP_gallery_obj_active.y_offset) * scale_org
     }
-    else {
-      cs.posLeft = _img.x
-      cs.posTop  = _img.y
-    }
 
-    var _scale = (use_Silverlight) ? scale_org : 1
+    var _scale = scale_org // [LEGACY 1C] use_Silverlight always true
     cs.pixelWidth  = _img.w * _scale
     cs.pixelHeight = _img.h * _scale
     if (!vo._video_src_changing) {
@@ -795,44 +791,11 @@ if (_img.adjust_dimension_by_scale) {
         cd.height = cdh
     }
 
-    if (!use_Silverlight_only)
-      continue
-
-// create a dummy Silverlight layer for mouse event
-    img = _img.img_obj_r_dummy
-    if (!img) {
-      var img_id = "main" + i
-
-      var xaml_para = 'Fill="White" Canvas.ZIndex="' + _img.z + '" Opacity="0"';
-
-      var xaml, ext
-      xaml =
-  '<Rectangle xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" x:Name="' + img_id + 'r_dummy" '
-+ xaml_para
-+ '>\n'
-+ '</Rectangle>'
-
-      ext = "r_dummy"
-
-      SL_content.children.add(SL.content.createFromXaml(xaml, false));
-      img = _img.img_obj_r_dummy = SL_root.FindName(img_id + ext)
-    }
-/*
-    if (_img.w >= 0)
-      img.Width  = _img.w
-    if (_img.h >= 0)
-      img.Height = _img.h
-    img["Canvas.Left"] = (_img.x_org - EQP_gallery_obj_active.x_offset) * EQP_size_scale
-    img["Canvas.Top"]  = (_img.y_org - EQP_gallery_obj_active.y_offset) * EQP_size_scale
-*/
-    img.Width  = Math.round((EQP_gallery_obj_active.w_org - EQP_gallery_obj_active.x_offset*2) * EQP_size_scale)
-    img.Height = Math.round((EQP_gallery_obj_active.h_org - EQP_gallery_obj_active.y_offset*2) * EQP_size_scale)
-    img["Canvas.Left"] = 0
-    img["Canvas.Top"]  = 0
+    // [LEGACY REMOVED 1C] use_Silverlight_only always false — continue always executes, Silverlight dummy layer code removed
   }
   continue
 }
-else if (use_Silverlight && !EQP_gallery_obj_active.use_filter) {
+else if (!EQP_gallery_obj_active.use_filter) { // [LEGACY 1C] use_Silverlight always true
   if (SL_loaded) {
     if (!img) {
 
@@ -1047,7 +1010,7 @@ if (!self.EQ_Filter) {
       }
     }
   }
-  else if (use_Silverlight && SL_loaded) {
+  else if (SL_loaded) { // [LEGACY 1C] use_Silverlight always true
     var ss = SL_Host_Parent.style
     var cp = SL_root.FindName("C_content_parent")
     ss.pixelWidth  = cp.Width  = Math.round((EQP_gallery_obj_active.w_org - EQP_gallery_obj_active.x_offset*2) * EQP_size_scale)
@@ -1170,7 +1133,7 @@ var EQP_EV_init = function () {
 
 // Defaults START
   var size_default = (System.Gadget.docked) ? 0.5 : 1
-  if ((EQP_size_scale == null) || !use_Silverlight) {
+  if ((EQP_size_scale == null)) { // [LEGACY 1C] !use_Silverlight always false
     if (ie9_mode && !returnBoolean("CSSTransformToChildAnimation") && ((SA_zoom < 1) || (!self.EQP_video_options && (SA_zoom > 1)))) {
       EQP_size_scale = SA_zoom
       SA_zoom = 1
@@ -1688,7 +1651,7 @@ else
   }
 }
 
-      img.use_Silverlight = (EQP_use_HTML5_video) ? use_Silverlight : true
+      img.use_Silverlight = true // [LEGACY 1C] use_Silverlight always true
       img.play_sound = (bg_video.play_sound || (img.EQP_video_options && img.EQP_video_options.play_sound))
       img.use_media_control = true
       img.w = bg_video.w = (bg_video.w > 0) ? bg_video.w : 320
@@ -1697,10 +1660,7 @@ else
       img.h_video = (bg_video.h_video > 0) ? bg_video.h_video : -1
 
       if (EQP_use_HTML5_video) {
-        if (!use_Silverlight) {
-          if (bg_video == bg)
-            bg.src = System.Gadget.path + '\\images\\_bg_dummy\\EQF_bars_bg0_o50.png'
-        }
+        // [LEGACY REMOVED 1C] !use_Silverlight branch removed (always false)
 
         if (Canvas_Effect)
           Canvas_Effect.canvas = (Canvas_Effect.show_behind_content || EQP_video_options.width || EQP_video_options.height) ? null : "V_canvas"
@@ -2726,8 +2686,7 @@ if (use_HTML5) {
 
   if (use_HTML5)
     EQP_allow_resize = true
-  if ((w3c_mode) && !use_Silverlight)
-    EQP_allow_resize = use_CSS3_2D_Transforms = true
+  // [LEGACY REMOVED 1C] !use_Silverlight branch removed (always false)
   if (EQP_allow_resize && !document.body.ondblclick && !self.EQ_Filter) {
 //    if (!use_Silverlight_only && !webkit_electron_mode)
 //      document.body.title += ', double-click to change size'
@@ -2744,13 +2703,12 @@ if (use_HTML5) {
     EQP_init_extra()
 
 
-// Silverlight
-  if (use_Silverlight) {
-    if (use_HTML5)
-      HTML5_Init()
-    else
-      SL_Init()
-  }
+// Silverlight/HTML5 rendering init
+// [LEGACY 1C] use_Silverlight always true
+  if (use_HTML5)
+    HTML5_Init()
+  else
+    SL_Init()
 }
 
 if (!EV_init && !self.EQ_Filter)
@@ -3179,7 +3137,7 @@ var CANVAS_must_redraw
 
 var EQP_EV_animate_full = function () {
 //DEBUG_show(PC_count_absolute)
-  if (use_Silverlight && !SL_loaded)
+  if (!SL_loaded) // [LEGACY 1C] use_Silverlight always true
     return
 
 //EQP_SEQ_Video_Process()
@@ -3338,7 +3296,7 @@ else {
 var Z  = [T, R, B, L]
 var Zi = [Ti,Ri,Bi,Li]
 
-var scale = (use_Silverlight && SL_ST_enabled) ? 1 : EQP_size_scale
+var scale = (SL_ST_enabled) ? 1 : EQP_size_scale // [LEGACY 1C] use_Silverlight always true
 
 for (var k = 0; k < 4; k++) {
   var zi = Zi[k]
