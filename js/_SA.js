@@ -5210,8 +5210,11 @@ function Canvas_BDDraw(canvas, beat) {
 
   if (gallery_js)
     document.write(SystemEXT.ReadJS(gallery_js, true))
-  else if (self.MMD_SA_options)
+  else if (self.MMD_SA_options) {
+    document.write('<script language="JavaScript" src="js/mmd/audio.js"></scr'+'ipt>')
+    document.write('<script language="JavaScript" src="js/mmd/sfx.js"></scr'+'ipt>')
     document.write('<script language="JavaScript" src="MMD.js/MMD_SA.js"></scr'+'ipt>')
+  }
   else if (!EQP_gallery && returnBoolean("UseFilters"))
     document.write('<script language="JavaScript" src="js_filters/animate.js"></scr'+'ipt>')
 })();

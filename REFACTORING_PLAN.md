@@ -77,9 +77,12 @@ Migrate to ES Modules progressively. Remove legacy platform support. Never break
 - `facemesh_worker.js` import path unchanged (`'../facemesh_lib.js'`)
 - Sub-modules as ES Modules (export), loaded via dynamic `import()` from IIFE (same pattern as pose_lib.js)
 
-### 3A — Extract MMD_SA.js: audio + SFX
-- `js/mmd/audio.js` (~300 lines) ← MMD_SA.js lines 253-1039
-- `js/mmd/sfx.js` (~300 lines) ← MMD_SA.js lines 6651-7350
+### 3A — Extract MMD_SA.js: audio + SFX ✅
+- `js/mmd/audio.js` (801 lines) — BPM sender/vo, DragDrop.onDrop_finish, audio event handlers, media/motion/model drag-drop
+- `js/mmd/sfx.js` (296 lines) — Audio3D IIFE: THREE_Audio wrapper, Audio_Player, Audio_Object, positional audio, channel management
+- Both as global functions (`window.MMD_SA_initAudio`, `window.MMD_SA_createAudio3D`) called synchronously from MMD_SA.js
+- Scripts loaded via `document.write` in `_SA.js` before `MMD_SA.js`
+- MMD_SA.js: 18,371 → 17,304 lines (−1,067)
 
 ### 3B — Extract MMD_SA.js: speech-bubble + VFX
 - `js/mmd/speech-bubble.js` (~300 lines) ← lines 2597-3668
