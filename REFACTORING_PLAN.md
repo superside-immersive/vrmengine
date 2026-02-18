@@ -55,12 +55,17 @@ Migrate to ES Modules progressively. Remove legacy platform support. Never break
 - Updated refs in `MMD_SA.js`, `_SA2.js`, `SA_system_emulation.min.js`
 - Worker-relative `importScripts` paths auto-resolved (same dir)
 
-### 2B — Split mocap_lib_module.js (1970 lines)
-- `js/tracking/core.js` (~300 lines) — Core class base, init, process_video_buffer
-- `js/tracking/pose-processor.js` (~300 lines) — PoseAT_init, BlazePose keypoints, coords
-- `js/tracking/hands-processor.js` (~250 lines) — HandsAT_init, hand landmarks
-- `js/tracking/mediapipe-bridge.js` (~200 lines) — MediaPipe/TF.js/Human.js adapter
-- All as ES Modules (export/import)
+### 2B — Split mocap_lib_module.js (1970 lines) ✅
+- `js/tracking/mocap-constants.js` (47 lines) — BLAZEPOSE_KEYPOINTS, blazepose_translated, get_pose_index
+- `js/tracking/mocap-pose-processor.js` (364 lines) — pose_adjust, process_facemesh
+- `js/tracking/mocap-hands-processor.js` (469 lines) — hands_adjust, is_hand_visible, get_hand_canvas
+- `js/tracking/mocap-mediapipe-bridge.js` (545 lines) — PoseAT_load_lib, HandsAT_load_lib, load_vision_common, create_mediapipe_hand_landmarker
+- `js/tracking/mocap-video-processor.js` (368 lines) — PoseAT_process_video_buffer, HandsAT_process_video_buffer
+- `js/mocap_lib_module.js` rewritten as orchestrator (350 lines) — Core constructor, init, shared state `S`, imports
+- All extracted functions take shared state object `S` as first param (replaces closure vars)
+- `pose_lib.js`/`hands_lib.js` import path unchanged (`'../mocap_lib_module.js'`)
+- All as ES Modules (export/import), static imports at module level
+- Commit: `c5f5ace`
 
 ### 2C — Split facemesh_lib.js (1134 lines)
 - `js/tracking/facemesh-core.js` (~300 lines) — FacemeshAT init, model loading
@@ -138,3 +143,6 @@ Migrate to ES Modules progressively. Remove legacy platform support. Never break
 - Body tracking uses Web Workers with ES module imports (mocap_lib_module.js)
 - 3D rendering via Three.js + jThree fork
 - `document.write()` for synchronous script loading (will be replaced in Etapa 8)
+
+## Notes
+- **Primary entry point: XR_Animator.html** — This is the main file in active use (sets `cmd_line: "demo20"`). It contains extra features and is the reference for all testing. All refactoring must be validated against this entry point first.
