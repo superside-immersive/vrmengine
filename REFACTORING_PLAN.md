@@ -48,10 +48,12 @@ Migrate to ES Modules progressively. Remove legacy platform support. Never break
 - **core_extra.js** (859→843): Removed `xul_mode`/`webkit_mode` re-declarations, removed `xul_mode` branch in SA_load_scripts, removed `oHTA.commandLine` HTA branch, removed `ie9_native`→`getHTAUseGPUAcceleration()` call, removed XUL event handler block, simplified `SA_top_window` to `self`
 - **EQP_gallery.js** (3582→3539): Simplified all `use_Silverlight` conditions (always true), removed `!use_Silverlight` dead branches, removed `use_Silverlight_only` dead code block (Silverlight dummy layer ~38 lines), kept SL_* API references for deeper cleanup later
 
-### 2A — Create tracking folder structure
-- Create `js/tracking/`
-- Move (without modifying): `pose_lib.js`, `pose_worker.js`, `hands_lib.js`, `hands_worker.js`, `facemesh_worker.js`, `one_euro_filter.js`, `headtracker_ar.js` → `js/tracking/`
-- Update all refs (importScripts, import paths) in workers and `MMD.js/MMD_SA.js`
+### 2A — Create tracking folder structure ✅
+- Created `js/tracking/`
+- Moved 7 files: `pose_lib.js`, `pose_worker.js`, `hands_lib.js`, `hands_worker.js`, `facemesh_worker.js`, `one_euro_filter.js`, `headtracker_ar.js` → `js/tracking/`
+- Updated import paths in `pose_lib.js`, `hands_lib.js` (`../mocap_lib_module.js`), `facemesh_worker.js` (`../facemesh_lib.js`)
+- Updated refs in `MMD_SA.js`, `_SA2.js`, `SA_system_emulation.min.js`
+- Worker-relative `importScripts` paths auto-resolved (same dir)
 
 ### 2B — Split mocap_lib_module.js (1970 lines)
 - `js/tracking/core.js` (~300 lines) — Core class base, init, process_video_buffer

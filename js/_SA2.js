@@ -409,7 +409,7 @@ console.log("IPC message:" + decodeURIComponent(type))
     document.write('<script language="JavaScript" src="js/box3d.js"></scr'+'ipt>')
 
   if (!is_SA_child_animation && returnBoolean("UseWebcamHeadtracking"))
-    document.write('<script language="JavaScript" src="js/headtracker_ar.js"></scr'+'ipt>')
+    document.write('<script language="JavaScript" src="js/tracking/headtracker_ar.js"></scr'+'ipt>')
 
   if (gallery.length && !gallery_cache_obj.SS_mode) {
     var galleries = (SEQ_gallery) ? SEQ_gallery : [{gallery:gallery}]

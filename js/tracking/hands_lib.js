@@ -9,7 +9,7 @@ var HandsAT = (function () {
     type: 'HandsAT',
     init: async function init(_worker, param) {
 // core START
-module_common = await import('./mocap_lib_module.js');
+module_common = await import('../mocap_lib_module.js');
 core = new module_common.Core(_HandsAT);
 // core END
 
