@@ -67,11 +67,15 @@ Migrate to ES Modules progressively. Remove legacy platform support. Never break
 - All as ES Modules (export/import), static imports at module level
 - Commit: `c5f5ace`
 
-### 2C — Split facemesh_lib.js (1134 lines)
-- `js/tracking/facemesh-core.js` (~300 lines) — FacemeshAT init, model loading
-- `js/tracking/facemesh-processor.js` (~300 lines) — process_facemesh, landmarks
-- `js/tracking/facemesh-emotions.js` (~200 lines) — Emotion detection, iris
-- `js/tracking/facemesh-draw.js` (~200 lines) — Canvas drawing, visualization
+### 2C — Split facemesh_lib.js (1134 lines) ✅
+- `js/tracking/facemesh-core.js` (268 lines) — fm_path_adjusted, fm_load_scripts, fm_init, fm_load_lib, _fm_model_init
+- `js/tracking/facemesh-processor.js` (322 lines) — fm_process_video_buffer, fm_process_facemesh, fm_rgba_to_grayscale
+- `js/tracking/facemesh-emotions.js` (55 lines) — fm_emotion_detection (object detection worker management)
+- `js/tracking/facemesh-draw.js` (247 lines) — fm_draw, fm_draw_facemesh, fm_draw_pose, fm_draw_hand, fm_drawPath
+- `js/facemesh_lib.js` rewritten as orchestrator (184 lines) — IIFE preserved, shared state `S`, dynamic imports
+- All extracted functions take shared state object `S` as first param (replaces closure vars)
+- `facemesh_worker.js` import path unchanged (`'../facemesh_lib.js'`)
+- Sub-modules as ES Modules (export), loaded via dynamic `import()` from IIFE (same pattern as pose_lib.js)
 
 ### 3A — Extract MMD_SA.js: audio + SFX
 - `js/mmd/audio.js` (~300 lines) ← MMD_SA.js lines 253-1039
