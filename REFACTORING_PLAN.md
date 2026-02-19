@@ -112,25 +112,25 @@ Migrate to ES Modules progressively. Remove legacy platform support. Never break
 - All 8 `document.write` script tags verified in `_SA.js`
 - Extracted modules: audio.js (801), sfx.js (296), speech-bubble.js (1074), vfx.js (343), webxr.js (897), osc.js (189), gamepad.js (439), wallpaper3d.js (1508) = 5,547 lines total
 
-### 4A — Extract MMD_SA.js core: camera + motion
-- `js/mmd/camera.js` (~300 lines)
-- `js/mmd/motion.js` (~300 lines)
+### 4A — Extract MMD_SA.js: Sprite + CameraShake ✅
+- `js/mmd/sprite.js` (986 lines) — Sprite IIFE: TextureAnimator, sprite sheet management, explosions/blood/hit/HP bar effects, Dungeon VFX integration
+- `js/mmd/camera-shake.js` (92 lines) — CameraShake IIFE: magnitude/duration/decay curves, offset rendering, camera position perturbation
+- Both as global functions (`window.MMD_SA_createSprite`, `window.MMD_SA_createCameraShake`) called synchronously from MMD_SA.js
+- Scripts loaded via `document.write` in `_SA.js` before `MMD_SA.js`
+- **Fix**: Restored `gadget.xml` (deleted in 1A but required by SA_system_emulation for Settings init)
+- MMD_SA.js: 12,887 → 11,818 lines (−1,069)
 
-### 4B — Extract MMD_SA.js core: renderer + post-processing
-- `js/mmd/renderer.js` (~300 lines)
-- `js/mmd/post-processing.js` (~300 lines)
+### 4B — Extract MMD_SA.js: Defaults block (~1,527 lines)
+- `js/mmd/defaults.js` — standalone IIFE: model path defaults, THREEX options, model selection/parameters, extra models, X-ray, script loading
 
-### 4C — Extract MMD_SA.js core: bones + WebGL utils
-- `js/mmd/bones.js` (~300 lines)
-- `js/mmd/webgl-utils.js` (~250 lines)
+### 4C — Extract MMD_SA.js THREEX sub-modules: VRM (~1,474 lines) + PPE (~1,081 lines)
+- `js/mmd/vrm.js` — VRM model loading, bone mapping, morph/expression handling (inside THREEX IIFE)
+- `js/mmd/ppe.js` — Post-Processing Effects: DOF, N8AO, UnrealBloom pipeline (inside THREEX IIFE)
 
-### 4D — Extract MMD_SA.js core: VRM + bloom/SSAO/DOF
-- `js/mmd/vrm-loader.js` (~300 lines)
-- `js/mmd/vrm-rig.js` (~300 lines)
-- `js/mmd/bloom-ssao.js` (~300 lines)
-- `js/mmd/dof.js` (~200 lines)
+### 4D — Extract MMD_SA.js THREEX sub-modules: utils (~2,040 lines)
+- `js/mmd/threex-utils.js` — load_THREEX_motion, export_GLTF_motion, camera_auto_targeting, HDRI, display_helper
 
-### 4E — MMD_SA.js as orchestrator (~300-500 lines)
+### 4E — Verify MMD_SA.js after Etapa 4
 
 ### 5A — Split _SA.js: init, resize, events, utils → js/app/
 ### 5B — Split _SA.js: animation, sequence, ev-usage → js/app/
