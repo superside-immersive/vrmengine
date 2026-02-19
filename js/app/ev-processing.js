@@ -344,7 +344,8 @@ EV_sync_update._EQBand_and_BD = EQBand + BD
 // END
 
 // "eval" causes MEMORY LEAK (IE9 RC only?). Use another workaround here.
-if (ie9_mode) {
+// [9D] ie9_mode always true — unwrapped, eval fallback removed
+{
   try {
     EQBand = JSON.parse(EQBand)
   }
@@ -352,21 +353,16 @@ if (ie9_mode) {
     EQBand = [0,0,0,0,0, 0,0,0,0,0, 0,0,0,0,0, 0]
   }
 }
-else {
-  EQBand = EQBand.replace(/[^\d\,]/g, "").split(",")
-  for (var z=0, z_max=EQBand.length; z < z_max; z++) { EQBand[z] = parseInt(EQBand[z]) }
-}
 
 var BD_obj
 if (BD && (Settings.BDSpectrumToBeat || Settings.EnableBeatDetection)) {
-  if (ie9_mode) {
+  // [9D] ie9_mode always true — unwrapped, eval fallback removed
+  {
     try {
       BD_obj = JSON.parse(BD)
     }
     catch (err) {}
   }
-  else
-    eval('BD_obj = ' + BD)
 }
 if (BD_obj) {
   BD_obj.EQBand = EQBand

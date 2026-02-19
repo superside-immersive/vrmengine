@@ -128,7 +128,7 @@ try {
 + '<hr size=1 noshade/>\n'
 + '<table style="width:100%;"><tr valign="top">\n'
 + '<td style="width:50%; font-size:10px">\n'
-+ ((webkit_mode) ? ((webkit_nwjs_mode) ? "NW.js v": "Electron v") + webkit_version + " (v" + ((webkit_electron_mode) ? top.process.versions.chrome : process.versions['chromium']) + ")" : ((xul_mode) ? 'XUL mode (v' + xul_version + ')' : ((ie9_native) ? 'HTA mode (v' + parent_window.document.documentMode + ')' : 'Gadget mode')))
++ ((webkit_mode) ? ((webkit_nwjs_mode) ? "NW.js v": "Electron v") + webkit_version + " (v" + ((webkit_electron_mode) ? top.process.versions.chrome : process.versions['chromium']) + ")" : ((xul_mode) ? 'XUL mode (v' + xul_version + ')' : ((ie9_native) ? 'HTA mode (v' + parent_window.document.documentMode + ')' : 'Gadget mode'))) // [9D] ie9_native branch dead in modern paths (webkit_mode always true)
 + '</td>\n'
 + '<td style="width:50%">\n'
 + '<div style="width:100%; text-align:right">\n'

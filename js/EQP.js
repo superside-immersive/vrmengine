@@ -103,7 +103,7 @@ CANVAS_must_redraw = true
 // Defaults START
   var size_default = (System.Gadget.docked) ? 0.5 : 1
   if ((EQP_size_scale == null) || !use_Silverlight) {
-    if (ie9_mode && !returnBoolean("CSSTransformToChildAnimation") && (SA_zoom != 1)) {
+    if (!returnBoolean("CSSTransformToChildAnimation") && (SA_zoom != 1)) { // [9D] ie9_mode always true
       EQP_size_scale = SA_zoom
       SA_zoom = 1
     }

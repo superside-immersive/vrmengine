@@ -74,7 +74,8 @@ catch (err) {
     SA_init_browser_ui()
   }
 
-  if (ie9_mode) {
+  // [9D] ie9_mode always true — unwrapped
+  {
     for (var i = 0; i < SA_child_animation_max; i++) {
       var d = document.getElementById("Ichild_animation" + i)
       if (d) {

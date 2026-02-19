@@ -500,7 +500,7 @@ needs_resize = true
       }
 
       var mod = barPhysics(u - u_last) + u_last
-      var zoom = (ie9_mode) ? 1 : SA_zoom
+      var zoom = 1 // [9D] ie9_mode always true
 
       document.getElementById(id_prefix + "_content").style.pixelWidth = parseInt(mod * (B_width*zoom-2) / 100)
     }

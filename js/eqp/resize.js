@@ -67,7 +67,7 @@ if (ps.use_Silverlight) {
       if (EQP_size_scale == 0.5) {
         if (ps.img_GADGET) {
           ps.img = ps.img_GADGET
-          ps.img.opacity = (ps.img_HTML) ? ((ie9_mode) ? ps.img_HTML.opacity*100 : ps.img_HTML.opacity) : ps.o_min
+          ps.img.opacity = (ps.img_HTML) ? ps.img_HTML.opacity*100 : ps.o_min // [9D] ie9_mode always true
           ps.img_obj.style.display = "none"
         }
         else {
@@ -79,7 +79,7 @@ if (ps.use_Silverlight) {
         if (ps.img_GADGET) {
           if (ps.img_HTML) {
             ps.img = ps.img_HTML
-            ps.img.opacity = (ie9_mode) ? ps.img_GADGET.opacity/100 : ps.img_GADGET.opacity
+            ps.img.opacity = ps.img_GADGET.opacity/100 // [9D] ie9_mode always true
           }
           else
             ps.img = null

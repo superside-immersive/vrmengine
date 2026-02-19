@@ -195,7 +195,7 @@ if (self.EQ_Filter && EQ_Filter.EQP_width) {
     s.zIndex = 50
     s.visibility = (bg.EQP_video_options && bg.EQP_video_options.hide_EQ) ? "hidden" : "inherit"
 
-    if (ie9_mode && bg.opacity)
+    if (bg.opacity) // [9D] ie9_mode always true
       s.opacity = bg.opacity/100
 
     img.src = ((!use_SA_browser_mode && (EQP_size_scale < 1)) || EQP_gallery_obj_active.use_gimage) ? "gimage:///" + bg.src + ("?width=" + bg.w + "&height=" + bg.h) : toFileProtocol(bg.src)
@@ -976,7 +976,7 @@ catch (err) { DEBUG_show('(ERROR: Failed to load the image in Canvas)',0,1) }
         }
       }
     }
-    else if (ie9_mode && _img.opacity)
+    else if (_img.opacity) // [9D] ie9_mode always true
       s.opacity = _img.opacity/100
 
     img.src = ((!use_SA_browser_mode && (EQP_size_scale < 1)) || EQP_gallery_obj_active.use_gimage) ? "gimage:///" + _img.src + ("?width=" + _img.w + "&height=" + _img.h) : toFileProtocol(_img.src)
@@ -1084,8 +1084,8 @@ if (SL_mask['content_mask'] && SL_mask['content_mask'].Mask_src)
 
   if (EQP_bg_color) {
     var s = EQP_gallery_obj_active.html_bg.style
-    s.pixelWidth  = ((use_CSS3_2D_Transforms) ? EQP_gallery_obj_active.w_org + EQP_border_width*2 : EV_width ) - ((ie9_mode) ? EQP_border_width*2 : 0)
-    s.pixelHeight = ((use_CSS3_2D_Transforms) ? EQP_gallery_obj_active.h_org + EQP_border_width*2 : EV_height) - ((ie9_mode) ? EQP_border_width*2 : 0)
+    s.pixelWidth  = ((use_CSS3_2D_Transforms) ? EQP_gallery_obj_active.w_org + EQP_border_width*2 : EV_width ) - EQP_border_width*2 // [9D] ie9_mode always true
+    s.pixelHeight = ((use_CSS3_2D_Transforms) ? EQP_gallery_obj_active.h_org + EQP_border_width*2 : EV_height) - EQP_border_width*2 // [9D] ie9_mode always true
   }
 
   if (!EQP_gallery_obj_active.main_container) {
@@ -1134,7 +1134,7 @@ var EQP_EV_init = function () {
 // Defaults START
   var size_default = (System.Gadget.docked) ? 0.5 : 1
   if ((EQP_size_scale == null)) { // [LEGACY 1C] !use_Silverlight always false
-    if (ie9_mode && !returnBoolean("CSSTransformToChildAnimation") && ((SA_zoom < 1) || (!self.EQP_video_options && (SA_zoom > 1)))) {
+    if (!returnBoolean("CSSTransformToChildAnimation") && ((SA_zoom < 1) || (!self.EQP_video_options && (SA_zoom > 1)))) { // [9D] ie9_mode always true
       EQP_size_scale = SA_zoom
       SA_zoom = 1
     }
@@ -1236,7 +1236,7 @@ var EQP_EV_init = function () {
   }
 
   if (EQP_bg_filter == null)
-    EQP_bg_filter = 'progid:DXImageTransform.Microsoft.BasicImage(grayScale=1, opacity=0.5)'
+    EQP_bg_filter = 'grayscale(1) opacity(0.5)' // [9D] replaced DXImageTransform with CSS filter
   if (EQP_bg_border == null)
     EQP_bg_border = '2px outset white'
 
@@ -1365,7 +1365,7 @@ else {
       var img = obj.imgs[0]
 
 var path = bg_video.src
-EQP_use_HTML5_video = (ie9_mode && /\.(webm|mp4|mkv)$/i.test(path))
+EQP_use_HTML5_video = /\.(webm|mp4|mkv)$/i.test(path) // [9D] ie9_mode always true
 
 if (EQP_use_HTML5_video) {
   if (self.EQP_video_options && is_SA_child_animation && !EQP_video_options.use_canvas_video && parent.MMD_SA_options && parent.MMD_SA_options.child_animation_as_texture) {
@@ -2498,7 +2498,7 @@ if (!bg.w || !bg.h) {
   if (obj.use_filter) {
     var pixels = w * h
     if (pixels > 600000) {
-      obj.use_gimage = !(ie9_mode || use_SA_browser_mode)
+      obj.use_gimage = false // [9D] ie9_mode always true → !(true || x) = false
       var ratio = Math.sqrt(480000 / pixels)
 
       w = parseInt(w * ratio)
@@ -3512,7 +3512,7 @@ document.write('<script language="JavaScript" src="js/EQP_core.js"></scr'+'ipt>'
 
 // Pixastic
 var use_Pixastic=true
-if (ie9_mode && use_Pixastic) {
+if (use_Pixastic) { // [9D] ie9_mode always true
   document.write('<script language="JavaScript" src="js/pixastic.js"></scr'+'ipt>');
   document.write('<script language="JavaScript" src="js/pixastic_noise.js"></scr'+'ipt>');
   document.write('<script language="JavaScript" src="js/pixastic_sepia.js"></scr'+'ipt>');

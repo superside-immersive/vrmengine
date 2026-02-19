@@ -51,7 +51,8 @@ SA.platform = {
   WallpaperEngine_CEF_native_mode: false,
   Settings_WE: {},
 
-  // Legacy (kept for reference during transition, will be removed in Etapa 1)
+  // [9D] Legacy IE flags — kept for child animation iframe propagation
+  // ie9_mode/ie8_mode: always true; ie9_native: false in modern; ie_64bit: always false
   ie9: false,
   ie9_native: false,
   ie9_mode: false,
@@ -177,6 +178,7 @@ SA.syncFromGlobals = function () {
 
   // Legacy platform
   p.ie9 = !!self.ie9;
+  // [9D] Legacy IE flags — propagated to child animation iframes
   p.ie9_native = !!self.ie9_native;
   p.ie9_mode = !!self.ie9_mode;
   p.ie8_mode = !!self.ie8_mode;
@@ -278,6 +280,7 @@ SA.syncToGlobals = function () {
   self.Settings_WE = p.Settings_WE;
 
   self.ie9 = p.ie9;
+  // [9D] Legacy IE flags — received from parent iframe
   self.ie9_native = p.ie9_native;
   self.ie9_mode = p.ie9_mode;
   self.ie8_mode = p.ie8_mode;

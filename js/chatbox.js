@@ -490,8 +490,8 @@ if (_w3c_ie8) {
   CB_LresizeB0.style.pixelWidth -= 4
   CB_LresizeB0.style.pixelHeight -= 4
 
-  CB_SminimizeB0.style.top = ((ie8_mode) ? -2 : -1) + "px"
-  CB_SresizeB0.style.top = ((ie8_mode) ? -2 : -1) + "px"
+  CB_SminimizeB0.style.top = -2 + "px" // [9D] ie8_mode always true
+  CB_SresizeB0.style.top = -2 + "px" // [9D] ie8_mode always true
 }
 
 if (_w3c_dom) {

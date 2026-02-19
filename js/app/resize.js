@@ -187,7 +187,7 @@ if (!ie9)
   }
 
 
-  var bar_height = 8+((ie8_mode)?2:0)
+  var bar_height = 10 // [9D] ie8_mode always true: 8+2
   var bw = B_width
   var bh = B_height + ((Settings.Display > 0) ? bar_height*EV_usage_list.length : 0)
   var fullscreen = use_SA_browser_mode && Settings.CSSTransformFullscreen && (!is_SA_child_animation || is_SA_child_animation_host)
@@ -267,16 +267,15 @@ else {
       document.getElementById(id_prefix + "_up").style.backgroundColor = color[0]
       document.getElementById(id_prefix + "_down").style.backgroundColor = color[1]
 
-      if (ie8_mode) {
-        document.getElementById(id_prefix + "_up").style.pixelHeight = document.getElementById(id_prefix + "_down").style.pixelHeight = document.getElementById(id_prefix + "_down").style.posTop = 4
-        document.getElementById(id_prefix + "_content").style.pixelHeight = 8
-      }
+      // [9D] ie8_mode always true — unwrapped
+      document.getElementById(id_prefix + "_up").style.pixelHeight = document.getElementById(id_prefix + "_down").style.pixelHeight = document.getElementById(id_prefix + "_down").style.posTop = 4
+      document.getElementById(id_prefix + "_content").style.pixelHeight = 8
 
       if (w3c_mode && !bar_accelerate)
         document.getElementById(id_prefix + "_content").style.transition = "width " + (PC_count/10) + "s ease-out"
 
       cs.posTop = B_height + bar_height*i
-      cs.pixelWidth = B_width - ((ie8_mode)?2:0)
+      cs.pixelWidth = B_width - 2 // [9D] ie8_mode always true
       cs.visibility = "inherit"
     }
     else
@@ -287,7 +286,8 @@ else {
   var bs = Lbody_host.style
   var x_shift = 0
   var y_shift = 0
-  if (ie9_mode) {
+  // [9D] ie9_mode always true — unwrapped, DXImageTransform else branch removed
+  {
     bs.pixelWidth  = bw
     bs.pixelHeight = bh
 
@@ -492,11 +492,6 @@ if (fullscreen) {
       bs.msTransform = bs.msTransformOrigin = ""
     }
   }
-  else {
-    cs.pixelWidth  = B_width  * SA_zoom - (cs.posLeft * 2)
-    cs.pixelHeight = B_height * SA_zoom - (cs.posTop  * 2)
-    cs.filter = (SA_zoom == 1) ? "" : "progid:DXImageTransform.Microsoft.Matrix(M11=" + SA_zoom + ", M22=" + SA_zoom + ", FilterType='" + SA_zoom_filterType + "')"
-  }
 
   if (Canvas_Effect && Canvas_Effect._use_default_canvas) {
     var cw = (Canvas_Effect.width)  ? Canvas_Effect.width  : B_width
@@ -686,10 +681,8 @@ System._browser._s_left = System._browser._s_top = null
   if (self.SL_MC_video_obj)
     SL_MC_Place()
 
-// skip for HTA
-  if (!ie9_native) {
-    window.dispatchEvent(new CustomEvent("SA_resize"));
-  }
+// [9D] ie9_native always false in modern browsers — unwrapped
+  window.dispatchEvent(new CustomEvent("SA_resize"));
 
   if (!no_focus) {
 //if (!is_SA_child_animation) console.log(999)

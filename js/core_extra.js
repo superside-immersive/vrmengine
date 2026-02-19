@@ -31,7 +31,7 @@ var absolute_screen_mode
 
 // Re-declared from core.js — provides real initialization
 var SA_child_animation_id = 99
-var ie9_native = /Trident.[5-9]/i.test(navigator.userAgent)
+var ie9_native = /Trident.[5-9]/i.test(navigator.userAgent) // [9D] false in all modern browsers (Chrome/Electron)
 
 document.write('<script type="text/javascript" language="javascript" src="js/SA_system_emulation_ext.js"></scr'+'ipt>\n')
 if (!self.System) {
@@ -689,7 +689,7 @@ else {
     }
   }
 
-  if (!ie9_mode || is_SA_child_animation)
+  if (is_SA_child_animation) // [9D] ie9_mode always true — inverted: was (!ie9_mode || is_SA_child_animation)
     return
 
   for (var i = 0; i < SA_child_animation_max; i++) {
@@ -740,6 +740,7 @@ else {
   }
 
   try {
+    // [9D] ie9_native is false in modern browsers — this HTA block is dead code
     if (ie9_native && !is_SA_child_animation && System.Gadget.Settings.readString("HTALoadSpectrumAnalyser")) {
       var hta
 

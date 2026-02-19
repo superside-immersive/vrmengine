@@ -535,9 +535,10 @@ linux_mode = !browser_native_mode && linux_mode;
 var mac_mode = !browser_native_mode && /(macintosh|macintel|macppc|mac68k|macos)/i.test(navigator.userAgent);
 var save_settings_by_localStorage = WallpaperEngine_CEF_mode || mac_mode;
 
-// [LEGACY REMOVED 1C] ie_64bit (MSIE Win64 check) — always false in modern browsers
+// [9D] ie_64bit: always false in all modern browsers
 var ie_64bit = false
 
+// [9D] ie9_mode/ie8_mode: always true in all modern code paths (webkit, xul, nwjs, electron)
 var ie9, ie9_native
 var ie9_mode, ie8_mode
 

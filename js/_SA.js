@@ -42,10 +42,10 @@ var absolute_screen_mode = (webkit_electron_mode && !returnBoolean("MoveWithinPr
 
 var spectrum_analyser, use_full_fps, use_full_fps_registered
 
-var use_SVG_Clock = (ie9_mode && returnBoolean("UseSVGClock"))
+var use_SVG_Clock = returnBoolean("UseSVGClock") // [9D] ie9_mode always true
 
-var use_EQP_ripple = (ie9_mode && returnBoolean("UseCanvasRipple"))
-var use_EQP_fireworks = (ie9_mode && returnBoolean("UseCanvasFireworks"))
+var use_EQP_ripple = returnBoolean("UseCanvasRipple") // [9D] ie9_mode always true
+var use_EQP_fireworks = returnBoolean("UseCanvasFireworks") // [9D] ie9_mode always true
 
 var use_WebGL = (w3c_mode)
 var use_WebGL_2D// = (use_WebGL && webkit_transparent_mode && returnBoolean("UseWebGLForCanvas2D"))

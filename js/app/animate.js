@@ -149,7 +149,8 @@ function Animate() {
 //EV_sync_update.fps_count_func()
 //if (!is_SA_child_animation && EV_sync_update.fps_last) { console.log('FPS:' + EV_sync_update.fps_last); EV_sync_update.fps_last=0; }
   var active_child = []
-  if (ie9_mode && !is_SA_child_animation) {
+  // [9D] ie9_mode always true — unwrapped
+  if (!is_SA_child_animation) {
     for (var i = 0; i < SA_child_animation_max; i++) {
       if (SA_child_animation[i])
         active_child.push(i)

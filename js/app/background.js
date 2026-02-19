@@ -12,7 +12,7 @@ function BG_Basic() {
 function BG_AddShadow(basic_mode) {
   BG_dim_calculate()
 
-  var mod = (ie9_mode) ? 1 : SA_zoom
+  var mod = 1 // [9D] ie9_mode always true
   var w = EV_width  * mod
   var h = EV_height * mod
 

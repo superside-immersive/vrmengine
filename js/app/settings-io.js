@@ -2,7 +2,7 @@
 
 function Settings_writeJS(f_path, excluded_settings) {
 try {
-  if (!f_path && ie9_mode && !is_SA_child_animation) {
+  if (!f_path && !is_SA_child_animation) { // [9D] ie9_mode always true
     for (var i = 0; i < SA_child_animation_max; i++) {
       var ani = SA_child_animation[i]
 

@@ -102,7 +102,7 @@ var EQP_EV_animate_full = function () {
           CANVAS_must_redraw = ps.use_HTML5
         }
         else
-          ps.img.opacity = (ie9_mode) ? opacity/100 : opacity
+          ps.img.opacity = opacity/100 // [9D] ie9_mode always true
         ps._needs_update = false
       }
     }
