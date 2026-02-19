@@ -1,10 +1,16 @@
 // EQP resize — extracted from EQP.js (Step 7A)
 
+/**
+ * Resize all EQP parts (equalizer/visualizer elements) to the given scale.
+ * Handles Silverlight, HTML IMG, CSS3 Transforms, and canvas modes.
+ * @param {number} scale - Scale factor (0.5 = gadget docked, 1 = full)
+ * @param {boolean} [no_msg] - Suppress debug messages
+ */
 function EQP_resize(scale, no_msg) {
   EQP_resize_CORE(scale, no_msg)
 
 
-  var scale_org = EQP_size_scale
+  const scale_org = EQP_size_scale
   if ((use_Silverlight && SL_ST_enabled) || use_CSS3_2D_Transforms)
     EQP_size_scale = 1
 
@@ -12,24 +18,24 @@ function EQP_resize(scale, no_msg) {
   if (EQP_use_HTML_IMG_FULL)
     EV_BG_allow_dummy = (EQP_size_scale == 1)
 
-  for (var i = 0, i_max = EQP_ps.length; i < i_max; i++) {
-    var ps = EQP_ps[i]
+  for (let i = 0, i_max = EQP_ps.length; i < i_max; i++) {
+    const ps = EQP_ps[i]
 
 if (ps.use_Silverlight) {
   if (!SL_loaded)
     continue
 
-  var img = ps.img
+  const img = ps.img
   if (!img)
     continue
 
   if (ps.use_HTML5) {
-    var c_obj = img.canvas_parent
+    const c_obj = img.canvas_parent
     c_obj.drawn = false
 
-    var mask_obj_list = c_obj.mask_obj_list
+    const mask_obj_list = c_obj.mask_obj_list
     if (mask_obj_list) {
-      for (var name in mask_obj_list)
+      for (let name in mask_obj_list)
         mask_obj_list[name].drawn = false
     }
   }
@@ -47,7 +53,7 @@ if (ps.use_Silverlight) {
   img["Canvas.Top"]  = (ps.y_org - EQP_SL_y) * EQP_size_scale
 
   if (ps.is_video) {
-    var obj_v = SL_root.FindName(img.Name + "_obj")
+    const obj_v = SL_root.FindName(img.Name + "_obj")
     if (ps.w_video > 0)
       obj_v.Width  = ps.w_video
     if (ps.h_video > 0)
@@ -90,10 +96,10 @@ if (ps.use_Silverlight) {
     if (!ps.img)
       continue
 
-    var w = ps.w_org * scale_org
-    var h = ps.h_org * scale_org
+    const w = ps.w_org * scale_org
+    const h = ps.h_org * scale_org
 
-    var img = ps.img
+    const img = ps.img
     img.left = (w - ps.w_org)/2 + ps.x_org * scale_org
     img.top  = (h - ps.h_org)/2 + ps.y_org * scale_org
     img.width  = w
@@ -103,7 +109,7 @@ if (ps.use_Silverlight) {
 
   EQP_size_scale = scale_org
 
-  var s = BG.style
+  const s = BG.style
   s.posLeft = Math.round(EQP_BG_x * EQP_size_scale)
   s.posTop  = Math.round(EQP_BG_y * EQP_size_scale)
   s.pixelWidth  = Math.round(EQP_BG_width  * EQP_size_scale)
@@ -113,9 +119,9 @@ if (ps.use_Silverlight) {
   EV_height = Math.round(EQP_EV_height * EQP_size_scale)
 
   if (use_CSS3_2D_Transforms) {
-    var ids = ["Lmain_obj", "Lgimage_BG"]
-    for (var i = 0; i < ids.length; i++) {
-      var cs = document.getElementById(ids[i]).style
+    const ids = ["Lmain_obj", "Lgimage_BG"]
+    for (let i = 0; i < ids.length; i++) {
+      const cs = document.getElementById(ids[i]).style
       if (EQP_size_scale == 1) {
         cs.MozTransform = cs.MozTransformOrigin = "";
       }
@@ -126,7 +132,7 @@ if (ps.use_Silverlight) {
     }
   }
   else if (use_Silverlight && SL_loaded) {
-    var ss = SL_Host_Parent.style
+    const ss = SL_Host_Parent.style
     ss.pixelWidth  = Math.round(EQP_SL_w * EQP_size_scale)
     ss.pixelHeight = Math.round(EQP_SL_h * EQP_size_scale)
     ss.posLeft = Math.round(EQP_SL_x * EQP_size_scale)
@@ -147,10 +153,10 @@ if (SL_mask['content_mask'] && SL_mask['content_mask'].Mask_src)
       SL_ArrangeButtons()
 
       if (SL_ST_enabled) {
-        var st = SL_root.FindName("content_ST")
-        var tt = SL_root.FindName("content_TT")
+        const st = SL_root.FindName("content_ST")
+        const tt = SL_root.FindName("content_TT")
 
-        var scale = EQP_size_scale * SL_fullscreen_scale
+        const scale = EQP_size_scale * SL_fullscreen_scale
 
         if (EQP_flipH) {
           tt.X = -ss.pixelWidth

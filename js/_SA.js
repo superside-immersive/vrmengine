@@ -9,23 +9,23 @@ System Animator
 */
 
 // Load app modules (Step 5A extraction)
-document.write('<script language="JavaScript" src="js/app/utils.js"></scr'+'ipt>')
-document.write('<script language="JavaScript" src="js/app/events.js"></scr'+'ipt>')
-document.write('<script language="JavaScript" src="js/app/init-ui.js"></scr'+'ipt>')
-document.write('<script language="JavaScript" src="js/app/resize.js"></scr'+'ipt>')
+SA.loader.loadScriptSync('js/app/utils.js')
+SA.loader.loadScriptSync('js/app/events.js')
+SA.loader.loadScriptSync('js/app/init-ui.js')
+SA.loader.loadScriptSync('js/app/resize.js')
 // Load app modules (Step 5B extraction)
-document.write('<script language="JavaScript" src="js/app/ev-init.js"></scr'+'ipt>')
-document.write('<script language="JavaScript" src="js/app/animate.js"></scr'+'ipt>')
-document.write('<script language="JavaScript" src="js/app/animate-core.js"></scr'+'ipt>')
-document.write('<script language="JavaScript" src="js/app/ev-processing.js"></scr'+'ipt>')
-document.write('<script language="JavaScript" src="js/app/seq-animate.js"></scr'+'ipt>')
+SA.loader.loadScriptSync('js/app/ev-init.js')
+SA.loader.loadScriptSync('js/app/animate.js')
+SA.loader.loadScriptSync('js/app/animate-core.js')
+SA.loader.loadScriptSync('js/app/ev-processing.js')
+SA.loader.loadScriptSync('js/app/seq-animate.js')
 // Load app modules (Step 5C extraction)
-document.write('<script language="JavaScript" src="js/app/sa-init.js"></scr'+'ipt>')
-document.write('<script language="JavaScript" src="js/app/dragdrop-handler.js"></scr'+'ipt>')
-document.write('<script language="JavaScript" src="js/app/load-main.js"></scr'+'ipt>')
-document.write('<script language="JavaScript" src="js/app/settings-io.js"></scr'+'ipt>')
-document.write('<script language="JavaScript" src="js/app/background.js"></scr'+'ipt>')
-document.write('<script language="JavaScript" src="js/app/gallery-utils.js"></scr'+'ipt>')
+SA.loader.loadScriptSync('js/app/sa-init.js')
+SA.loader.loadScriptSync('js/app/dragdrop-handler.js')
+SA.loader.loadScriptSync('js/app/load-main.js')
+SA.loader.loadScriptSync('js/app/settings-io.js')
+SA.loader.loadScriptSync('js/app/background.js')
+SA.loader.loadScriptSync('js/app/gallery-utils.js')
 
 // obsolete
 var Seq_speed_delay = 1
@@ -178,7 +178,7 @@ self.EQP_init_extra = function () {
   }
 }
 
-document.write('<script language="JavaScript" src="js/EQP.js"></scr'+'ipt>')
+SA.loader.loadScriptSync('js/EQP.js')
         }
         else {
           use_native_img = true
@@ -621,24 +621,24 @@ function loadFolder_CORE() {
 
   // Load mmd/ dependencies before any path that loads MMD_SA.js
   if (gallery_js || self.MMD_SA_options) {
-    document.write('<script language="JavaScript" src="js/mmd/audio.js"></scr'+'ipt>')
-    document.write('<script language="JavaScript" src="js/mmd/sfx.js"></scr'+'ipt>')
-    document.write('<script language="JavaScript" src="js/mmd/speech-bubble.js"></scr'+'ipt>')
-    document.write('<script language="JavaScript" src="js/mmd/vfx.js"></scr'+'ipt>')
-    document.write('<script language="JavaScript" src="js/mmd/webxr.js"></scr'+'ipt>')
-    document.write('<script language="JavaScript" src="js/mmd/osc.js"></scr'+'ipt>')
-    document.write('<script language="JavaScript" src="js/mmd/gamepad.js"></scr'+'ipt>')
-    document.write('<script language="JavaScript" src="js/mmd/wallpaper3d.js"></scr'+'ipt>')
-    document.write('<script language="JavaScript" src="js/mmd/sprite.js"></scr'+'ipt>')
-    document.write('<script language="JavaScript" src="js/mmd/camera-shake.js"></scr'+'ipt>')
-    document.write('<script language="JavaScript" src="js/mmd/defaults.js"></scr'+'ipt>')
+    SA.loader.loadScriptSync('js/mmd/audio.js')
+    SA.loader.loadScriptSync('js/mmd/sfx.js')
+    SA.loader.loadScriptSync('js/mmd/speech-bubble.js')
+    SA.loader.loadScriptSync('js/mmd/vfx.js')
+    SA.loader.loadScriptSync('js/mmd/webxr.js')
+    SA.loader.loadScriptSync('js/mmd/osc.js')
+    SA.loader.loadScriptSync('js/mmd/gamepad.js')
+    SA.loader.loadScriptSync('js/mmd/wallpaper3d.js')
+    SA.loader.loadScriptSync('js/mmd/sprite.js')
+    SA.loader.loadScriptSync('js/mmd/camera-shake.js')
+    SA.loader.loadScriptSync('js/mmd/defaults.js')
   }
 
   if (gallery_js)
     document.write(SystemEXT.ReadJS(gallery_js, true))
   else if (self.MMD_SA_options) {
-    document.write('<script language="JavaScript" src="MMD.js/MMD_SA.js"></scr'+'ipt>')
+    SA.loader.loadScriptSync('MMD.js/MMD_SA.js')
   }
   else if (!EQP_gallery && returnBoolean("UseFilters"))
-    document.write('<script language="JavaScript" src="js_filters/animate.js"></scr'+'ipt>')
+    SA.loader.loadScriptSync('js_filters/animate.js')
 })();

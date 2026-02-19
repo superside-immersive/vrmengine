@@ -700,17 +700,17 @@ if (!EV_init)
 
 
 // CORE
-document.write('<script language="JavaScript" src="js/EQP_core.js"></scr'+'ipt>');
+SA.loader.loadScriptSync('js/EQP_core.js');
 
 
 // EQP - Free BG version
 if (use_EQP_FB)
-  document.write('<script language="JavaScript" src="js/EQP_FB.js"></scr'+'ipt>');
+  SA.loader.loadScriptSync('js/EQP_FB.js');
 
 // EQP extracted modules (Step 7A)
-document.write('<script language="JavaScript" src="js/eqp/resize.js"></scr'+'ipt>');
-document.write('<script language="JavaScript" src="js/eqp/animate.js"></scr'+'ipt>');
-document.write('<script language="JavaScript" src="js/eqp/wallpaper_mode.js"></scr'+'ipt>');
+SA.loader.loadScriptSync('js/eqp/resize.js');
+SA.loader.loadScriptSync('js/eqp/animate.js');
+SA.loader.loadScriptSync('js/eqp/wallpaper_mode.js');
 
 
 // Silverlight
@@ -772,8 +772,8 @@ resize()
 // Silverlight scripts
 // [LEGACY REMOVED] Silverlight support removed
 if (use_HTML5) {
-  document.write('<script language="JavaScript" src="js/html5.js"></scr'+'ipt>');
+  SA.loader.loadScriptSync('js/html5.js');
 }
 else if (use_SVG) {
-  document.write('<script language="JavaScript" src="js/svg.js"></scr'+'ipt>');
+  SA.loader.loadScriptSync('js/svg.js');
 }

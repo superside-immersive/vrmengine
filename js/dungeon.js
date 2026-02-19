@@ -8124,19 +8124,19 @@ else {
 }
 
 // extracted modules (Step 6A)
-document.write('<script language="JavaScript" src="js/dungeon/inventory.js"></scr'+'ipt>');
-document.write('<script language="JavaScript" src="js/dungeon/restart.js"></scr'+'ipt>');
-document.write('<script language="JavaScript" src="js/dungeon/multiplayer.js"></scr'+'ipt>');
+SA.loader.loadScriptSync('js/dungeon/inventory.js');
+SA.loader.loadScriptSync('js/dungeon/restart.js');
+SA.loader.loadScriptSync('js/dungeon/multiplayer.js');
 
 // extracted modules (Step 6B)
-document.write('<script language="JavaScript" src="js/dungeon/check_states.js"></scr'+'ipt>');
-document.write('<script language="JavaScript" src="js/dungeon/events_default.js"></scr'+'ipt>');
-document.write('<script language="JavaScript" src="js/dungeon/run_event.js"></scr'+'ipt>');
-document.write('<script language="JavaScript" src="js/dungeon/sfx_check.js"></scr'+'ipt>');
-document.write('<script language="JavaScript" src="js/dungeon/utils.js"></scr'+'ipt>');
+SA.loader.loadScriptSync('js/dungeon/check_states.js');
+SA.loader.loadScriptSync('js/dungeon/events_default.js');
+SA.loader.loadScriptSync('js/dungeon/run_event.js');
+SA.loader.loadScriptSync('js/dungeon/sfx_check.js');
+SA.loader.loadScriptSync('js/dungeon/utils.js');
 
 // extracted modules (Step 6C)
-document.write('<script language="JavaScript" src="js/dungeon/character.js"></scr'+'ipt>');
-document.write('<script language="JavaScript" src="js/dungeon/map.js"></scr'+'ipt>');
+SA.loader.loadScriptSync('js/dungeon/character.js');
+SA.loader.loadScriptSync('js/dungeon/map.js');
 
 document.write('<script>MMD_SA_options.Dungeon.init();</scr'+'ipt>');

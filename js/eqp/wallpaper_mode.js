@@ -1,21 +1,29 @@
 // EQP wallpaper mode — extracted from EQP.js (Step 7A)
 
+/** @type {boolean} Whether wallpaper mode is enabled (set by animation config) */
 var EQP_wallpaper_mode_enabled
+/** @type {Object} Options for wallpaper mode positioning */
 var EQP_wallpaper_mode_options
 
+/**
+ * Wallpaper mode controller.
+ * Adjusts EQP part positions for desktop wallpaper display,
+ * handling fullscreen scaling and offset ratios for fireworks/WebGL effects.
+ * @type {{x_ratio: number, y_ratio: number, init: Function, adjust_pos: Function}}
+ */
 var EQP_wallpaper_mode = {
   x_ratio: 0.5
  ,y_ratio: 0.5
 
  ,init: function () {
 if (EQP_wallpaper_mode_options) {
-  for (var name in EQP_wallpaper_mode_options)
+  for (let name in EQP_wallpaper_mode_options)
     this[name] = EQP_wallpaper_mode_options[name]
 }
 
 EV_init = function () {
 // support "fullscreen" child animation as well
-  var fullscreen = (use_SA_browser_mode && Settings.CSSTransformFullscreen)
+  const fullscreen = (use_SA_browser_mode && Settings.CSSTransformFullscreen)
   if (fullscreen) {
     EV_width  = EQP_EV_width  = EQP_SL_w = Math.max(screen.availWidth,  EQP_ref_width)
     EV_height = EQP_EV_height = EQP_SL_h = Math.max(screen.availHeight, EQP_ref_height)
@@ -27,7 +35,7 @@ EV_init = function () {
     EV_height = EQP_EV_height = EQP_SL_h = EQP_ref_height
   }
 
-  var first_resize = !EQP_EV_initialized
+  const first_resize = !EQP_EV_initialized
   if (!first_resize)
     EQP_wallpaper_mode.adjust_pos()
 
@@ -41,8 +49,8 @@ EV_init = function () {
   }
 
  ,adjust_pos: function () {
-    var x_ratio = this.x_ratio
-    var y_ratio = this.y_ratio
+    const x_ratio = this.x_ratio
+    const y_ratio = this.y_ratio
 
     EQP_ps.forEach(function (ps) {
 if (ps._x_org_ == null)

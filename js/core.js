@@ -168,10 +168,21 @@ var Settings_default = {
 // END
 
 
+/**
+ * Read a boolean setting, returning its default if not stored.
+ * @param {string} name - Settings key name
+ * @returns {boolean}
+ */
 function returnBoolean(name) {
   return ((!System.Gadget.Settings.readString(name)) ? Settings_default[name] : !Settings_default[name])
 }
 
+/**
+ * Convert a local path or URL to a file:// protocol URL.
+ * Handles blob/data URLs (pass-through), zip archives, and DragDrop object URLs.
+ * @param {string} url - File path or URL to convert
+ * @returns {string} file:// URL or blob/data URL
+ */
 function toFileProtocol(url) {
   if (/^(blob|data)\:/i.test(url))
     return url
@@ -216,11 +227,21 @@ Other file types (including zip file by its own) will return in blob url.
 // Encode () to avoid issues when used in CSS (eg. background-image).
   return "file:///" + encodeURI(url_decoded.replace(/\\/g, "/")).replace(/^(\w)\:/, "$1|").replace(/\(/g, "%28").replace(/\)/g, "%29");
 }
-
-function toLocalPath(url) {
+/**
+ * Convert a file:// URL back to a local filesystem path.
+ * @param {string} url - file:// URL to convert
+ * @returns {string} Local path (OS-appropriate separators)
+ */function toLocalPath(url) {
   return (/^(blob|data)\:/i.test(url)) ? url : decodeURIComponent(url.replace(/^file\:\/+/i, ((windows_mode||browser_native_mode)?"":"/")).replace(/^(\w)[\|\:]/i, "$1:").replace(/[\/\\]/g, ((windows_mode)?"\\":"/")).replace(/\?.+$/, ""));
 }
 
+/**
+ * Escape a string (or array of strings) for safe use in a RegExp.
+ * Non-ASCII characters are converted to \\uXXXX notation.
+ * @param {string|string[]} str - String(s) to escape
+ * @param {string} [separator] - Join separator for multiple strings
+ * @returns {string} RegExp-safe pattern string
+ */
 function toRegExp(str, separator) {
   var str_list = (Array.isArray(str)) ? str : [str];
   str_list.forEach(function (s, idx) {
@@ -258,6 +279,11 @@ Array.prototype.shuffle = function () {
 
 // [REMOVED 7A] Dead polyfills: String.prototype.trim (ES5), Date.now (ES5), Array.prototype.find (ES2015), Object.assign (ES2015)
 
+/**
+ * Deep-clone an object via JSON round-trip, preserving Function and RegExp references.
+ * @param {Object} obj - Object to clone
+ * @returns {Object|null} Deep clone, or null if obj is falsy
+ */
 Object.clone = function (obj) {
   if (!obj)
     return null
@@ -280,6 +306,13 @@ return value
   return obj_clone;
 };
 
+/**
+ * Recursively merge source object(s) into target (deep assign).
+ * Primitives, Functions, RegExps, and Arrays are overwritten; plain objects are merged recursively.
+ * @param {Object} target - Target object to merge into
+ * @param {...Object} sources - Source objects
+ * @returns {Object|null} The merged target, or null if target is falsy
+ */
 Object.append = (function () {
   function append(target, source) {
     if ((target == null) || (source == null))
@@ -420,6 +453,12 @@ var DEBUG_always_visible
 var DEBUG_hide_sec = 0
 var DEBUG_last_display_time = 0
 
+/**
+ * Show or hide a debug overlay message.
+ * @param {string|null} msg - Message to display, or null to hide
+ * @param {number} [hide_sec] - Seconds before auto-hide (0 = permanent)
+ * @param {boolean} [always_visible] - If true, keep visible until explicitly cleared
+ */
 function DEBUG_show(msg, hide_sec, always_visible) {
   if (always_visible)
     DEBUG_always_visible = true

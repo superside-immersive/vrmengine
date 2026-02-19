@@ -1,24 +1,31 @@
 // EQP animate — extracted from EQP.js (Step 7A)
 
+/** @type {boolean} Flag indicating canvas needs redraw this frame */
 var CANVAS_must_redraw
 
+/**
+ * Per-frame animation loop for EQP parts.
+ * Updates opacity, scale, and rotation based on audio EV_usage values.
+ * Composites all HTML5 canvas parts into the main SL canvas.
+ * @global
+ */
 var EQP_EV_animate_full = function () {
 //DEBUG_show(PC_count_absolute)
   if (use_Silverlight && !SL_loaded)
     return
 
-  var timestamp = performance.now()
+  const timestamp = performance.now()
 
-  for (var i = 0, i_max = EQP_ps.length; i < i_max; i++) {
-    var ps = EQP_ps[i]
+  for (let i = 0, i_max = EQP_ps.length; i < i_max; i++) {
+    const ps = EQP_ps[i]
     if (ps.use_HTML5 && !ps.img.canvas_parent.drawn && ps.img.Opacity) {
       CANVAS_must_redraw = true
     }
     if (ps.static_part)
       continue
 
-    for (var j = 0; j < 3; j++) {
-      var pp
+    for (let j = 0; j < 3; j++) {
+      let pp
       if (j == 0) {
         if (ps.static_alpha)
           continue
@@ -35,11 +42,11 @@ var EQP_EV_animate_full = function () {
         pp = ps.rotate
       }
 
-      var u = -1
+      let u = -1
       if (EV_usage_sub) {
-        var g_EQ   = pp.g_EQ
-        var g_num  = pp.g_num
-        var g_beat = pp.g_beat
+        let g_EQ   = pp.g_EQ
+        let g_num  = pp.g_num
+        let g_beat = pp.g_beat
         if (!g_EQ && !g_num && !g_beat) {
           g_EQ   = ps.g_EQ
           g_num  = ps.g_num
@@ -47,10 +54,10 @@ var EQP_EV_animate_full = function () {
         }
 
         if (EQP_EQ_mode && g_EQ && g_EQ[EQP_EQ_index]) {
-          var EQ = g_EQ[EQP_EQ_index]
+          const EQ = g_EQ[EQP_EQ_index]
 
           u = 0
-          for (var k = 0, k_max = EQ.length; k < k_max; k++)
+          for (let k = 0, k_max = EQ.length; k < k_max; k++)
             u += EV_usage_sub.sound_raw[EQ[k]].usage_raw * Sound_EQBand_mod
           u /= EQ.length
 
@@ -68,8 +75,8 @@ var EQP_EV_animate_full = function () {
 
       u = EQP_EV_usage_PROCESS(pp.decay2, u, pp.decay_factor2)
 
-      var u_min = pp.u_min
-      var u_max = pp.u_max
+      const u_min = pp.u_min
+      const u_max = pp.u_max
       if (u < u_min)
         u = (u <= pp.u_min_hidden) ? -1 : 0
       else if (u >= u_max)
@@ -87,8 +94,8 @@ var EQP_EV_animate_full = function () {
 
     if (!ps.static_alpha) {
       if (ps._needs_update) {
-        var u = ps._u
-        var opacity = (u == -1) ? 0 : parseInt(ps.o_min + (ps.o_max - ps.o_min) * u/100)
+        const u = ps._u
+        const opacity = (u == -1) ? 0 : parseInt(ps.o_min + (ps.o_max - ps.o_min) * u/100)
 //if (opacity == 100) DEBUG_show(opacity+','+i)
         if (ps.use_Silverlight) {
           ps.img.Opacity = opacity / 100
@@ -100,7 +107,7 @@ var EQP_EV_animate_full = function () {
       }
     }
 
-    var pp, u
+    let pp, u
     if (!ps.static_scale) {
       pp = ps.scale 
       if (pp._needs_update) {
@@ -112,14 +119,14 @@ var EQP_EV_animate_full = function () {
 
     if (!ps.static_rotate) {
       pp = ps.rotate
-      var u = pp._u
+      u = pp._u
       if ((pp.min != null) && pp._needs_update) {
         pp._rotate_static = (u == -1) ? pp.min : pp.min + (pp.max - pp.min) * u/100
         pp._needs_update = false
       }
       if (pp.rpm_min != null) {
         if (pp._timestamp) {
-          var r = (u == -1) ? pp.rpm_min : pp.rpm_min + (pp.rpm_max - pp.rpm_min) * u/100
+          const r = (u == -1) ? pp.rpm_min : pp.rpm_min + (pp.rpm_max - pp.rpm_min) * u/100
           if (r) {
             pp._rotate_by_rpm = (pp._rotate_by_rpm + r * ((timestamp - pp._timestamp) / 1000 / 60)) % 1
             CANVAS_must_redraw = ps.use_HTML5
@@ -138,16 +145,16 @@ var EQP_EV_animate_full = function () {
       CANVAS_must_redraw = true
   }
 
-  var update_WMP_wallpaper_mask = CANVAS_must_redraw
+  const update_WMP_wallpaper_mask = CANVAS_must_redraw
   WebGL_2D_must_redraw = CANVAS_must_redraw
   if (CANVAS_must_redraw) {
     SL._drawn_id = Date.now()
 
-    var context = SL.getContext("2d")
+    const context = SL.getContext("2d")
     context.globalCompositeOperation = 'copy'
 
     if (EQP_flipH || EQP_flipV) {
-      var wxh = SL.width+'x'+SL.height
+      const wxh = SL.width+'x'+SL.height
       if (SL._transformed != wxh) {
         context.translate(((EQP_flipH)?SL.width:0), ((EQP_flipV)?SL.height:0))
         context.scale(((EQP_flipH)?-1:1), ((EQP_flipV)?-1:1))
@@ -155,14 +162,14 @@ var EQP_EV_animate_full = function () {
       }
     }
 
-    var canvas_drawn = 0
-    for (var i = 0, i_max = EQP_ps.length; i < i_max; i++) {
-      var ps = EQP_ps[i]
+    let canvas_drawn = 0
+    for (let i = 0, i_max = EQP_ps.length; i < i_max; i++) {
+      const ps = EQP_ps[i]
       if (!ps.use_HTML5)
         continue
 
-var canvas = ps.img
-var opacity = canvas.Opacity
+const canvas = ps.img
+const opacity = canvas.Opacity
 if (!opacity)
   continue
 
@@ -199,33 +206,33 @@ if (ps.rotation) {
 if (((ps.scale._scale || 1) != 1) || ps.rotate._rotate) {
   context.save()
 
-  var x = (ps.x_org - EQP_SL_x) * EQP_size_scale
-  var y = (ps.y_org - EQP_SL_y) * EQP_size_scale
-  var w = ps.w_org * EQP_size_scale
-  var h = ps.h_org * EQP_size_scale
+  const x = (ps.x_org - EQP_SL_x) * EQP_size_scale
+  const y = (ps.y_org - EQP_SL_y) * EQP_size_scale
+  const w = ps.w_org * EQP_size_scale
+  const h = ps.h_org * EQP_size_scale
 
 // adjust x/y rounding offset due to resized canvas, moving to the accurate resized (0,0)
-  var x_resized_offset = canvas.x_resized-x
-  var y_resized_offset = canvas.y_resized-y
+  const x_resized_offset = canvas.x_resized-x
+  const y_resized_offset = canvas.y_resized-y
   context.translate(x_resized_offset, y_resized_offset)
 
-  var scale = ps.scale._scale || 1
+  const scale = ps.scale._scale || 1
   if (scale != 1) {
     context.scale(scale, scale)
   }
 
-  var x_adjusted = w*(1-scale)*0.5 + x
-  var y_adjusted = h*(1-scale)*0.5 + y
+  let x_adjusted = w*(1-scale)*0.5 + x
+  let y_adjusted = h*(1-scale)*0.5 + y
 
-  var rotate = ps.rotate._rotate
+  const rotate = ps.rotate._rotate
   if (rotate) {
-    var a = rotate/180 * Math.PI
+    let a = rotate/180 * Math.PI
 
     context.translate(w/2, h/2)
     context.rotate(a)
     context.translate(-w/2, -h/2)
 
-    var r = Math.sqrt(x_adjusted*x_adjusted + y_adjusted*y_adjusted)
+    const r = Math.sqrt(x_adjusted*x_adjusted + y_adjusted*y_adjusted)
     a = Math.atan2(y_adjusted,x_adjusted) - a
 
     x_adjusted = Math.cos(a) * r
@@ -246,7 +253,7 @@ else {
     }
 
     if (SL_mask['content_mask'] && SL_mask['content_mask'].Mask_src) {
-var mask_obj = SL_mask['content_mask']
+const mask_obj = SL_mask['content_mask']
 mask_obj.draw(true)
 
 context.globalAlpha = 1
@@ -267,7 +274,7 @@ context.drawImage(mask_obj.canvas, 0,0)
       EQP_matrix_rain._SA_draw()
 
     if (update_WMP_wallpaper_mask && self.C_WMP_wallpaper_mask) {
-      for (var k = 0; k < SA_child_animation_max; k++) {
+      for (let k = 0; k < SA_child_animation_max; k++) {
         if (!SA_child_animation[k])
           continue
 
