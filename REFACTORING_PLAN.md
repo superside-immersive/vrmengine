@@ -120,8 +120,11 @@ Migrate to ES Modules progressively. Remove legacy platform support. Never break
 - **Fix**: Restored `gadget.xml` (deleted in 1A but required by SA_system_emulation for Settings init)
 - MMD_SA.js: 12,887 → 11,818 lines (−1,069)
 
-### 4B — Extract MMD_SA.js: Defaults block (~1,527 lines)
-- `js/mmd/defaults.js` — standalone IIFE: model path defaults, THREEX options, model selection/parameters, extra models, X-ray, script loading
+### 4B — Extract MMD_SA.js: Defaults block ✅
+- `js/mmd/defaults.js` (1530 lines) — standalone IIFE: model path defaults, THREEX options, model selection/parameters, extra models, X-ray, mesh/material generation, script loading
+- Global function `window.MMD_SA_initDefaults` called synchronously from MMD_SA.js
+- Script loaded via `document.write` in `_SA.js` before `MMD_SA.js`
+- MMD_SA.js: 11,818 → 10,291 lines (−1,527)
 
 ### 4C — Extract MMD_SA.js THREEX sub-modules: VRM (~1,474 lines) + PPE (~1,081 lines)
 - `js/mmd/vrm.js` — VRM model loading, bone mapping, morph/expression handling (inside THREEX IIFE)

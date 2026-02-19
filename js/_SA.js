@@ -5221,6 +5221,7 @@ function Canvas_BDDraw(canvas, beat) {
     document.write('<script language="JavaScript" src="js/mmd/wallpaper3d.js"></scr'+'ipt>')
     document.write('<script language="JavaScript" src="js/mmd/sprite.js"></scr'+'ipt>')
     document.write('<script language="JavaScript" src="js/mmd/camera-shake.js"></scr'+'ipt>')
+    document.write('<script language="JavaScript" src="js/mmd/defaults.js"></scr'+'ipt>')
     document.write('<script language="JavaScript" src="MMD.js/MMD_SA.js"></scr'+'ipt>')
   }
   else if (!EQP_gallery && returnBoolean("UseFilters"))
