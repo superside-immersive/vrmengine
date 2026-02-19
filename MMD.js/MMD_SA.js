@@ -8104,10 +8104,7 @@ c_max = Math.max(c.color.r, c.color.g, c.color.b);
 //threeX.renderer.obj.physicallyCorrectLights=true;
 //if (threeX.renderer.obj.physicallyCorrectLights) c_max *= 5;
 
-// .useLegacyLights is obsolete
-//threeX.renderer.obj.useLegacyLights = false;
-//if (!threeX.renderer.obj.useLegacyLights)
-c_max *= 5;
+c_max *= 5; // [9F] useLegacyLights comments removed (obsolete Three.js property)
 
 if (c.type == 'DirectionalLight') {
   if (use_VRM1)

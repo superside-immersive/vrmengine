@@ -10,10 +10,7 @@ var Pixastic = (function() {
 
 
 	function addEvent(el, event, handler) {
-		if (el.addEventListener)
-			el.addEventListener(event, handler, false); 
-		else if (el.attachEvent)
-			el.attachEvent("on" + event, handler); 
+		el.addEventListener(event, handler, false); // [9F] attachEvent fallback removed (IE-only)
 	}
 
 	function onready(handler) {

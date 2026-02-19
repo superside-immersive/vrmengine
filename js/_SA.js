@@ -27,8 +27,7 @@ SA.loader.loadScriptSync('js/app/settings-io.js')
 SA.loader.loadScriptSync('js/app/background.js')
 SA.loader.loadScriptSync('js/app/gallery-utils.js')
 
-// obsolete
-var Seq_speed_delay = 1
+// [9F] Seq_speed_delay removed (always 1)
 
 
 var loaded

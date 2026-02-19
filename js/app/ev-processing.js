@@ -725,7 +725,7 @@ else {
 
 // Draw pic
   if (SEQ_mode) {
-    var ms = SEQ_CalculateFPS() * Seq_speed_delay
+    var ms = SEQ_CalculateFPS() // [9F] Seq_speed_delay removed (always 1)
 
     var s = Seq.item("SEQ")
     var ms_final = EV_AdjustTimer(ms, s.interval_current)

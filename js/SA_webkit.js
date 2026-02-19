@@ -750,30 +750,7 @@ else {
 console.error(cmd)
 return ""
 
-/*
-var js_path = System.Gadget.path + toLocalPath('\\js\\SA_regread.js');
-var temp_path = oShell.ExpandEnvironmentStrings("%TEMP%");
-var temp_filename = js_path.replace(/^.+[\/\\]/, '').replace(/\s/g, "_") + ("_" + Date.now()) + ("-" + Math.random()).replace(/0\./, "");
-
-//if (/EQBand/i.test(key)) alert(key)
-
-WebKit_object["Shell.Application"]._run(js_path, encodeURIComponent(temp_filename) + " " + encodeURIComponent(key), null, true);
-
-temp_path += toLocalPath('\\' + temp_filename + '.txt');
-var result = ""
-try {
-  var fs = SA_require('fs')
-  if (fs.existsSync(temp_path)) {
-    result = fs.readFileSync(temp_path).toString()
-    fs.unlinkSync(temp_path)
-  }
-}
-catch (err) {
-  console.error(err)
-}
-
-return result
-*/
+// [9F] Removed commented-out SA_regread.js block (dead code)
    }
 
    ,CreateShortcut: function (path) {
