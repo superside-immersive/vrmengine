@@ -5208,9 +5208,8 @@ function Canvas_BDDraw(canvas, beat) {
     ItemsFromFolder(f_path_default, true)
   }
 
-  if (gallery_js)
-    document.write(SystemEXT.ReadJS(gallery_js, true))
-  else if (self.MMD_SA_options) {
+  // Load mmd/ dependencies before any path that loads MMD_SA.js
+  if (gallery_js || self.MMD_SA_options) {
     document.write('<script language="JavaScript" src="js/mmd/audio.js"></scr'+'ipt>')
     document.write('<script language="JavaScript" src="js/mmd/sfx.js"></scr'+'ipt>')
     document.write('<script language="JavaScript" src="js/mmd/speech-bubble.js"></scr'+'ipt>')
@@ -5222,6 +5221,11 @@ function Canvas_BDDraw(canvas, beat) {
     document.write('<script language="JavaScript" src="js/mmd/sprite.js"></scr'+'ipt>')
     document.write('<script language="JavaScript" src="js/mmd/camera-shake.js"></scr'+'ipt>')
     document.write('<script language="JavaScript" src="js/mmd/defaults.js"></scr'+'ipt>')
+  }
+
+  if (gallery_js)
+    document.write(SystemEXT.ReadJS(gallery_js, true))
+  else if (self.MMD_SA_options) {
     document.write('<script language="JavaScript" src="MMD.js/MMD_SA.js"></scr'+'ipt>')
   }
   else if (!EQP_gallery && returnBoolean("UseFilters"))
