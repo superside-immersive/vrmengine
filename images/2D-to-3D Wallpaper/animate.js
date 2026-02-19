@@ -570,4 +570,15 @@ MMD_SA.Wallpaper3D.options.pos_y_offset_percent += mov_offset[1] * 100;
 })();
 
 // main js
+document.write('<script language="JavaScript" src="js/mmd/audio.js"></scr'+'ipt>');
+document.write('<script language="JavaScript" src="js/mmd/sfx.js"></scr'+'ipt>');
+document.write('<script language="JavaScript" src="js/mmd/speech-bubble.js"></scr'+'ipt>');
+document.write('<script language="JavaScript" src="js/mmd/vfx.js"></scr'+'ipt>');
+document.write('<script language="JavaScript" src="js/mmd/webxr.js"></scr'+'ipt>');
+document.write('<script language="JavaScript" src="js/mmd/osc.js"></scr'+'ipt>');
+document.write('<script language="JavaScript" src="js/mmd/gamepad.js"></scr'+'ipt>');
+document.write('<script language="JavaScript" src="js/mmd/wallpaper3d.js"></scr'+'ipt>');
+document.write('<script language="JavaScript" src="js/mmd/sprite.js"></scr'+'ipt>');
+document.write('<script language="JavaScript" src="js/mmd/camera-shake.js"></scr'+'ipt>');
+document.write('<script language="JavaScript" src="js/mmd/defaults.js"></scr'+'ipt>');
 document.write('<script language="JavaScript" src="MMD.js/MMD_SA.js"></scr'+'ipt>');

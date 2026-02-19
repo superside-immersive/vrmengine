@@ -16442,4 +16442,15 @@ document.write('<script language="JavaScript" src="' + toFileProtocol(Settings.f
 // main js
 if (MMD_SA_options.Dungeon_options)
   document.write('<script language="JavaScript" src="js/dungeon.js"></scr'+'ipt>');
+document.write('<script language="JavaScript" src="js/mmd/audio.js"></scr'+'ipt>');
+document.write('<script language="JavaScript" src="js/mmd/sfx.js"></scr'+'ipt>');
+document.write('<script language="JavaScript" src="js/mmd/speech-bubble.js"></scr'+'ipt>');
+document.write('<script language="JavaScript" src="js/mmd/vfx.js"></scr'+'ipt>');
+document.write('<script language="JavaScript" src="js/mmd/webxr.js"></scr'+'ipt>');
+document.write('<script language="JavaScript" src="js/mmd/osc.js"></scr'+'ipt>');
+document.write('<script language="JavaScript" src="js/mmd/gamepad.js"></scr'+'ipt>');
+document.write('<script language="JavaScript" src="js/mmd/wallpaper3d.js"></scr'+'ipt>');
+document.write('<script language="JavaScript" src="js/mmd/sprite.js"></scr'+'ipt>');
+document.write('<script language="JavaScript" src="js/mmd/camera-shake.js"></scr'+'ipt>');
+document.write('<script language="JavaScript" src="js/mmd/defaults.js"></scr'+'ipt>');
 document.write('<script language="JavaScript" src="MMD.js/MMD_SA.js"></scr'+'ipt>');
