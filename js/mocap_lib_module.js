@@ -8,7 +8,13 @@ import { PoseAT_process_video_buffer, HandsAT_process_video_buffer } from './tra
 const is_worker = (typeof window !== "object");
 
 function path_adjusted(url) {
-  if (!is_worker && !/^\w+\:/i.test(url)) {
+  if (is_worker) {
+    // Worker is at js/tracking/, resources are at js/ — prepend ../
+    if (!/^\w+\:/i.test(url) && !/^\.\.\//.test(url)) {
+      url = url.replace(/^(\.?\/?)([\w\@])/, "../$2")
+    }
+  }
+  else if (!/^\w+\:/i.test(url)) {
     url = url.replace(/^(\.?\/?)([\w\@])/, "$1js/$2")
   }
   return url
