@@ -105,7 +105,12 @@ Migrate to ES Modules progressively. Remove legacy platform support. Never break
 - Scripts loaded via `document.write` in `_SA.js` before `MMD_SA.js`
 - MMD_SA.js: 14,826 → 12,887 lines (−1,939)
 
-### 3E — Verify MMD_SA.js integration after Etapa 3
+### 3E — Verify MMD_SA.js integration after Etapa 3 ✅
+- All 8 extracted modules pass syntax check (`node -c`)
+- MMD_SA.js reduced from 18,371 → 12,887 lines (−5,484, ~30% reduction)
+- All `MMD_SA_create*`/`MMD_SA_init*` calls verified in MMD_SA.js
+- All 8 `document.write` script tags verified in `_SA.js`
+- Extracted modules: audio.js (801), sfx.js (296), speech-bubble.js (1074), vfx.js (343), webxr.js (897), osc.js (189), gamepad.js (439), wallpaper3d.js (1508) = 5,547 lines total
 
 ### 4A — Extract MMD_SA.js core: camera + motion
 - `js/mmd/camera.js` (~300 lines)
