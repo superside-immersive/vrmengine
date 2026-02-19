@@ -19,7 +19,7 @@ if (!self.System) {
   return_window = (use_inline_dialog) ? self : ((opener) ? opener : self)
   self.returnValue = return_window.returnValue = false
 
-  parent_window = (use_inline_dialog) ? parent : ((xul_mode) ? opener : self.dialogArguments)
+  parent_window = (use_inline_dialog) ? parent : self.dialogArguments // [9E] xul_mode branch removed (was opener)
   self.System    = parent_window.System
   self.SystemEXT = parent_window.SystemEXT
 
@@ -44,7 +44,7 @@ else {
 }
 
 function SA_alert(msg) {
-  if (xul_mode || use_inline_dialog)
+  if (use_inline_dialog) // [9E] xul_mode always false
     parent_window.alert(msg)
   else
     alert(msg)

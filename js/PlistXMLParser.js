@@ -57,7 +57,7 @@ default:
     
     dictNode : function (dictNode) {
         var obj = {};
-        var keyNodes = (xul_mode || webkit_mode) ? dictNode.ownerDocument.selectNodes("key", dictNode) : dictNode.selectNodes("key");
+        var keyNodes = (webkit_mode) ? dictNode.ownerDocument.selectNodes("key", dictNode) : dictNode.selectNodes("key"); // [9E] xul_mode always false
         for (var i = 0, n = keyNodes.length; i < n; i++) {
             obj[keyNodes[i].firstChild.nodeValue] = this.toObject(keyNodes[i].nextSibling);
         }
@@ -81,7 +81,7 @@ var PlistXMLParser = new _PlistXMLParser();
 // Firefox/XUL workaround
 var xul_mode, webkit_mode
 
-if (xul_mode || webkit_mode) {
+if (webkit_mode) { // [9E] xul_mode always false
        XMLDocument.prototype.selectNodes = function(cXPathString, xNode)
        {
           if( !xNode ) { xNode = this; } 

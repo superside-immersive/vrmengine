@@ -2670,8 +2670,8 @@ if (use_HTML5) {
     html_bg.style.position = "absolute"
     html_bg.style.posLeft = 0
     html_bg.style.posTop = 0
-    if (!xul_mode || !use_HTML5)
-      html_bg.style.backgroundColor = EQP_bg_color
+    // [9E] xul_mode always false — condition simplified (was: !xul_mode || !use_HTML5)
+    html_bg.style.backgroundColor = EQP_bg_color
     if (EQP_bg_border)
       html_bg.style.border = EQP_bg_border
 

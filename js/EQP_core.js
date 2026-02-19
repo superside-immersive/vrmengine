@@ -7,7 +7,7 @@ var use_EQP_normal
 var EQP_size_scale_default
 
 // [LEGACY REMOVED 9C] use_WMP removed (WMP support deleted in Phase 1)
-Settings.UseAudioFFT = ((webkit_mode || (xul_version >= 26)) && returnBoolean("UseAudioFFT"))
+Settings.UseAudioFFT = (webkit_mode && returnBoolean("UseAudioFFT")) // [9E] xul_version always 0
 
 var use_CSS3_2D_Transforms
 

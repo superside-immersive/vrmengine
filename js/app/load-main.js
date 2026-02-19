@@ -102,7 +102,7 @@ function loadMain() {
   if (!Settings.BDSpectrumToBeat)
     Settings.BDSpectrumToBeat = Settings_default.BDSpectrumToBeat
 
-  if (returnBoolean("Use32BandSpectrum") && /SOUND/.test(Settings.EventToMonitor) && (Settings.UseAudioFFT || (is_SA_child_animation && (webkit_mode || (xul_version >= 26))))) {
+  if (returnBoolean("Use32BandSpectrum") && /SOUND/.test(Settings.EventToMonitor) && (Settings.UseAudioFFT || (is_SA_child_animation && webkit_mode))) { // [9E] xul_version always 0
     Settings.Use32BandSpectrum = true
     DEBUG_show("Use 32-band spectrum", 2)
   }

@@ -412,7 +412,7 @@ function createAnimationShortcut(animation_path, no_alert) {
   }
 
   let shortcut;
-  let desktop_path = (xul_mode) ? XPCOM_object._getSpecialPath("Desk") : System.Environment.getEnvironmentVariable("USERPROFILE") + '\\Desktop';
+  let desktop_path = System.Environment.getEnvironmentVariable("USERPROFILE") + '\\Desktop'; // [9E] xul_mode branch removed
 
   if (webkit_mode) {
     shortcut = oShell.CreateShortcut(desktop_path + '\\' + script_name + '.lnk');
@@ -427,12 +427,7 @@ function createAnimationShortcut(animation_path, no_alert) {
       shortcut.Arguments = '"' + f_path + '"';
     }
   }
-  else if (xul_mode) {
-    shortcut = oShell.CreateShortcut(desktop_path + '\\' + script_name + ' - XUL.lnk');
-    let XUL_path = SystemEXT.GetXULPath();
-    shortcut.TargetPath = XUL_path;
-    shortcut.Arguments = ((/firefox.exe/i.test(XUL_path)) ? "-app " : "") + '"' + System.Gadget.path + '\\_xul_gadget\\application.ini" "' + f_path + '"';
-  }
+  // [9E] xul_mode branch removed (was else if (xul_mode) { create XUL shortcut })
   else {
     shortcut = oShell.CreateShortcut(desktop_path + '\\' + script_name + ' - HTA.lnk');
     shortcut.TargetPath = System.Gadget.path + '\\SystemAnimator_ie.hta';
@@ -746,7 +741,7 @@ return webkit_electron_remote.dialog.showMessageBox(browserWindow, options)
   webkit_transparent_mode = webkit_nwjs_mode || webkit_electron_remote.getGlobal("is_transparent")
 })();
 
-var w3c_mode = xul_mode || webkit_mode || browser_native_mode
+var w3c_mode = webkit_mode || browser_native_mode // [9E] xul_mode always false, removed
 var use_inline_dialog = w3c_mode
 
 

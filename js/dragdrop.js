@@ -1,15 +1,11 @@
 // Drag drop (2023-01-30)
 
-var xul_mode, webkit_mode
+var xul_mode, webkit_mode // [9E] xul_mode always false
 
 var DragDrop = {
   init: function (obj, ondrop_finish, validate_func) {
-    if (xul_mode) {
-      obj.addEventListener("dragover", XPCOM_object._dragOver, true);
-//      obj.addEventListener("dragdrop", XPCOM_object._dragDrop, true);
-      obj.addEventListener("drop", XPCOM_object._dragDrop, true);
-    }
-    else if (webkit_mode) {
+    // [9E] xul_mode branch removed (always false)
+    if (webkit_mode) {
       obj.addEventListener("dragenter", WebKit_object._dragEnter, false);
       obj.addEventListener("dragexit",  WebKit_object._dragExit, false);
       obj.addEventListener("dragover",  WebKit_object._dragOver, false);

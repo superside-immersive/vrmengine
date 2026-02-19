@@ -371,7 +371,7 @@ if (use_inline_dialog) {
 }
 
 var v = showModalDialog(url)
-v = (xul_mode || webkit_mode) ? self.returnValue : v
+v = (webkit_mode) ? self.returnValue : v // [9E] xul_mode always false
 
 return (v) ? new this._Folder({path:v}) : null;
     }

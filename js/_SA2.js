@@ -397,7 +397,7 @@ console.log("IPC message:" + decodeURIComponent(type))
   if (use_SVG_Clock)
     document.write('<script language="JavaScript" src="js/svg_clock.js"></scr'+'ipt>')
 
-  Settings.UseAudioFFT = ((webkit_mode || (xul_version >= 26)) && (returnBoolean("UseAudioFFT") || (self.MMD_SA_options && MMD_SA_options.use_CircularSpectrum)/* || returnBoolean("AutoItWinampMode")*/))
+  Settings.UseAudioFFT = (webkit_mode && (returnBoolean("UseAudioFFT") || (self.MMD_SA_options && MMD_SA_options.use_CircularSpectrum)/* || returnBoolean("AutoItWinampMode")*/)) // [9E] xul_version always 0
   Settings.UseAudioFFTLiveInput = Settings.UseAudioFFT && (returnBoolean("UseAudioFFTLiveInput") || returnBoolean("AutoItWinampMode"))
   if (Settings.UseAudioFFT)
     document.write('<script language="JavaScript" src="js/audio_fft.js"></scr'+'ipt>')

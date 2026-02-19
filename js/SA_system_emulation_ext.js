@@ -1,15 +1,15 @@
 // System object emultaion - extension
 // (2025-02-22)
 
-var xul_mode
+var xul_mode // [9E] always undefined/false in modern browsers
 
 var oShell
 var Shell_OBJ, FSO_OBJ
 
 var is_SA_child_animation = parent && (parent != self) && !parent.is_chrome_window && parent.SA_child_animation_max;
 var SA_topmost_window = (is_SA_child_animation) ? parent : self;
-// obsolete, mainly for XUL mode only
-var SA_top_window = (xul_mode && !is_SA_child_animation) ? parent : self;
+// [9E] xul_mode always false — simplified
+var SA_top_window = self;
 
 var SystemEXT = {
   _default: {
@@ -45,39 +45,8 @@ catch (err) {
   }
 
  ,ReadJS: function (path, parse) {
-if (!xul_mode)
-  return '<script type="text/javascript" language="javascript" src="' + toFileProtocol(path) + '"></scr'+'ipt>\n'
-
-var file = FileIO.open(path)
-if (!file || !file.exists())
-  return '\n'
-
-try {
-  var txt = FileIO.readText(file)
-  txt = txt.replace(/^[^\w\{\(\/]+/, "")
-
-  if (parse) {
-    try {
-      eval.call(window, txt);
-    }
-    catch (err) {
+// [9E] xul_mode always false — XUL FileIO branch removed (dead code after return)
 return '<script type="text/javascript" language="javascript" src="' + toFileProtocol(path) + '"></scr'+'ipt>\n'
-//      parse = false
-    }
-
-    if (parse)
-      return ""
-  }
-
-  var temp_name = path.replace(/\W/g, "_")
-  var temp_path = this.GetTempFolder() + toLocalPath('\\' + temp_name + '.js')
-  FileIO.write(FileIO.open(temp_path), txt)
-
-  return '<script type="text/javascript" language="javascript" src="' + toFileProtocol(temp_path) + '"></scr'+'ipt>\n'
-}
-catch (err) {
-  return '<script type="text/javascript" language="javascript" src="' + toFileProtocol(path) + '"></scr'+'ipt>\n'
-}
   }
 
  ,GetIEVersion: function () {
@@ -342,16 +311,14 @@ return js
   }
 
  ,CreateShortcut: function (para, blocking=true) {
-var _null = (xul_mode || webkit_mode) ? "null" : "";
+var _null = (webkit_mode) ? "null" : ""; // [9E] xul_mode always false
 for (let i = 2; i <= 4; i++) {
   if (!para[i])
     para[i] = _null;
 }
 
-if (xul_mode) {
-  XPCOM_object["Shell.Application"]._run(System.Gadget.path + '\\js\\SA_xul_create_shortcut.js', encodeURIComponent(para[0])+' '+encodeURIComponent(para[1])+' '+encodeURIComponent(para[2])+' '+encodeURIComponent(para[3])+' '+encodeURIComponent(para[4]), true, true);
-}
-else if (webkit_mode) {
+// [9E] xul_mode branch removed
+if (webkit_mode) {
 // supress occasional error when blocking is false
   WebKit_object["Shell.Application"]._run(System.Gadget.path + '\\js\\SA_xul_create_shortcut.js', encodeURIComponent(para[0])+' '+encodeURIComponent(para[1])+' '+encodeURIComponent(para[2])+' '+encodeURIComponent(para[3])+' '+encodeURIComponent(para[4]), null, blocking);
 }
