@@ -3,7 +3,13 @@
 
 export function fm_path_adjusted(url) {
   var is_worker = (typeof window !== "object");
-  if (!is_worker && !/^\w+\:/i.test(url)) {
+  if (is_worker) {
+    // Worker is in js/tracking/, but resources are in js/
+    if (!/^\w+\:/i.test(url) && !/^\.\.\//.test(url)) {
+      url = '../' + url
+    }
+  }
+  else if (!/^\w+\:/i.test(url)) {
     url = url.replace(/^(\.?\/?)([\w\@])/, "$1js/$2")
   }
   return url

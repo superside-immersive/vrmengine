@@ -80,7 +80,7 @@ var FacemeshAT = (function () {
     process_video_buffer: null,
   };
 
-  S.postMessageAT = (is_worker) ? postMessage : function (msg, transfer) {
+  S.postMessageAT = (is_worker) ? postMessage.bind(self) : function (msg, transfer) {
     S._worker.onmessage({data:msg})
   };
 

@@ -330,7 +330,7 @@ this.AT = AT;
 
 AT.path_adjusted = path_adjusted;
 
-S.postMessageAT = (is_worker) ? postMessage : function (msg, transfer) {
+S.postMessageAT = (is_worker) ? postMessage.bind(self) : function (msg, transfer) {
   AT._worker.onmessage({data:msg});
 };
 
