@@ -180,7 +180,14 @@ Migrate to ES Modules progressively. Remove legacy platform support. Never break
 - Created js/dungeon/multiplayer.js (674 lines) — P2P networking, OPC sync
 - Added `document.write` loading for modules before `init()` call
 - dungeon.js: 14,108 → 11,667 lines (−2,441)
-### 6B — Split dungeon.js: map, camera, npc, dialogue → js/dungeon/
+### 6B — Split dungeon.js: events, states, sfx, utils → js/dungeon/ ✅
+- Created js/dungeon/check_states.js (34 lines) — auto-damage, HP checking, character state actions
+- Created js/dungeon/events_default.js (704 lines) — default event/dialogue data (player manual, settings, WebXR options, misc, defeated handler)
+- Created js/dungeon/run_event.js (768 lines) — event execution engine (_event_active, run_event IIFE: branching dialogue, combat, NPC interactions, inventory events)
+- Created js/dungeon/sfx_check.js (44 lines) — footstep sound effects tied to animation frames
+- Created js/dungeon/utils.js (522 lines) — create_combat_character, create_combat_event, grid_array_by_object, adjust_boundingBox, tooltip
+- Added `document.write` loading for 5 modules after Step 6A modules
+- dungeon.js: 11,667 → 9,620 lines (−2,047)
 ### 6C — Split dungeon.js: events, ui, rendering, audio, input, config → js/dungeon/
 
 ### 7A — Split EQP.js + unify core.js/core_extra.js
