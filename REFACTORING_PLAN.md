@@ -208,7 +208,25 @@ Migrate to ES Modules progressively. Remove legacy platform support. Never break
   - Kept two-file split (core.js = definitions/utils/platform detection, core_extra.js = script orchestration/UI generation)
   - Analysis showed merging is viable (~1,560 lines) but the current split matches logical roles
 
-### 8A — JSDoc, ES module entry point, remove document.write, var→let/const
+### 8A — JSDoc, ES module entry point, remove document.write, var→let/const ✅
+- **document.write → SA.loader.loadScriptSync()**: migrated 48 calls in 3 files
+  - `_SA.js`: 31 calls (15 app/ modules, 11 mmd/ modules, EQP.js, MMD_SA.js, js_filters/animate.js)
+  - `EQP.js`: 7 calls (EQP_core.js, EQP_FB.js, 3 eqp/ modules, html5.js, svg.js)
+  - `dungeon.js`: 10 calls (all dungeon/ extracted modules)
+  - Kept: platform-conditional document.write in core.js (SA_webkit.js, aurora.js, etc.) and core_extra.js (emulation scripts) — these have conditional logic that requires document.write
+- **var → let/const** in eqp modules (35 conversions):
+  - `eqp/resize.js`: 10 conversions
+  - `eqp/animate.js`: 21 conversions (including scoped re-declaration fixes)
+  - `eqp/wallpaper_mode.js`: 4 conversions
+  - Rule: only inside functions (top-level var creates needed window globals)
+- **JSDoc**: added documentation to:
+  - `eqp/resize.js`, `eqp/animate.js`, `eqp/wallpaper_mode.js` — module headers + @param/@returns
+  - `core.js` — 7 utility functions (returnBoolean, toFileProtocol, toLocalPath, toRegExp, Object.clone, Object.append, DEBUG_show)
+  - `globals.js`, `module-loader.js` already had comprehensive JSDoc (verified)
+- **NEW: `js/sa-bootstrap.js`** (48 lines) — centralized entry point replacing 5-line HTML boilerplate
+  - Loads globals.js → module-loader.js → core.js → core_extra.js → SA_load_scripts()
+  - HTML pages can use single `<script src="js/sa-bootstrap.js">` instead of 5 separate tags
+  - Documents full load chain and future ES module migration path
 
 ---
 
