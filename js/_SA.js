@@ -631,6 +631,7 @@ function loadFolder_CORE() {
     SA.loader.loadScriptSync('js/mmd/sprite.js')
     SA.loader.loadScriptSync('js/mmd/camera-shake.js')
     SA.loader.loadScriptSync('js/mmd/defaults.js')
+    SA.loader.loadScriptSync('js/mmd/threex-vrm.js')
   }
 
   if (gallery_js)
