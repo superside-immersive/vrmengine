@@ -188,7 +188,11 @@ Migrate to ES Modules progressively. Remove legacy platform support. Never break
 - Created js/dungeon/utils.js (522 lines) — create_combat_character, create_combat_event, grid_array_by_object, adjust_boundingBox, tooltip
 - Added `document.write` loading for 5 modules after Step 6A modules
 - dungeon.js: 11,667 → 9,620 lines (−2,047)
-### 6C — Split dungeon.js: events, ui, rendering, audio, input, config → js/dungeon/
+### 6C — Split dungeon.js: character, map → js/dungeon/ ✅
+- Created js/dungeon/character.js (496 lines) — character controller: position, rotation, camera TPS, combat mode toggle, mount/dismount, bounding box, key bindings, reset
+- Created js/dungeon/map.js (1,000 lines) — check_grid_blocking, GOML_dungeon_blocks (mesh generation), get_ground_y (bilinear interpolation), get_para (grid params), update_dungeon_blocks (minimap, wall rendering, grid cache)
+- Closure var refs in character.js updated: Object3D_proxy_base → MMD_SA_options.Dungeon.Object3D_proxy_base, CombatStats → MMD_SA_options.Dungeon._CombatStats
+- dungeon.js: 9,620 → 8,142 lines (−1,478)
 
 ### 7A — Split EQP.js + unify core.js/core_extra.js
 ### 8A — JSDoc, ES module entry point, remove document.write, var→let/const
