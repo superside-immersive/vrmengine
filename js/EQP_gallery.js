@@ -1790,11 +1790,7 @@ if (item.isFolder) {
   Audio_BPM.play_list.drop_folder(item)
 }
 else if (item.isFileSystem && /\.(mp3|wav|aac)$/i.test(src)) {
-  // IE9 native WMP child animation support, somewhat obsolete
-  if (!item._winamp_JSON && !no_parent_call && is_SA_child_animation && (ie9_native && parent.use_WMP)) {
-    parent.DragDrop.onDrop_finish(item, true)
-    return false
-  }
+  // [LEGACY REMOVED 9C] IE9/WMP child animation branch removed
 
   var ao = vo.audio_obj = (item._winamp_JSON) ? vo.audio_obj_WINAMP : ((vo.audio_obj) ? vo.audio_obj : vo.audio_obj_HTML5)
   if (ao && ((ao._ao_linked || ao._ao_linked_list) || ((ao == vo.audio_obj_HTML5) && self.AudioFFT)))

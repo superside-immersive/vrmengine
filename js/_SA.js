@@ -162,7 +162,7 @@ self.EV_height = self.EQP_ref_height = h
 self.EQP_parts_path = "/"
 self.EQP_ps = [{src:path.replace(/^.+[\/\\]/, ""), xy:w+'x'+h, o_min:-1}]
 
-self.use_WMP = self.WMP_hidden = true
+// [LEGACY REMOVED 9C] use_WMP/WMP_hidden assignment removed (WMP support deleted in Phase 1)
 
 self.EQP_init_extra = function () {
   if (use_EQP_ripple) {

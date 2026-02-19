@@ -447,12 +447,8 @@ this.BPMFinalize()
     }
 
     vo.BPMFinalize = function () {
-// IE9 native WMP child animation support, somewhat obsolete
-if (is_SA_child_animation && !this.audio_obj.is_winamp && (ie9_native && parent.use_WMP)) {
-  parent.DragDrop.onDrop_finish_BPM(DragDrop._item)
-}
-else
-  DragDrop.onDrop_finish_BPM(DragDrop._item)
+// [LEGACY REMOVED 9C] IE9/WMP child animation branch removed
+DragDrop.onDrop_finish_BPM(DragDrop._item)
     }
 
     vo._audio_BPM_detection_finished = function (beat_zone) {

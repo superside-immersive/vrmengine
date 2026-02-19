@@ -71,7 +71,7 @@ switch (name) {
     SL_tooltip_msg_custom = 'Play / Pause'
     break
   case "stop":
-    SL_tooltip_msg_custom = 'Stop' + ((SL_MC_simple_mode || self.MMD_SA || (use_WMP && WMP.in_use) || (!EQP_dragdrop_target || !EQP_dragdrop_target.is_video || !EQP_dragdrop_target.img_obj_i)) ? '' : ' (click again to hide video)')
+    SL_tooltip_msg_custom = 'Stop' + ((SL_MC_simple_mode || self.MMD_SA || (!EQP_dragdrop_target || !EQP_dragdrop_target.is_video || !EQP_dragdrop_target.img_obj_i)) ? '' : ' (click again to hide video)')
     break
   case "forward":
     SL_tooltip_msg_custom = (SL_MC_simple_mode || !self.MMD_SA || SL_MC_video_obj.vo.motion_by_song_name_mode) ? 'Seek forward' : 'Speed+'//(options && options.BPM_mode) ? 'BPM sync+' : 'Seek forward'
@@ -80,7 +80,7 @@ switch (name) {
     SL_tooltip_msg_custom = (SL_MC_simple_mode || !self.MMD_SA || SL_MC_video_obj.vo.motion_by_song_name_mode) ? 'Seek backward' : 'Speed-'//(options && options.BPM_mode) ? 'BPM sync-' : 'Seek backward'
     break
   case "sound":
-    SL_tooltip_msg_custom = (!SL_MC_simple_mode && !self.MMD_SA && ((options && options.BPM_mode && options.beat_reference && !SL_MC_video_obj.paused) || (use_WMP && WMP.in_use && WMP.audio_child_list))) ? 'Click on a beat to sync BPM.' : 'Mute / Unmute'
+    SL_tooltip_msg_custom = (!SL_MC_simple_mode && !self.MMD_SA && ((options && options.BPM_mode && options.beat_reference && !SL_MC_video_obj.paused))) ? 'Click on a beat to sync BPM.' : 'Mute / Unmute'
     break
   case "seek":
     SL_tooltip_msg_custom = "Seek"
@@ -126,11 +126,7 @@ function SL_MC_Update() {
   else if (self.MMD_SA) {
     SL_root.FindName("MC_sound").Text = (SL_MC_video_obj.vo.audio_obj.muted) ? "\ud83d\udd07" : "\ud83d\udd0a"
   }
-  else if (use_WMP && WMP.in_use) {
-    if (!use_HTML5)
-      SL_root.FindName("MC_play").Text  = (WMP.player.playState == 3) ? ";" : "4"
-    SL_root.FindName("MC_sound").Text = (WMP.player.settings.mute) ? ((use_HTML5)?"\ud83d\udd07":"U") : ((use_HTML5)?"\ud83d\udd0a":"V")
-  }
+  // [LEGACY REMOVED 9C] WMP.in_use state branch removed
   else if (self.EQP_use_HTML5_video && (!self.EQP_video_options || !EQP_video_options.use_overlay_video)) {
     if (!use_HTML5)
       SL_root.FindName("MC_play").Text  = (!SL_MC_video_obj.paused) ? ";" : "4"
@@ -244,9 +240,7 @@ function SL_MC_Play(ignore_linked_control) {
       System._browser.video_capture.pause();
     }
   }
-  else if (use_WMP && WMP.in_use) {
-    WMP.play()
-  }
+  // [LEGACY REMOVED 9C] WMP.play() branch removed
   else if (self.EQP_use_HTML5_video && (!vo || !vo.use_overlay_video)) {
     if (SL_MC_video_obj)
       SL_MC_video_obj.poster_mode = false
@@ -321,8 +315,7 @@ function SL_MC_Stop(ignore_linked_control) {
     }
     ao.currentTime = 0
   }
-  else if (use_WMP && WMP.in_use)
-    WMP.stop()
+  // [LEGACY REMOVED 9C] WMP.stop() branch removed
   else if (self.EQP_use_HTML5_video && (!vo || !vo.use_overlay_video)) {
     var ao = (vo && vo.BPM_mode) ? vo.audio_obj : null
     if (ao && ao.is_linked)
@@ -439,15 +432,7 @@ case 2:
     return
   }
 
-  if (use_WMP && WMP.in_use) {
-    try {
-      WMP.player.controls.currentPosition += 30 * mod
-    }
-    catch (err) {
-      DEBUG_show('(media seek failed)', 2)
-    }
-    return
-  }
+  // [LEGACY REMOVED 9C] WMP seek branch removed
 
   if (self.EQP_use_HTML5_video && (!self.EQP_video_options || !EQP_video_options.use_overlay_video)) {
     // for Winamp, just in case SL_MC_Play is called before SL_MC_video_obj is assigned.
@@ -524,8 +509,7 @@ function SL_MC_Sound(ignore_linked_control) {
     var ao = SL_MC_video_obj.vo.audio_obj
     ao.muted = !ao.muted
   }
-  else if (use_WMP && WMP.in_use)
-    WMP.sound()
+  // [LEGACY REMOVED 9C] WMP.sound() branch removed
   else if (self.EQP_use_HTML5_video && self.EQP_video_options && EQP_video_options.BPM_mode && EQP_video_options.beat_reference && !SL_MC_video_obj.paused) {
     var ao = (self.EQP_video_options && EQP_video_options.BPM_mode) ? EQP_video_options.audio_obj : null
     if (ao && ao.is_linked)

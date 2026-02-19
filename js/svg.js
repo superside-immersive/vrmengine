@@ -152,9 +152,7 @@ DEBUG_show('Use SVG', 2, true)
 
   SL_object = SL
 
-// WMP
-if (self.WMP)
-  WMP.dragdrop_init()
+// [LEGACY REMOVED 9C] WMP.dragdrop_init() removed (WMP support deleted in Phase 1)
 
 // Enforce proper resizing
   EQP_resize()

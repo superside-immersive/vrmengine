@@ -1103,8 +1103,7 @@ function HTML5_Init() {
   SL_loaded = true
 
 var SL_info = []
-if (self.use_WMP)
-  SL_info.push('WMP')
+// [LEGACY REMOVED 9C] WMP info removed
 if (self.EQP_dragdrop_target || self.EQP_dragdrop_obj) {
   SL_info.push('Gallery')
   if (use_EQP_normal)
@@ -1211,7 +1210,7 @@ DEBUG_show('Use HTML5 Canvas' + ((SL_info.length) ? '(' + SL_info.join('/') + ')
 SL._mouseout_timerID = null
 
 SL._mouse_event_main = function () {
-  if (SL_MC_video_obj || (self.use_WMP && WMP.in_use) || (self.EQP_use_HTML5_video && (!self.EQP_video_options || !EQP_video_options.use_overlay_video))) {
+  if (SL_MC_video_obj || (self.EQP_use_HTML5_video && (!self.EQP_video_options || !EQP_video_options.use_overlay_video))) {
     if (SL._mouseout_timerID) {
       clearTimeout(SL._mouseout_timerID)
       SL._mouseout_timerID = null
@@ -1256,9 +1255,7 @@ this.canvas.onmouseout  = WebGL_2D._m_.onmouseout
 
   SL_object = SL
 
-// WMP
-if (self.WMP)
-  WMP.dragdrop_init()
+// [LEGACY REMOVED 9C] WMP.dragdrop_init() removed
 
 if (CANVAS_Video_Overlay)
   CANVAS_Video_Overlay_Init()

@@ -420,15 +420,7 @@ console.log("Use Chatbox")
   '<script type="text/javascript" language="javascript" src="js/_SA.js"></scr'+'ipt>\n'
 + '<script type="text/javascript" language="javascript" src="js/_SA2.js"></scr'+'ipt>\n'
 
-+ '<script language="javascript" for="WMP_player" event="OpenStateChange(NewState)">\n'
-+ 'if (self.WMP)\n'
-+ '  WMP.OpenStateChange(NewState)\n'
-+ '</scr'+'ipt>\n'
-
-+ '<script language="javascript" for="WMP_player" event="PlayStateChange(NewState)">\n'
-+ 'if (self.WMP)\n'
-+ '  WMP.PlayStateChange(NewState)\n'
-+ '</scr'+'ipt>\n'
+// [LEGACY REMOVED 9C] WMP_player event handler script tags removed
 
   document.write(html)
 }

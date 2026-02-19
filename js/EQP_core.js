@@ -6,10 +6,8 @@ var use_EQP_core = true
 var use_EQP_normal
 var EQP_size_scale_default
 
-var use_WMP
+// [LEGACY REMOVED 9C] use_WMP removed (WMP support deleted in Phase 1)
 Settings.UseAudioFFT = ((webkit_mode || (xul_version >= 26)) && returnBoolean("UseAudioFFT"))
-if (use_HTML5 && Settings.UseAudioFFT)
-  use_WMP = true
 
 var use_CSS3_2D_Transforms
 
@@ -97,8 +95,7 @@ function EQP_MM_Load(src, para) {
   this.is_video = /\.(wmv|webm|mp4|mkv)(\?|$)/i.test(src)
 
   if (this.use_Silverlight) {
-    if (use_WMP && WMP.in_use)
-      WMP.hide()
+    // [LEGACY REMOVED 9C] WMP.hide() call removed
 
     var obj
     var w,h
@@ -388,9 +385,8 @@ function EQP_DragDrop_Init(ps) {
     DragDrop.onDrop_finish = function (item) {
 var src = item.path
 var para = EQP_dragdrop_target.dragdrop
-if (use_WMP && WMP.dragdrop(item, true))
-  return
-else if (item.isFileSystem && /\.(wmv|webm|mp4|mkv)(\?|$)/i.test(src)) {
+// [LEGACY REMOVED 9C] WMP.dragdrop branch removed
+if (item.isFileSystem && /\.(wmv|webm|mp4|mkv)(\?|$)/i.test(src)) {
   para.src = src
   EQP_dragdrop_target.load(item.path, para)
   if (para.func_extra)
@@ -545,29 +541,12 @@ function EQP_Hide_Video() {
 }
 
 function EQP_Process_CanvasEffect_Mask(w_default, h_default) {
-  if (!Canvas_Effect || !use_WMP || !WMP_mask || (CanvasEffect_options && CanvasEffect_options.WMP_mask_disabled))
+  // [LEGACY REMOVED 9C] WMP mask logic removed (use_WMP always false, function was no-op)
+  if (!Canvas_Effect)
     return
 
-  var mask_absolute_mapping = (WMP_left || WMP_top || WMP_width || WMP_height)
-  var options = {
-    x: (WMP_left) ? WMP_left : 0
-   ,y: (WMP_top)  ? WMP_top  : 0
-   ,width:  (WMP_width)  ? WMP_width  : w_default
-   ,height: (WMP_height) ? WMP_height : h_default
-
-   ,WMP_mask_disabled: false
-   ,mask: ((EQP_parts_path) ? EQP_parts_path + '\\' : 'mask\\') + WMP_mask
-   ,mask_inverted: true
-   ,mask_alpha_mod: (CanvasEffect_options && CanvasEffect_options.mask_alpha_mod) ? CanvasEffect_options.mask_alpha_mod : 1.5
-   ,mask_absolute_mapping: mask_absolute_mapping
-
-   ,resize_func: function (w,h) {
-var ratio = EQP_size_scale
-return [this.x*ratio,this.y*ratio, w*ratio,h*ratio]
-    }
-  }
-
-  Canvas_Effect.load_options(options)
+  // Note: WMP_mask canvas effect loading removed. Canvas_Effect.load_options()
+  // was only called when use_WMP && WMP_mask were set, which required WMP support.
 }
 
 function EQP_SS_init(ps_str, img_id) {
@@ -638,7 +617,7 @@ function EQP_SS_init(ps_str, img_id) {
 
   _g.gallery_obj.func = function () {
 var _ps = this.ps
-if (this.disabled || (use_WMP && WMP.in_use) || (_ps.img_obj_i.Visibility == "Collapsed"))
+if (this.disabled || (_ps.img_obj_i.Visibility == "Collapsed"))
   return
 if (!this.path || !this.gallery.length) {
   _ps.img_obj_i.Visibility = "Collapsed"
@@ -693,4 +672,4 @@ if (!_ps.use_HTML5 && !_g.gallery_obj._SL_bug_fixed) {
 
 // external scripts
 // [LEGACY REMOVED] WMP/Silverlight support removed
-use_WMP = false
+// [LEGACY REMOVED 9C] use_WMP = false removed

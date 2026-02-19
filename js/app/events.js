@@ -226,19 +226,7 @@ return function (event, enforced) {
   }
   else if (k == 77 && is_safe_key) {
 // m
-    if (use_HTML5 && self.WMP_mask) {
-      CANVAS_must_redraw = true
-      var mask_obj = SL_root.FindName('content_mask')
-      if (!mask_obj.ImageSource) {
-        var mask_path = toLocalPath((EQP_parts_path) ? EQP_parts_path + '\\' : 'mask\\');
-        mask_obj.ImageSource = toFileProtocol(Settings.f_path + '\\' + mask_path + WMP_mask + '.png')
-        DEBUG_show("WMP Mask:ON", 2)
-      }
-      else {
-        mask_obj.ImageSource = null
-        DEBUG_show("WMP Mask:OFF", 2)
-      }
-    }
+    // [LEGACY REMOVED 9C] WMP_mask toggle removed (WMP support deleted)
   }
   else if (k == 84 && is_safe_key) {
 // t
