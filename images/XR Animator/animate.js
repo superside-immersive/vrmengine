@@ -3995,7 +3995,7 @@ System._browser.on_animation_update.add(()=>{
 // needed for "auto_zoom" camera mod
   MMD_SA.reset_camera();
 
-  if (MMD_SA.Wallpaper3D.visible) {
+  if (MMD_SA.Wallpaper3D?.visible) {
     MMD_SA.Wallpaper3D.update_transform();
     MMD_SA.Wallpaper3D.update_mesh();
   }

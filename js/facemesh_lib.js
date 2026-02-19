@@ -85,9 +85,9 @@ var FacemeshAT = (function () {
   };
 
   // Sub-module imports (loaded in init)
-  // In worker context, import() resolves relative to the worker's URL (js/tracking/),
-  // not facemesh_lib.js's URL (js/). So use './' for workers, './tracking/' for main thread.
-  var _mod_base = is_worker ? './' : './tracking/';
+  // import() in importScripts-loaded code resolves relative to the importScripts
+  // source URL (js/facemesh_lib.js), same as <script src> in main thread.
+  var _mod_base = './tracking/';
   var _modules_loaded = false;
   async function _load_modules() {
     if (_modules_loaded) return;

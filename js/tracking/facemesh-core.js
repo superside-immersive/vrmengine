@@ -17,6 +17,10 @@ export function fm_path_adjusted(url) {
 
 export async function fm_load_scripts(S, url) {
   if (S.is_worker) {
+    // Worker is at js/tracking/, resources are at js/ — prepend ../
+    if (!/^\w+\:/i.test(url) && !/^\.\.\//.test(url)) {
+      url = url.replace(/^(\.\/)?/, '../')
+    }
     importScripts(url)
   }
   else {

@@ -16,6 +16,10 @@ function path_adjusted(url) {
 
 async function load_scripts(url) {
   if (is_worker) {
+    // Worker is at js/tracking/, resources are at js/ — prepend ../
+    if (!/^\w+\:/i.test(url) && !/^\.\.\//.test(url)) {
+      url = url.replace(/^(\.\/)?/, '../')
+    }
     importScripts(url)
   }
   else {
