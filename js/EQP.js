@@ -34,7 +34,7 @@ var EQP_SS_path
 
 var EQP_ps
 
-var EQP_SL_xaml = []
+// [LEGACY REMOVED 9B] EQP_SL_xaml removed (Silverlight XAML is dead)
 
 /*
 "EQP_decay_factor" is applied to the opacity. It's 0.2 by default (i.e. value can drop no more than 20% of the maximum value in a single update at 10fps).
@@ -441,116 +441,8 @@ console.log(["ps" + i, ps.w,ps.h, x,y])
   if (ps.dragdrop)
     EQP_DragDrop_Init(ps)
 }
-else if (use_Silverlight) {
-  ps.use_Silverlight = true
-
-  var img_id = "main" + i
-
-  if (ps.w != null)
-    w = ps.w
-  if (ps.h != null)
-    h = ps.h
-
-  var xaml_para = 'Canvas.ZIndex="' + i + '" Canvas.Left="' + x + '" Canvas.Top="' + y + '"' + ((use_alpha) ? ' Opacity="' + (ps.o_min/100) + '"' : '') + ' ';
-  var xaml_src  = 'Source="' + toFileProtocol(img_path) + '" ';
-
-  var xaml
-  if (ps.is_video) {
-    img_id += "v"
-
-    var mask = ''
-    if (para.mask) {
-      mask =
-  '<Canvas.OpacityMask>\n'
-+ '<ImageBrush x:Name="' + img_id + '_mask" ImageSource="' + toFileProtocol(para.mask) + '"/>\n'
-+ '</Canvas.OpacityMask>\n'
-    }
-
-    var mask_v = ''
-    if (para.mask_v) {
-      mask_v =
-  '<MediaElement.OpacityMask>\n'
-+ '<ImageBrush x:Name="' + img_id + '_obj_mask" ImageSource="' + toFileProtocol(para.mask_v) + '"/>\n'
-+ '</MediaElement.OpacityMask>\n'
-    }
-
-    xaml =
-  '<Canvas xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" x:Name="' + img_id + '" '
-+ xaml_para
-+ '>\n'
-+ mask
-+ '<MediaElement x:Name="' + img_id + '_obj" '
-+ xaml_src
-+ ((w > 0) ? 'Width="' + w + '" Height="' + h + '" ' : '')
-+ 'MediaOpened="SL_MediaOpened" MediaEnded="SL_MediaEnded" '
-+ ((ps.use_media_control) ? 'MouseEnter="SL_Media_MouseEnter" ' : '')
-+ ((ps.play_sound) ? 'Volume="1"' : 'IsMuted="true"')
-+ '>\n'
-+ mask_v
-+ '</MediaElement>\n'
-+ '</Canvas>'
-
-    ps.w_video = w
-    ps.h_video = h
-  }
-  else {
-    img_id += "i"
-
-    var mask = EQP_SS_init("EQP_ps[" + i + "]", img_id)
-
-    xaml =
-  '<Image xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" x:Name="' + img_id + '" '
-+ xaml_para + xaml_src
-+ ((mask) ? 'Stretch="UniformToFill" ' : '')
-+ '>\n'
-+ mask
-+ '</Image>'
-
-    if (w == -1) {
-      var dim = loadImageDim(img_path)
-      w = dim.w
-      h = dim.h
-    }
-  }
-
-  if ((i > 0) && ps.group_id) {
-    var i_last = i - 1
-    var ps_last = EQP_ps[i_last]
-    if (ps_last.group_id == ps.group_id) {
-      xaml = EQP_SL_xaml[i_last] + '\n' + xaml
-      EQP_SL_xaml[i_last] = null
-    }
-  }
-
-  EQP_SL_xaml[i] = xaml
-
-  ps.img = img_id
-
-  ps.w_org = w
-  ps.h_org = h
-
-  if (ps.dragdrop)
-    EQP_DragDrop_Init(ps)
-}
-else {
-  var img = document.createElement("img")
-  img.style.position = "absolute"
-  img.style.posLeft = x
-  img.style.posTop = y
-  img.src = toFileProtocol(img_path)
-  if (use_alpha) {
-    if (ie9_mode)
-      img.style.opacity = ps.o_min/100
-    else
-      img.style.filter = "progid:DXImageTransform.Microsoft.Alpha(opacity=" + ps.o_min + ")"
-  }
-
-  L_EV_content.appendChild(img)
-  ps.img_obj = img
-
-  if (use_alpha)
-    ps.img = ps.img_HTML = (ie9_mode) ? img.style : img.filters.item("DXImageTransform.Microsoft.Alpha")
-}
+// [LEGACY REMOVED 9B] Silverlight XAML code path removed (~90 lines)
+// [LEGACY REMOVED 9D] IE<9 raw DOM img code path removed (~15 lines)
 
       if (EQP_allow_resize) {
         ps.full_size = (ps.full_size == null) ? true : ps.full_size
@@ -648,8 +540,7 @@ if ((_SL_LR_y == null) || (_SL_LR_y < y+h))
   if (!EV_usage_sub)
     EV_usage_sub = EV_object[0].EV_usage_sub = EV_usage_sub_CREATE(null, "sound", 3)
 
-  if (use_Silverlight_only && !EQP_SL_xaml.length)
-    use_Silverlight = false
+  // [LEGACY REMOVED 9B] use_Silverlight_only dead branch removed
 
   if (EQP_allow_resize || use_Silverlight)
     EQP_resize()
@@ -677,17 +568,13 @@ if ((_SL_LR_y == null) || (_SL_LR_y < y+h))
       EQP_SL_x = EQP_SL_y = 0
       EQP_SL_w = EQP_EV_width
       EQP_SL_h = EQP_EV_height
-//DEBUG_show(EQP_SL_x+','+EQP_SL_y+'/'+EQP_SL_w+'x'+EQP_SL_h,0,true)
       HTML5_Init()
     }
     else if (use_SVG)
       SVG_Init(svg_objs)
-    else
-      SL_Init()
+    // [LEGACY REMOVED 9B] SL_Init() dead branch removed
   }
-  else if ((w3c_mode) && use_WMP) {
-// SVG filter test
-  }
+  // [LEGACY REMOVED 9C] WMP SVG filter test removed
 }
 
 if (!EV_init)
@@ -713,60 +600,7 @@ SA.loader.loadScriptSync('js/eqp/animate.js');
 SA.loader.loadScriptSync('js/eqp/wallpaper_mode.js');
 
 
-// Silverlight
-var EV_SL_init = function () {
-
-try {
-  var group_id
-  for (var i = 0; i < EQP_SL_xaml.length; i++) {
-    var xaml = EQP_SL_xaml[i]
-    if (!xaml) {
-      group_id = EQP_ps[i].group_id
-      continue
-    }
-
-    if (group_id) {
-      xaml =
-  '<Canvas xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" x:Name="' + group_id + '" '
-+ 'Canvas.ZIndex="' + i + '"'
-+ '>\n'
-+ xaml + '\n'
-+ '</Canvas>'
-      group_id = null
-    }
-
-    SL_content.children.add(SL.content.createFromXaml(xaml, false));
-  }
-}
-catch (err) { DEBUG_show(err.description, 0,true) }
-
-try {
-  var i
-  for (i = 0; i < EQP_ps.length; i++) {
-    var ps = EQP_ps[i]
-
-    if (!ps.use_Silverlight)
-      continue
-
-    var img = ps.img
-    if (!img)
-      continue
-
-    var name = ps.img
-    img = ps.img = SL_root.FindName(name)
-
-    if (ps.is_video)
-      ps.img_obj_v = img
-    else
-      ps.img_obj_i = img
-  }
-}
-catch (err) { DEBUG_show(err.description + '(' + i + ')', 0,true) }
-
-// Enforce proper resizing
-resize()
-
-}
+// [LEGACY REMOVED 9B] EV_SL_init function removed (Silverlight XAML init is dead)
 
 
 // Silverlight scripts

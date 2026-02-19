@@ -32,9 +32,9 @@ var Seq_speed_delay = 1
 
 
 var loaded
-// [LEGACY REMOVED 1B] Silverlight vars (use_Silverlight, use_Silverlight_only, Silverlight_native_capable) removed
-var use_Silverlight = true // kept for cross-file compatibility, always true
-var use_Silverlight_only = false // kept for cross-file compatibility, always false
+// [LEGACY REMOVED 1B] Silverlight vars removed
+var use_Silverlight = true // semantic flag: use SVG/HTML5/Canvas rendering path
+// [LEGACY REMOVED 9B] use_Silverlight_only removed (always false, dead)
 // [LEGACY REMOVED 1B] xul_mode/xul_path/xul_transparent_mode branches removed
 var is_SA_BG_transparent = webkit_transparent_mode
 
