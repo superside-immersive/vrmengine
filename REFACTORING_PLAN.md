@@ -98,9 +98,12 @@ Migrate to ES Modules progressively. Remove legacy platform support. Never break
 - Scripts loaded via `document.write` in `_SA.js` before `MMD_SA.js`
 - MMD_SA.js: 15,906 → 14,826 lines (−1,080)
 
-### 3D — Extract MMD_SA.js: gamepad + depth-wallpaper
-- `js/mmd/gamepad.js` (~300 lines) ← lines 14886-15400
-- `js/mmd/depth-wallpaper.js` (~300 lines) ← lines 15400-16200
+### 3D — Extract MMD_SA.js: gamepad + Wallpaper3D ✅
+- `js/mmd/gamepad.js` (439 lines) — Gamepad IIFE: Gamepad class, control profiles (camera pan/rotate/zoom, avatar move/jump, mocap, custom buttons), button state management
+- `js/mmd/wallpaper3d.js` (1508 lines) — Wallpaper3D IIFE: depth estimation, 3D parallax wallpaper, transformers worker, canvas depth effects, video/image processing
+- Both as global functions (`window.MMD_SA_createGamepad`, `window.MMD_SA_createWallpaper3D`) called synchronously from MMD_SA.js
+- Scripts loaded via `document.write` in `_SA.js` before `MMD_SA.js`
+- MMD_SA.js: 14,826 → 12,887 lines (−1,939)
 
 ### 3E — Verify MMD_SA.js integration after Etapa 3
 
