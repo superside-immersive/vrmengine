@@ -84,9 +84,12 @@ Migrate to ES Modules progressively. Remove legacy platform support. Never break
 - Scripts loaded via `document.write` in `_SA.js` before `MMD_SA.js`
 - MMD_SA.js: 18,371 → 17,304 lines (−1,067)
 
-### 3B — Extract MMD_SA.js: speech-bubble + VFX
-- `js/mmd/speech-bubble.js` (~300 lines) ← lines 2597-3668
-- `js/mmd/vfx.js` (~300 lines) ← lines 7347-8766
+### 3B — Extract MMD_SA.js: speech-bubble + VFX ✅
+- `js/mmd/speech-bubble.js` (1074 lines) — SpeechBubble IIFE: SB class, canvas text rendering, bubble positioning, dialogue branching, highlight system
+- `js/mmd/vfx.js` (343 lines) — VFX IIFE: FX class, Animator, aura/ring effects, texture preloading, 3D mesh VFX
+- Both as global functions (`window.MMD_SA_createSpeechBubble`, `window.MMD_SA_createVFX`) called synchronously from MMD_SA.js
+- Scripts loaded via `document.write` in `_SA.js` before `MMD_SA.js`
+- MMD_SA.js: 17,304 → 15,906 lines (−1,398)
 
 ### 3C — Extract MMD_SA.js: WebXR + OSC
 - `js/mmd/webxr.js` (~300 lines) ← lines 5300-6190

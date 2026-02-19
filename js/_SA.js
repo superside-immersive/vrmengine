@@ -5213,6 +5213,8 @@ function Canvas_BDDraw(canvas, beat) {
   else if (self.MMD_SA_options) {
     document.write('<script language="JavaScript" src="js/mmd/audio.js"></scr'+'ipt>')
     document.write('<script language="JavaScript" src="js/mmd/sfx.js"></scr'+'ipt>')
+    document.write('<script language="JavaScript" src="js/mmd/speech-bubble.js"></scr'+'ipt>')
+    document.write('<script language="JavaScript" src="js/mmd/vfx.js"></scr'+'ipt>')
     document.write('<script language="JavaScript" src="MMD.js/MMD_SA.js"></scr'+'ipt>')
   }
   else if (!EQP_gallery && returnBoolean("UseFilters"))
