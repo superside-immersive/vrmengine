@@ -3,9 +3,12 @@
 
 var use_SA_browser_mode
 
+// NOTE: oShell, Shell_OBJ, FSO_OBJ re-declared in core_extra.js (same bare var)
 var oShell
 var Shell_OBJ, FSO_OBJ
 
+// NOTE: is_SA_child_animation, SA_child_animation_id, SA_topmost_window
+//   are initialized with real values in core_extra.js (overrides these defaults)
 var is_SA_child_animation
 var SA_child_animation_max = 10
 var SA_child_animation = []
@@ -253,41 +256,7 @@ Array.prototype.shuffle = function () {
   return this;
 };
 
-if (!String.prototype.trim) {
-  String.prototype.trim = function () {
-    return this.replace(/^\s+|\s+$/g,'');
-  };
-}
-
-if (!Date.now) {
-  Date.now = function now() {
-    return new Date().getTime();
-  };
-}
-
-if (!Array.prototype.find) {
-  Array.prototype.find = function(predicate) {
-    'use strict';
-    if (this == null) {
-      throw new TypeError('Array.prototype.find called on null or undefined');
-    }
-    if (typeof predicate !== 'function') {
-      throw new TypeError('predicate must be a function');
-    }
-    var list = Object(this);
-    var length = list.length >>> 0;
-    var thisArg = arguments[1];
-    var value;
-
-    for (var i = 0; i < length; i++) {
-      value = list[i];
-      if (predicate.call(thisArg, value, i, list)) {
-        return value;
-      }
-    }
-    return undefined;
-  };
-}
+// [REMOVED 7A] Dead polyfills: String.prototype.trim (ES5), Date.now (ES5), Array.prototype.find (ES2015), Object.assign (ES2015)
 
 Object.clone = function (obj) {
   if (!obj)
@@ -338,31 +307,6 @@ Object.append = (function () {
       return target;
   };
 })();
-
-if (typeof Object.assign != 'function') {
-  (function () {
-    Object.assign = function (target) {
-      'use strict';
-      // We must check against these specific cases.
-      if (target === undefined || target === null) {
-        throw new TypeError('Cannot convert undefined or null to object');
-      }
-
-      var output = Object(target);
-      for (var index = 1; index < arguments.length; index++) {
-        var source = arguments[index];
-        if (source !== undefined && source !== null) {
-          for (var nextKey in source) {
-            if (source.hasOwnProperty(nextKey)) {
-              output[nextKey] = source[nextKey];
-            }
-          }
-        }
-      }
-      return output;
-    };
-  })();
-}
 
 // [LEGACY REMOVED 1C] HTA_use_GPU_acceleration and getHTAUseGPUAcceleration() removed — HTA is dead
 var HTA_use_GPU_acceleration = false

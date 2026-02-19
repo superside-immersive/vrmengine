@@ -1,4 +1,5 @@
 // System Animator core - EXTRA (2025-02-22)
+// NOTE: Some vars below are re-declared from core.js — this file provides the real initializations
 
 var use_SA_gimage_emulation
 
@@ -16,9 +17,11 @@ var PC_count_absolute = 0
 
 // [LEGACY REMOVED 1C] HTA_use_GPU_acceleration removed (HTA is dead)
 
+// Re-declared from core.js (bare var there, no-op here)
 var oShell
 var Shell_OBJ, FSO_OBJ
 
+// Re-declared from core.js — these provide the real initialization values
 var is_SA_child_animation = parent && (parent != self) && !parent.is_chrome_window && parent.SA_child_animation_max;
 var SA_topmost_window = (is_SA_child_animation) ? parent : self;
 // [LEGACY REMOVED 1C] SA_top_window xul_mode branch removed — always self
@@ -26,7 +29,7 @@ var SA_top_window = self;
 
 var absolute_screen_mode
 
-// for all gadgets
+// Re-declared from core.js — provides real initialization
 var SA_child_animation_id = 99
 var ie9_native = /Trident.[5-9]/i.test(navigator.userAgent)
 
