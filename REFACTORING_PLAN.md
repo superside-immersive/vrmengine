@@ -173,7 +173,13 @@ Migrate to ES Modules progressively. Remove legacy platform support. Never break
 - Parse-time code kept in _SA.js: ValidatePath, ItemsFromFolder, FrameObject, SEQ_generate_gallery, LABEL_LoadSettings, loadFolder_CORE, gallery/SEQ vars, bottom IIFE
 - _SA.js: 1,789 → 644 lines (−1,145)
 
-### 6A — Split dungeon.js: core, combat, inventory, player → js/dungeon/
+### 6A — Split dungeon.js: inventory, restart, multiplayer → js/dungeon/ ✅
+- Exposed closure vars `_CombatStats`, `_AreaDataSaved` on return object
+- Created js/dungeon/inventory.js (378 lines) — INV class, inventory manager
+- Created js/dungeon/restart.js (1,404 lines) — scene restart/area transitions
+- Created js/dungeon/multiplayer.js (674 lines) — P2P networking, OPC sync
+- Added `document.write` loading for modules before `init()` call
+- dungeon.js: 14,108 → 11,667 lines (−2,441)
 ### 6B — Split dungeon.js: map, camera, npc, dialogue → js/dungeon/
 ### 6C — Split dungeon.js: events, ui, rendering, audio, input, config → js/dungeon/
 
