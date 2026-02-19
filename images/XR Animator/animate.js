@@ -8966,7 +8966,7 @@ window.addEventListener('jThree_ready', ()=>{
 // use .condition instead of .enabled to save some headaches when .camera_face_locking can change at any time
 //    enabled: MMD_SA_options.camera_face_locking,
     condition: ()=>{
-return MMD_SA_options.camera_face_locking || ((MMD_SA_options.camera_face_locking !== false) && !explorer_mode && !MMD_SA_options.Dungeon_options.item_base.hand_camera._hand_camera_active && MMD_SA_options.Dungeon.started && (MMD_SA.Wallpaper3D.visible || MMD_SA_options.mesh_obj_by_id["DomeMESH"]._obj.visible || (MMD_SA.THREEX.enabled && MMD_SA.THREEX.scene.background) || object3d_list.some(obj=>!obj.parent_bone)) && !MMD_SA.THREEX._THREE.MMD.getCameraMotion().length);
+return MMD_SA_options.camera_face_locking || ((MMD_SA_options.camera_face_locking !== false) && !explorer_mode && !MMD_SA_options.Dungeon_options.item_base.hand_camera._hand_camera_active && MMD_SA_options.Dungeon.started && (MMD_SA.Wallpaper3D?.visible || MMD_SA_options.mesh_obj_by_id["DomeMESH"]?._obj?.visible || (MMD_SA.THREEX.enabled && MMD_SA.THREEX.scene.background) || object3d_list.some(obj=>!obj.parent_bone)) && !MMD_SA.THREEX._THREE.MMD.getCameraMotion().length);
     },
   });
 

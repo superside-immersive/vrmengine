@@ -4,6 +4,13 @@ import http.server
 import sys
 
 class NoCacheHandler(http.server.SimpleHTTPRequestHandler):
+    def do_GET(self):
+        # Strip conditional headers to prevent 304 responses
+        for h in ('If-Modified-Since', 'If-None-Match', 'If-Unmodified-Since'):
+            if h in self.headers:
+                del self.headers[h]
+        super().do_GET()
+
     def end_headers(self):
         self.send_header('Cache-Control', 'no-store, no-cache, must-revalidate, max-age=0')
         self.send_header('Pragma', 'no-cache')

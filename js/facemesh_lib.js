@@ -85,15 +85,18 @@ var FacemeshAT = (function () {
   };
 
   // Sub-module imports (loaded in init)
+  // In worker context, import() resolves relative to the worker's URL (js/tracking/),
+  // not facemesh_lib.js's URL (js/). So use './' for workers, './tracking/' for main thread.
+  var _mod_base = is_worker ? './' : './tracking/';
   var _modules_loaded = false;
   async function _load_modules() {
     if (_modules_loaded) return;
 
     const [core, processor, emotions, draw_mod] = await Promise.all([
-      import('./tracking/facemesh-core.js'),
-      import('./tracking/facemesh-processor.js'),
-      import('./tracking/facemesh-emotions.js'),
-      import('./tracking/facemesh-draw.js'),
+      import(_mod_base + 'facemesh-core.js'),
+      import(_mod_base + 'facemesh-processor.js'),
+      import(_mod_base + 'facemesh-emotions.js'),
+      import(_mod_base + 'facemesh-draw.js'),
     ]);
 
     // Wire cross-module function references into S
@@ -110,7 +113,7 @@ var FacemeshAT = (function () {
   async function init(_worker, param) {
     await _load_modules();
 
-    const core = await import('./tracking/facemesh-core.js');
+    const core = await import(_mod_base + 'facemesh-core.js');
     await core.fm_init(S, _worker, param);
   }
 
