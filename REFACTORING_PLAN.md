@@ -194,7 +194,20 @@ Migrate to ES Modules progressively. Remove legacy platform support. Never break
 - Closure var refs in character.js updated: Object3D_proxy_base → MMD_SA_options.Dungeon.Object3D_proxy_base, CombatStats → MMD_SA_options.Dungeon._CombatStats
 - dungeon.js: 9,620 → 8,142 lines (−1,478)
 
-### 7A — Split EQP.js + unify core.js/core_extra.js
+### 7A — Split EQP.js + clean core.js/core_extra.js ✅
+- **EQP.js** extracted 3 modules into `js/eqp/`:
+  - `js/eqp/resize.js` (174 lines) — EQP_resize function (part sizing, Silverlight/HTML5/CSS3 scaling)
+  - `js/eqp/animate.js` (287 lines) — EQP_EV_animate_full + CANVAS_must_redraw (per-frame opacity/scale/rotation animation, canvas compositing)
+  - `js/eqp/wallpaper_mode.js` (86 lines) — EQP_wallpaper_mode object (position adjustment for wallpaper display, fireworks/WebGL offsets)
+  - Modules loaded via `document.write` after EQP_core.js
+  - EQP.js: 1,314 → 779 lines (−535). Remaining bulk: EQP_EV_init (635 lines, too tightly integrated to split)
+- **core.js**: removed 4 dead polyfills (String.trim ES5, Date.now ES5, Array.find ES2015, Object.assign ES2015)
+  - core.js: 774 → 717 lines (−57)
+  - Added clarifying comments for vars re-declared in core_extra.js (oShell, Shell_OBJ, FSO_OBJ, is_SA_child_animation, SA_child_animation_id, SA_topmost_window)
+- **core_extra.js**: added documentation comments for re-declaration intent
+  - Kept two-file split (core.js = definitions/utils/platform detection, core_extra.js = script orchestration/UI generation)
+  - Analysis showed merging is viable (~1,560 lines) but the current split matches logical roles
+
 ### 8A — JSDoc, ES module entry point, remove document.write, var→let/const
 
 ---
