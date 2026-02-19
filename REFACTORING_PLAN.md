@@ -126,14 +126,23 @@ Migrate to ES Modules progressively. Remove legacy platform support. Never break
 - Script loaded via `document.write` in `_SA.js` before `MMD_SA.js`
 - MMD_SA.js: 11,818 → 10,291 lines (−1,527)
 
-### 4C — Extract MMD_SA.js THREEX sub-modules: VRM (~1,474 lines) + PPE (~1,081 lines)
-- `js/mmd/vrm.js` — VRM model loading, bone mapping, morph/expression handling (inside THREEX IIFE)
-- `js/mmd/ppe.js` — Post-Processing Effects: DOF, N8AO, UnrealBloom pipeline (inside THREEX IIFE)
+### 4C — Extract MMD_SA.js THREEX sub-modules: VRM + PPE — DEFERRED
+- VRM (1,474 lines) and PPE (1,081 lines) are tightly coupled to THREEX closure variables (30+ and 50+ refs to `modelX`, `threeX`, `bones_by_name`, etc.)
+- Extracting would require passing all closure dependencies as parameters — too risky
+- These need interface refactoring before extraction (future step)
 
-### 4D — Extract MMD_SA.js THREEX sub-modules: utils (~2,040 lines)
-- `js/mmd/threex-utils.js` — load_THREEX_motion, export_GLTF_motion, camera_auto_targeting, HDRI, display_helper
+### 4D — Extract MMD_SA.js THREEX sub-modules: utils — DEFERRED
+- Same issue: utils section (2,040 lines) heavily references THREEX closure variables
+- Recommend: future step after establishing THREEX public API
 
-### 4E — Verify MMD_SA.js after Etapa 4
+### 4E — Verify MMD_SA.js after Etapa 4 ✅
+- All 11 extracted modules pass syntax check (`node -c`)
+- MMD_SA.js reduced from 18,371 → 10,291 lines (−8,080, ~44% reduction)
+- All `MMD_SA_create*`/`MMD_SA_init*` calls verified in MMD_SA.js
+- All 11 `document.write` script tags verified in `_SA.js`
+- Extracted modules: audio.js (801), sfx.js (296), speech-bubble.js (1074), vfx.js (343), webxr.js (897), osc.js (189), gamepad.js (439), wallpaper3d.js (1508), sprite.js (986), camera-shake.js (92), defaults.js (1530) = 8,155 lines total
+- Remaining THREEX IIFE (~6,400 lines) tightly coupled — deferred to future refactoring
+- **Fix applied**: Restored `gadget.xml` deleted in 1A (required by SA_system_emulation for Settings init)
 
 ### 5A — Split _SA.js: init, resize, events, utils → js/app/
 ### 5B — Split _SA.js: animation, sequence, ev-usage → js/app/
