@@ -91,9 +91,12 @@ Migrate to ES Modules progressively. Remove legacy platform support. Never break
 - Scripts loaded via `document.write` in `_SA.js` before `MMD_SA.js`
 - MMD_SA.js: 17,304 → 15,906 lines (−1,398)
 
-### 3C — Extract MMD_SA.js: WebXR + OSC
-- `js/mmd/webxr.js` (~300 lines) ← lines 5300-6190
-- `js/mmd/osc.js` (~300 lines) ← lines 14000-14880
+### 3C — Extract MMD_SA.js: WebXR + OSC ✅
+- `js/mmd/webxr.js` (897 lines) — WebXR IIFE: AR/VR session management, XR hit-testing, anchor compatibility, immersive mode
+- `js/mmd/osc.js` (189 lines) — OSC IIFE: VMC class, Open Sound Control protocol, DatagramPlugin, Warudo/VNyan/VSeeFace modes
+- Both as global functions (`window.MMD_SA_createWebXR`, `window.MMD_SA_createOSC`) called synchronously from MMD_SA.js
+- Scripts loaded via `document.write` in `_SA.js` before `MMD_SA.js`
+- MMD_SA.js: 15,906 → 14,826 lines (−1,080)
 
 ### 3D — Extract MMD_SA.js: gamepad + depth-wallpaper
 - `js/mmd/gamepad.js` (~300 lines) ← lines 14886-15400

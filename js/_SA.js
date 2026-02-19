@@ -5215,6 +5215,8 @@ function Canvas_BDDraw(canvas, beat) {
     document.write('<script language="JavaScript" src="js/mmd/sfx.js"></scr'+'ipt>')
     document.write('<script language="JavaScript" src="js/mmd/speech-bubble.js"></scr'+'ipt>')
     document.write('<script language="JavaScript" src="js/mmd/vfx.js"></scr'+'ipt>')
+    document.write('<script language="JavaScript" src="js/mmd/webxr.js"></scr'+'ipt>')
+    document.write('<script language="JavaScript" src="js/mmd/osc.js"></scr'+'ipt>')
     document.write('<script language="JavaScript" src="MMD.js/MMD_SA.js"></scr'+'ipt>')
   }
   else if (!EQP_gallery && returnBoolean("UseFilters"))
