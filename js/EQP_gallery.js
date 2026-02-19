@@ -2703,8 +2703,7 @@ if (use_HTML5) {
 // [LEGACY 1C] use_Silverlight always true
   if (use_HTML5)
     HTML5_Init()
-  else
-    SL_Init()
+  // [9G] SL_Init() else branch removed (function no longer exists)
 }
 
 if (!EV_init && !self.EQ_Filter)
