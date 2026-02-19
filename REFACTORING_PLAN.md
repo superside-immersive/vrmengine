@@ -162,7 +162,16 @@ Migrate to ES Modules progressively. Remove legacy platform support. Never break
 - All as global functions loaded via `document.write` in `_SA.js`
 - animate-core.js and ev-processing.js exceed 300-line limit due to monolithic functions with deep local dependencies — deferred to future split
 - _SA.js: 3,781 → 1,789 lines (−1,992)
-### 5C — Split _SA.js: gallery, settings-io, background, reload, dragdrop → js/app/
+### 5C — Split _SA.js: gallery, settings-io, background, reload, dragdrop → js/app/ ✅
+- `js/app/sa-init.js` (160 lines) — init() function (main body onload entry point)
+- `js/app/dragdrop-handler.js` (278 lines) — SA_DragDropEMU, DragDrop_RE vars, DragDrop_install, SA_Reload_PRE, SA_Reload
+- `js/app/load-main.js` (240 lines) — loadMain() function (reads all settings, initializes EV monitoring, resize)
+- `js/app/settings-io.js` (120 lines) — Settings_writeJS, SettingsClosed
+- `js/app/background.js` (210 lines) — BG vars, BG_Basic, BG_AddShadow, BG_AddBlackhole, OP selection (OP_gallery_sorting, OP_change, OP_change_event), Canvas_BDDraw_disabled, Canvas_BDDraw
+- `js/app/gallery-utils.js` (130 lines) — loadImageDimALL, loadImageDim, SA_extra_info_on, SEQ_SmartPreloading vars, SEQ_SmartPreloading, SEQ_SmartPreloading_Core
+- All as global functions loaded via `document.write` in `_SA.js`
+- Parse-time code kept in _SA.js: ValidatePath, ItemsFromFolder, FrameObject, SEQ_generate_gallery, LABEL_LoadSettings, loadFolder_CORE, gallery/SEQ vars, bottom IIFE
+- _SA.js: 1,789 → 644 lines (−1,145)
 
 ### 6A — Split dungeon.js: core, combat, inventory, player → js/dungeon/
 ### 6B — Split dungeon.js: map, camera, npc, dialogue → js/dungeon/
