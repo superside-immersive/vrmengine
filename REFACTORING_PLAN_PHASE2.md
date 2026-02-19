@@ -81,7 +81,8 @@ These are always `true` in all supported environments. They were IE version gate
 
 **Note:** `wmp.js` was already deleted in Phase 1 (Step 1A). The `WMP` global object is now always undefined, so all `use_WMP && WMP.in_use` conditions are always false.
 
-### 9D — Simplify IE mode variables
+### 9D — Simplify IE mode variables ✅
+**Commit:** 926a0d7
 **Files:** `js/core.js`, `js/globals.js`, `js/_SA.js`, `js/app/resize.js`, `js/app/ev-processing.js`, `js/EQP.js`, `js/chatbox.js`, `js/dragdrop.js`, `js/EQP_gallery.js`
 **What to do:**
 - `ie_64bit`: always `false` — remove variable, remove all conditions (replace with `false` branch)
@@ -92,7 +93,8 @@ These are always `true` in all supported environments. They were IE version gate
 
 **WARNING:** `ie9_mode` is used in ~40 places. Work through them one by one. Many are in files not yet refactored (EQP_gallery.js).
 
-### 9E — Clean HTA/XUL remnants
+### 9E — Clean HTA/XUL remnants ✅
+**Commit:** 0ad8930
 **Files:** `js/SA_system_emulation_ext.js`, `js/core.js`, `js/core_extra.js`, `js/_SA2.js`, `js/dragdrop.js`, `js/EQP_core.js`, `js/audio_fft.js`
 **What to do:**
 - `xul_mode` branches: in SA_system_emulation_ext.js (L4, L12, L48, L345, L351), core.js (L545), dragdrop.js (L8-10), EQP_core.js (L10), audio_fft.js (L144) — `xul_mode` is always `undefined`/`false`, simplify conditions
@@ -102,7 +104,8 @@ These are always `true` in all supported environments. They were IE version gate
 
 **CAREFUL with SA_system_emulation_ext.js:** This file handles real Electron/NW.js functionality (shortcut creation, environment paths). The `webkit_mode` branches must be preserved. Only remove `xul_mode` branches.
 
-### 9F — Remove misc dead code
+### 9F — Remove misc dead code ✅
+**Commit:** 423d57b
 **Files:** various
 **What to remove:**
 - `Seq_speed_delay = 1` in `_SA.js` L30 — obsolete, always 1. Remove variable and simplify multiply in `ev-processing.js` L732
@@ -110,7 +113,8 @@ These are always `true` in all supported environments. They were IE version gate
 - Commented-out `useLegacyLights` in `MMD_SA.js` L8107-8109
 - `EV_SL_init` duplicate declaration between EQP.js and EQP_gallery.js (covered in 9A/9B)
 
-### 9G — Verify + commit Etapa 9
+### 9G — Verify + commit Etapa 9 ✅
+**Commit:** 26a3818 (last SL_Init dead branch)
 - `node -c` on every modified file
 - `grep -r "use_Silverlight_only\|SL_Init\|EQP_SL_xaml\|DXImageTransform\|use_WMP\b\|ie_64bit\|Seq_speed_delay" js/ --include="*.js"` — verify no remnants
 - Test XR_Animator.html on http://127.0.0.1:8080
