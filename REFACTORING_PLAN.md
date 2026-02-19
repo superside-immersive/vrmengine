@@ -144,7 +144,15 @@ Migrate to ES Modules progressively. Remove legacy platform support. Never break
 - Remaining THREEX IIFE (~6,400 lines) tightly coupled — deferred to future refactoring
 - **Fix applied**: Restored `gadget.xml` deleted in 1A (required by SA_system_emulation for Settings init)
 
-### 5A — Split _SA.js: init, resize, events, utils → js/app/
+### 5A — Split _SA.js: init, resize, events, utils → js/app/ ✅
+- `js/app/utils.js` (65 lines) — addZero, random, SA_OnBeforeUnload_Common, AutoIt_Execute, CheckDockState, barPhysics + bar_accelerate var
+- `js/app/events.js` (350 lines) — SA_OnKeyDown IIFE (closure), SA_OnKeyDown_Gadget, SA_OnDocument, SA_OnFolder, SA_OnGallery, SA_ClearInterface, SA_OnMouseDown, SA_CreateHTA, SA_AnimationAppend_Switch, EQP_gallery_append_mode/SA_animation_append_mode/SA_confirm_HTA vars
+- `js/app/init-ui.js` (340 lines) — SA_init_browser_ui() wrapping System._browser init, mouseover/mouseout custom handlers, fullscreen/restore/minimize/resize/rotate buttons, child animation dblclick, onkeydown + writeSettings_CORE assignment
+- `js/app/resize.js` (700 lines) — resize() function + all resize vars (webkit_saved_screenLeft/Top, EV_frame_offset, SA_zoom/rotate/body_offset, SA_fullscreen_offset, B_content_width/height, _resize_loop_). Exceeds 300-line limit due to monolithic function with deep local variable dependencies — deferred to future split.
+- All as global functions loaded via `document.write` in `_SA.js` before any runtime calls
+- Functions only called at runtime (init, resize, event handlers) — safe to extract
+- Bottom IIFE functions (loadFolder_CORE, ItemsFromFolder, ValidatePath, LABEL_LoadSettings) kept in _SA.js (called during parsing)
+- _SA.js: 5,234 → 3,781 lines (−1,453)
 ### 5B — Split _SA.js: animation, sequence, ev-usage → js/app/
 ### 5C — Split _SA.js: gallery, settings-io, background, reload, dragdrop → js/app/
 
