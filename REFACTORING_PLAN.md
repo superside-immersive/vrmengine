@@ -153,7 +153,15 @@ Migrate to ES Modules progressively. Remove legacy platform support. Never break
 - Functions only called at runtime (init, resize, event handlers) — safe to extract
 - Bottom IIFE functions (loadFolder_CORE, ItemsFromFolder, ValidatePath, LABEL_LoadSettings) kept in _SA.js (called during parsing)
 - _SA.js: 5,234 → 3,781 lines (−1,453)
-### 5B — Split _SA.js: animation, sequence, ev-usage → js/app/
+### 5B — Split _SA.js: animation, sequence, ev-usage → js/app/ ✅
+- `js/app/ev-init.js` (225 lines) — EventToMonitor_para1, parseEventToMonitor, EV_usage_list, EV_usage_sub, Sound_EQBand_mod, Sound_Spectrum data object, Sound_classRoot, initEV
+- `js/app/animate.js` (200 lines) — EV_usage/PC_count vars, EV_sync_update object + defineProperty, use_RAF/RAF vars, Animate_RAF, Animate, RAF_animation_frame vars, SA_external_command vars
+- `js/app/animate-core.js` (511 lines) — Animate_core function (monolithic, deferred further split — deep local variable dependencies)
+- `js/app/ev-processing.js` (768 lines) — EQ_Emu, oShell/Shell_OBJ/FSO_OBJ declarations, regRoot, axDllClass, AT_bass_band, EV_usage_sub_CREATE, EV_usage_PROCESS, EV_object, processEV (giant switch), updateEvent
+- `js/app/seq-animate.js` (314 lines) — SEQ_CalculateFPS, SEQ vars, EV_AdjustTimer, random_sorting, SEQ_gallery_restore_order, SEQ_Animate, Gallery_h/v_align, AnimateFrame
+- All as global functions loaded via `document.write` in `_SA.js`
+- animate-core.js and ev-processing.js exceed 300-line limit due to monolithic functions with deep local dependencies — deferred to future split
+- _SA.js: 3,781 → 1,789 lines (−1,992)
 ### 5C — Split _SA.js: gallery, settings-io, background, reload, dragdrop → js/app/
 
 ### 6A — Split dungeon.js: core, combat, inventory, player → js/dungeon/
