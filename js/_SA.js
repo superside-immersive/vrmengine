@@ -633,6 +633,7 @@ function loadFolder_CORE() {
     SA.loader.loadScriptSync('js/mmd/defaults.js')
     SA.loader.loadScriptSync('js/mmd/threex-vrm.js')
     SA.loader.loadScriptSync('js/mmd/threex-ppe.js')
+    SA.loader.loadScriptSync('js/mmd/threex-motion.js')
   }
 
   if (gallery_js)
