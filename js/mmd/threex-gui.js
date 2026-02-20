@@ -190,7 +190,7 @@ Object.assign(self.THREE, THREE_module);
 const Geometry_module = await import(System.Gadget.path + '/three.js/Geometry.js');
 Object.assign(self.THREE, Geometry_module);
 
-self.TX.THREE.XLoader = TX._THREE.XLoader;
+self.THREE.XLoader = TX._THREE.XLoader;
 
 if (MMD_SA_options.THREEX_options.use_OutlineEffect) {
 // Jun 10, 2023
