@@ -218,7 +218,7 @@ Object.assign(self.THREE, GLTFLoader_module);
 //Object.assign(self.THREE, GLTFExporter_module);
 
 // three-vrm 1.0
-if (use_VRM1) {
+if (TX.use_VRM1) {
 //  await System._browser.load_script('./three.js/three-vrm.min_OLD.js');
   const three_vrm_module = await System._browser.load_script(System.Gadget.path + '/three.js/three-vrm.module.min.js', true);
   Object.assign(self.THREE, three_vrm_module);
@@ -227,7 +227,7 @@ else {
   await System._browser.load_script('./three.js/three-vrm.min_v0.6.11.js');
 }
 
-THREE = self.THREEX = self.THREE
+TX.THREE = self.THREEX = self.THREE
 self.THREE = TX._THREE
 
 //await this.PPE.init();
@@ -237,7 +237,7 @@ if (MMD_SA_options.Dungeon_options && MMD_SA_options.Dungeon.use_octree) await t
 
 // extend three-vrm START
 // three.vrm 1.0
-if (use_VRM1 && !TX.THREE.VRMSpringBoneManager.prototype.setCenter) {
+if (TX.use_VRM1 && !TX.THREE.VRMSpringBoneManager.prototype.setCenter) {
 // https://github.com/pixiv/three-vrm/issues/1112
 // https://pixiv.github.io/three-vrm/packages/three-vrm/docs/classes/VRMSpringBoneManager.html#joints
   TX.THREE.VRMSpringBoneManager.prototype.setCenter = function (obj3d) {
