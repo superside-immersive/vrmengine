@@ -4615,7 +4615,6 @@ MMD_SA.fn.setupUI()
   TX.MMD_dummy_obj = MMD_dummy_obj;
   TX.init_common = init_common;
   TX.init_on_MMDStarted = init_on_MMDStarted;
-  TX.MMD_bone_tree = MMD_bone_tree;
 
 // VRM — loaded from js/mmd/threex-vrm.js
   const VRM = MMD_SA_createTHREEX_VRM(TX);
