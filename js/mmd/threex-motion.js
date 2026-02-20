@@ -12,17 +12,17 @@ window.MMD_SA_createTHREEX_Motion = function(TX) {
 await TX.threeX.utils.load_THREEX();
 
 if (MMD_SA.MMD_started) {
-  init_on_MMDStarted();
+  TX.init_on_MMDStarted();
 }
 else {
   window.addEventListener("MMDStarted", ()=>{
-    init_on_MMDStarted();
+    TX.init_on_MMDStarted();
   });
 }
 
 // Mar 14, 2024
 const FBXLoader_module = await System._browser.load_script(System.Gadget.path + '/three.js/loaders/FBXLoader.js', true);
-for (const name in FBXLoader_module) THREE[name] = FBXLoader_module[name];
+for (const name in FBXLoader_module) TX.THREE[name] = FBXLoader_module[name];
         }
 
         function BoneKey(name, time, pos, rot) {
@@ -1033,7 +1033,7 @@ if (GLTF_loader) return;
 
 if (!TX.threeX.enabled) {
   const GLTFLoader_module = await import(System.Gadget.path + '/three.js/loaders/GLTFLoader.js');
-  Object.assign(THREE, GLTFLoader_module);
+  Object.assign(TX.THREE, GLTFLoader_module);
 }
 
 GLTF_loader = new TX.THREE.GLTFLoader();
@@ -1267,7 +1267,7 @@ if (TX.THREE.GLTFExporter) return;
 
 // April 27, 2024
 const GLTFExporter_module = await System._browser.load_script(System.Gadget.path + '/three.js/exporters/GLTFExporter.js', true);
-for (const name in GLTFExporter_module) THREE[name] = GLTFExporter_module[name];
+for (const name in GLTFExporter_module) TX.THREE[name] = GLTFExporter_module[name];
 
 exporter = new THREEX.GLTFExporter();
         }

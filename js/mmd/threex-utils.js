@@ -70,15 +70,15 @@ if (RegExp.$3.indexOf('捩') != -1) {
 // NOTE: May need to be calculated in the future since this may affect MMD_SA.get_bone_position()/.get_bone_position() calculations...?
 }
 else if (RegExp.$3.indexOf('+') == -1) {
-  const rs = rot_shoulder_axis[(sign_inverted) ? 0 : 1];
-  const rot_axis = (RegExp.$2 == '肩') ? rs : rot_arm_axis;//rot_arm_axis;//
+  const rs = TX.rot_shoulder_axis[(sign_inverted) ? 0 : 1];
+  const rot_axis = (RegExp.$2 == '肩') ? rs : TX.rot_arm_axis;//rot_arm_axis;//
 
 // NOTE: It seems rotating the axis of rot by q is the same as (q x rot x -q)
 //  const aa = TX.q1.toAxisAngle(); TX.q1.setFromAxisAngle(aa[0].applyQuaternion(rot_axis[dir]), aa[1])
   TX.q1.premultiply(rot_axis[dir]).multiply(rot_axis[-dir]);
 
   if (RegExp.$2 == '腕') {
-    TX.q1.premultiply(rot_arm_axis[-dir]);
+    TX.q1.premultiply(TX.rot_arm_axis[-dir]);
     if (!RegExp.$3) TX.q1.premultiply(rs[dir]);
   }
   else if (RegExp.$2 == '肩') {
