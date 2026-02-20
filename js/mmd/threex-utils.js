@@ -305,11 +305,11 @@ if (MMD_SA_options.camera_face_locking_vertical_constraint_percent) {
 
     const ray_direction = c_pos.unproject(camera).sub(camera.position).normalize();
 
-    const plane = p1.setFromNormalAndCoplanarPoint(ray_direction, head_pos_absolute);
+    const plane = TX.p1.setFromNormalAndCoplanarPoint(ray_direction, head_pos_absolute);
 
-    const ray = r1.set(camera.position, ray_direction);
+    const ray = TX.r1.set(camera.position, ray_direction);
 
-    const intersectionPoint = v2;
+    const intersectionPoint = TX.v2;
     if (ray.intersectPlane(plane, intersectionPoint)) {
       intersectionPoint.sub(head_pos_absolute);
       cam_height_offset.copy(intersectionPoint).negate();
@@ -326,8 +326,8 @@ MMD_SA.Camera_MOD.adjust_camera(target_current.id, cam_pos, target_pos);
 
 // restore updated matrix to make things like speech bubble mouseover to work
 if (matrix_updated) {
-  camera.matrix.copy(m1);
-  camera.matrixWorld.copy(m2);
+  camera.matrix.copy(TX.m1);
+  camera.matrixWorld.copy(TX.m2);
 }
         }
 

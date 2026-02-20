@@ -397,7 +397,7 @@ para.time_index = Math.min(para.time_index, track_sub.times.length-1);
 
 const dim = (track_main instanceof TX.THREE.QuaternionKeyframeTrack) ? 4 : 3;
 const k1 = para.time_index * dim;
-const value = (dim == 4) ? q1 : v1;
+const value = (dim == 4) ? TX.q1 : TX.v1;
 value.fromArray(track_sub.values.slice(k1, k1+dim));
 
 if ((para.time_index > 0) && (f != frame_id(track_sub.times[para.time_index]))) {
@@ -409,11 +409,11 @@ if ((para.time_index > 0) && (f != frame_id(track_sub.times[para.time_index]))) 
     if (dim == 4) {
 //if (TX.q1.toArray().some(v=>isNaN(v))) console.log(track_sub, para.time_index+'/'+(track_sub.times.length-1), k1);
       TX.q2.fromArray(track_sub.values.slice(k0, k0+4));
-      TX.q1.slerp(q2, time_delta/time_range);
+      TX.q1.slerp(TX.q2, time_delta/time_range);
     }
     else if (dim == 3) {
       TX.v2.fromArray(track_sub.values.slice(k0, k0+3));
-      TX.v1.lerp(v2, time_delta/time_range);
+      TX.v1.lerp(TX.v2, time_delta/time_range);
     }
   }
 }
@@ -444,7 +444,7 @@ if (/\.vrma$/i.test(url)) {
 //console.log(three_vrma_module)
     Object.assign(THREEX, three_vrma_module);
 
-    GLTF_loader.register((parser) => {
+    TX.GLTF_loader.register((parser) => {
       return new THREEX.VRMAnimationLoaderPlugin( parser );
     });
   }
@@ -452,7 +452,7 @@ if (/\.vrma$/i.test(url)) {
   const modelX = TX.threeX.get_model(0);
   const model_scale = modelX.model_scale;
 
-  const gltfVrma = await GLTF_loader.loadAsync( url );
+  const gltfVrma = await TX.GLTF_loader.loadAsync( url );
   const vrmAnimation = gltfVrma.userData.vrmAnimations[ 0 ];
 // create animation clip
   const clip = THREEX.createVRMAnimationClip( vrmAnimation, modelX.model );
@@ -470,7 +470,7 @@ if (/\.vrma$/i.test(url)) {
       for (let i = 0, i_max = values.length/3; i < i_max; i++) {
         const _i = i*3;
         TX.v1.set(values[_i], values[_i+1], values[_i+2]);
-        modelX.process_position(v1).multiplyScalar(model_scale);
+        modelX.process_position(TX.v1).multiplyScalar(model_scale);
         values[_i]   = TX.v1.x;
         values[_i+1] = TX.v1.y;
         values[_i+2] = TX.v1.z;
@@ -481,7 +481,7 @@ if (/\.vrma$/i.test(url)) {
       for (let i = 0, i_max = values.length/4; i < i_max; i++) {
         const _i = i*4;
         TX.q1.set(values[_i], values[_i+1], values[_i+2], values[_i+3]);
-        modelX.process_rotation(q1);
+        modelX.process_rotation(TX.q1);
         values[_i]   = TX.q1.x;
         values[_i+1] = TX.q1.y;
         values[_i+2] = TX.q1.z;
@@ -645,7 +645,7 @@ TX.m1.set(
   z_axis.x, z_axis.y, z_axis.z, 0,
   0,0,0,1
 );
-const rig_rot = new TX.THREE.Quaternion().copy(MMD_SA._q1.setFromBasis(m1));
+const rig_rot = new TX.THREE.Quaternion().copy(MMD_SA._q1.setFromBasis(TX.m1));
 
 hips_q = motion_hips.getWorldQuaternion(new TX.THREE.Quaternion());
 //console.log(hips_q.toArray())
@@ -705,14 +705,14 @@ if (skeletons.length) {
   console.log('_hips_height', _hips_height, motionHipsHeight);
 }
 else {
-  const hips = bone_clones['hips'].bone.getWorldPosition(v1);
-  const feet = (bone_clones['leftToes'] || bone_clones['leftFoot']).bone.getWorldPosition(v2);
+  const hips = bone_clones['hips'].bone.getWorldPosition(TX.v1);
+  const feet = (bone_clones['leftToes'] || bone_clones['leftFoot']).bone.getWorldPosition(TX.v2);
   if (feet.y < 0) {
 console.log('feet.y',feet.y);
     hips.y -= feet.y;
   }
 // can be negative
-  motionHipsHeight = hips.applyQuaternion(bone_clones['hips'].bone.getWorldQuaternion(q1).conjugate().premultiply(rig_rot)).y;
+  motionHipsHeight = hips.applyQuaternion(bone_clones['hips'].bone.getWorldQuaternion(TX.q1).conjugate().premultiply(rig_rot)).y;
 //  motionHipsHeight = TX.v1.copy((motion_hips.position.lengthSq()) ? motion_hips.position : motion_hips.parent.position).applyQuaternion(TX.q1.copy(motion_hips.quaternion).conjugate().premultiply(rig_rot)).y;
   hipsPositionScale = hips_height / motionHipsHeight;
 }
@@ -867,13 +867,13 @@ if (b_intermediate.length) {
     TX.q1.fromArray(q_flat);
 
     // 親のレスト時ワールド回転 * トラックの回転 * レスト時ワールド回転の逆
-    q1
+    TX.q1
       .premultiply( q.parentRestWorldRotation )
       .multiply( q.restRotationInverse );
 
     TX.q1.premultiply(hips_q).multiply(hips_q_inv);
 
-    _quatB.multiply(q1);
+    _quatB.multiply(TX.q1);
   });
 
   _quatA.premultiply(_quatB);

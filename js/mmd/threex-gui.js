@@ -115,9 +115,9 @@ for (const d of ['x', 'y', 'z']) {
   gui_directional_light.add( params, d, -1,1 ).onChange( function ( value ) {
     const v = Number(value);
     const light = MMD_SA.light_list[1].obj;
-    v1.set(params.x, params.y, params.z);
-    v1[d] = v;
-    System.Gadget.Settings.writeString('MMDLightPosition', '[' + v1.toArray().join(',') + ']');
+    TX.v1.set(params.x, params.y, params.z);
+    TX.v1[d] = v;
+    System.Gadget.Settings.writeString('MMDLightPosition', '[' + TX.v1.toArray().join(',') + ']');
     light.position.fromArray(MMD_SA_options.light_position).add(TX._THREE.MMD.getModels()[0].mesh.position);
     update_tray();
   });
