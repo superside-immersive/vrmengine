@@ -6,3 +6,7 @@ node_modules/OSC-js/
 node_modules/nut.js/
 au3/*.exe
 au3/*/*.exe
+
+# macOS Finder metadata
+.DS_Store
+**/.DS_Store
