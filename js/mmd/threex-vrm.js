@@ -5,6 +5,7 @@
  * @returns {Object} VRM interface object
  */
 window.MMD_SA_createTHREEX_VRM = function(TX) {
+    var _self;
 
     function init() {
 
@@ -30,7 +31,7 @@ if (TX.use_VRM1) {
 
 // backward compatibility
 // /three-vrm-core/types/humanoid/VRMHumanBoneName.d.ts
-  TX.THREE.VRMSchema = VRM.VRMSchema;
+  TX.THREE.VRMSchema = _self.VRMSchema;
 }
 
       window.addEventListener('jThree_ready', ()=>{
@@ -955,7 +956,7 @@ if (!mesh.matrixAutoUpdate) {
 
       MMD_bone_list = Object.keys(bone_map_MMD_to_VRM);
 
-      for (let name_VMC in VRM.VRMSchema.HumanoidBoneName) {
+      for (let name_VMC in _self.VRMSchema.HumanoidBoneName) {
         bone_map_VRM1_to_VRM0[name_VMC] = name_VMC.replace(/ThumbProximal/, 'ThumbIntermediate').replace(/ThumbMetacarpal/, 'ThumbProximal');
         bone_map_VRM0_to_VRM1[bone_map_VRM1_to_VRM0[name_VMC]] = name_VMC;
       }
@@ -1027,7 +1028,7 @@ if (!mesh.matrixAutoUpdate) {
 MMD_SA.THREEX.get_model(0).resetPhysics();
     }
 
-    return {
+    _self = {
       get list() { return vrm_list; },
       set list(v) { vrm_list = v; },
 
@@ -1400,4 +1401,5 @@ System._browser.on_animation_update.add(()=>{
       get use_OutlineEffect() { return this._use_OutlineEffect; },
       set use_OutlineEffect(v) { this._use_OutlineEffect = v; },
     };
+    return _self;
 };
