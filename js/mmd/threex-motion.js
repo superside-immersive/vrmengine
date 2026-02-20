@@ -201,7 +201,7 @@ bone_map.forEach(name=>{
 const rig_map = { VRM:{}, MMD:{} };
 Object.entries(_rig_map).forEach(e=>{
   rig_map.MMD[e[1]] = e[0];
-  rig_map.VRM[e[1]] = VRM.bone_map_MMD_to_VRM[e[0]];
+  rig_map.VRM[e[1]] = TX.threeX.VRM.bone_map_MMD_to_VRM[e[0]];
 });
 
 console.log(bone_map, rig_map)
@@ -586,7 +586,7 @@ VRM.fix_rig_map(rig_map.VRM);
 if (!rig_map.MMD) {
   rig_map.MMD = {};
   for (const k in rig_map.VRM) {
-    const MMD_name = VRM.bone_map_VRM_to_MMD[rig_map.VRM[k]];
+    const MMD_name = TX.threeX.VRM.bone_map_VRM_to_MMD[rig_map.VRM[k]];
     if (MMD_name)
       rig_map.MMD[k] = MMD_name;
   }
@@ -737,7 +737,7 @@ clip.tracks.forEach( ( track ) => {
   if (!/position|quaternion/.test(propertyName)) {
     if (/^VRMExpression_(.+)$/.test(mixamoRigName)) {
       const expression_name = RegExp.$1;
-      const name_MMD = Object.entries((TX.threeX.enabled) ? TX.models[0].blendshape_map_by_MMD_name : VRM.blendshape_map_by_MMD_name_VRM1).find(kv=>kv[1]==expression_name)?.[0];
+      const name_MMD = Object.entries((TX.threeX.enabled) ? TX.models[0].blendshape_map_by_MMD_name : TX.threeX.VRM.blendshape_map_by_MMD_name_VRM1).find(kv=>kv[1]==expression_name)?.[0];
       if (name_MMD) {
         const time_max = Math.max(clip.duration, 1/30);
 
@@ -769,7 +769,7 @@ clip.tracks.forEach( ( track ) => {
   const vrmNodeName = ((vrmBoneName == '上半身3') && vrmBoneName) || modelX.getBoneNode(vrmBoneName, true)?.name;
 
   if ( vrmNodeName != null ) {
-    const MMD_node_name = (VRM_mode && VRM.bone_map_VRM_to_MMD[vrmBoneName]) || vrmBoneName;
+    const MMD_node_name = (VRM_mode && TX.threeX.VRM.bone_map_VRM_to_MMD[vrmBoneName]) || vrmBoneName;
 
     const mixamoRigNode = asset.getObjectByName( mixamoRigName );
 
@@ -906,7 +906,7 @@ track.values.map( ( v, i ) => ( (VRM_mode && (!TX.use_VRM1 || vrm.meta?.metaVers
       }
 
 // a trick to fix animation mixing issue when the FBX animation has only one frame
-if (VRM_mode && (track.times.length == 1) && VRM.is_MMD_bone_motion_mixed.test(VRM.bone_map_VRM_to_MMD[vrmBoneName])) {
+if (VRM_mode && (track.times.length == 1) && TX.threeX.VRM.is_MMD_bone_motion_mixed.test(TX.threeX.VRM.bone_map_VRM_to_MMD[vrmBoneName])) {
   if (!model.animation._single_frame) model.animation._single_frame = {};
   model.animation._single_frame[vrmBoneName] = tracks[tracks.length-1].values.slice();
 }
@@ -1143,11 +1143,11 @@ for (const name of name_sync) {
 const tracks = [];
 
 for (const name_MMD in boneKeys_by_name) {
-  let name = VRM.bone_map_MMD_to_VRM[name_MMD];
+  let name = TX.threeX.VRM.bone_map_MMD_to_VRM[name_MMD];
   let name_MMD_translated = name_MMD;
   if (!name && (name_MMD.indexOf('足ＩＫ') != -1)) {
     name_MMD_translated = name_MMD.charAt(0) + '足首';
-    name = VRM.bone_map_MMD_to_VRM[name_MMD_translated];
+    name = TX.threeX.VRM.bone_map_MMD_to_VRM[name_MMD_translated];
   }
 
   if (name) {
@@ -1170,7 +1170,7 @@ for (const name_MMD in boneKeys_by_name) {
           pos.add(TX.v2.fromArray(bone_move.keys_full[f].pos));
         }
 
-        pos.multiplyScalar(1/VRM.vrm_scale);
+        pos.multiplyScalar(1/TX.threeX.VRM.vrm_scale);
         pos.multiplyScalar(leg_scale);
         pos.add(TX.v2.fromArray(model.para.pos0['hips']));
 

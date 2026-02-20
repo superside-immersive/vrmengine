@@ -202,7 +202,7 @@ const settings_default = this._joints_settings;
 let i = 0;
 for ( const e of this.model.springBoneManager.joints ) {
   const _scale = vrm_scale;
-  e.settings.stiffness = settings_default[i].stiffness * ((restrict_physics) ? 10 : 1) * VRM.joint_stiffness_percent/100 * _scale;
+  e.settings.stiffness = settings_default[i].stiffness * ((restrict_physics) ? 10 : 1) * _self.joint_stiffness_percent/100 * _scale;
   e.settings.gravityPower = settings_default[i].gravityPower * _scale;
   i++;
 };
@@ -894,7 +894,7 @@ if (!mesh.matrixAutoUpdate) {
 
     let MMD_bone_list = [];
     window.addEventListener('jThree_ready', ()=>{
-      bone_map_MMD_to_VRM = VRM.fix_rig_map({
+      bone_map_MMD_to_VRM = _self.fix_rig_map({
 センター:"hips",
 上半身:"spine",
 上半身2:"chest",
@@ -1242,7 +1242,7 @@ console.log(vrm_obj.emotion_list, vrm_obj.MMD_morph_list);
 
 if (!vrm_obj.is_VRM1) mesh_obj.quaternion.set(0,1,0,0);
 
-if (TX.data.OutlineEffect && VRM.use_OutlineEffect) {
+if (TX.data.OutlineEffect && _self.use_OutlineEffect) {
   mesh_obj.traverseVisible(obj=>{
     if (obj.isMesh) obj.userData.outlineParameters = { visible: true };
   });
