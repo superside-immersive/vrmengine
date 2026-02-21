@@ -2,6 +2,7 @@
 set -euo pipefail
 
 BASE_URL="${1:-http://127.0.0.1:8080}"
+RUN_VRM_CHECK="${RUN_VRM_CHECK:-1}"
 
 URLS=(
   "$BASE_URL/redux/XR_Animator.html"
@@ -25,10 +26,17 @@ for url in "${URLS[@]}"; do
   fi
 done
 
-if [[ "$ALL_OK" -eq 1 ]]; then
-  echo "[Phase3 Preflight] OK: todos los endpoints críticos responden 200"
-  exit 0
+if [[ "$ALL_OK" -ne 1 ]]; then
+  echo "[Phase3 Preflight] FAIL: hay endpoints no-200"
+  exit 1
 fi
 
-echo "[Phase3 Preflight] FAIL: hay endpoints no-200"
-exit 1
+echo "[Phase3 Preflight] OK: todos los endpoints críticos responden 200"
+
+if [[ "$RUN_VRM_CHECK" == "1" ]]; then
+  echo "[Phase3 Preflight] VRM console-check: buscando [XRA][VRM_LOADED]"
+  node redux/scripts/vrm_console_check.mjs "$BASE_URL/redux/XR_Animator.html"
+  echo "[Phase3 Preflight] VRM console-check OK"
+fi
+
+exit 0

@@ -1191,6 +1191,13 @@ if (!MMD_SA.MMD_started && !MMD_SA_options._XRA_headless_mode)
 
 var vrm_obj = new VRM_object(para.vrm_index, vrm, { url:url_raw });
 
+console.log('[XRA][VRM_LOADED]', {
+  index: para.vrm_index,
+  url: url_raw,
+  isVRM1: !!vrm_obj.is_VRM1,
+  metaVersion: vrm.meta?.metaVersion || null
+});
+
 vrm_obj.faceBlendshapes_map = {};
 if (vrm.expressionManager.customExpressionMap['CheekPuff']) {
   vrm_obj.use_faceBlendshapes = true;

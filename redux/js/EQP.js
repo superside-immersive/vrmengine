@@ -594,10 +594,8 @@ SA.loader.loadScriptSync('js/EQP_core.js');
 if (use_EQP_FB)
   SA.loader.loadScriptSync('js/EQP_FB.js');
 
-// EQP extracted modules (Step 7A)
-SA.loader.loadScriptSync('js/eqp/resize.js');
-SA.loader.loadScriptSync('js/eqp/animate.js');
-SA.loader.loadScriptSync('js/eqp/wallpaper_mode.js');
+// [DEAD CODE REMOVED] js/eqp/ modules were planned extractions that were never created.
+// The resize/animate/wallpaper_mode code remains inline in this file.
 
 
 // [LEGACY REMOVED 9B] EV_SL_init function removed (Silverlight XAML init is dead)

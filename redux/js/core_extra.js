@@ -404,18 +404,6 @@ console.log("_core.00.min.js")
   '<script type="text/javascript" language="javascript" src="js/_core.00.min.js"></scr'+'ipt>\n'
   }
 
-  if (SA_project_JSON && SA_project_JSON.P2P_network && !is_SA_child_animation) {
-console.log("Use PeerJS")
-    html +=
-  '<script type="text/javascript" language="javascript" src="js/peerjs.min.js"></scr'+'ipt>\n'
-  }
-  if (SA_project_JSON && SA_project_JSON.P2P_network && ((is_SA_child_animation_host) ? is_SA_child_animation : !is_SA_child_animation)) {
-console.log("Use Chatbox")
-    html +=
-  '<script type="text/javascript" language="javascript" src="js/chatbox.js"></scr'+'ipt>\n'
-+ '<script>ChatboxAT.channel = SA_project_JSON.P2P_network.chatbox_channel||0;</scr'+'ipt>\n'
-  }
-
   html +=
   '<script type="text/javascript" language="javascript" src="js/_SA.js"></scr'+'ipt>\n'
 + '<script type="text/javascript" language="javascript" src="js/_SA2.js"></scr'+'ipt>\n'

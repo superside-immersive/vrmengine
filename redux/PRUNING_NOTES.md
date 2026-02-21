@@ -423,8 +423,476 @@ Resultado:
 - Preflight Fase 3 en OK.
 - `XR_Animator` y `SystemAnimator_online` en `200`.
 
+Estado actual:
+- **Rollback aplicado**: `motion_demo_pack01.zip` restaurado en `redux/MMD.js/motion/` tras detectar `404` en runtime.
+
 Riesgo/compatibilidad:
 - Algunas coreografías demo (las que apuntaban al zip) ya no estarán disponibles.
 
 Rollback rápido:
 - Re-copiar `motion_demo_pack01.zip` desde `MMD.js/motion/` original a `redux/MMD.js/motion/`.
+
+## Block W — assets opcionales no referenciados (2026-02-20)
+
+Objetivo: recortar archivos sin referencias directas en `redux` y mantener estable el flujo principal de `XR_Animator`.
+
+Eliminado:
+- `redux/js/electron_main.js`
+- `redux/images/sign_loop.png`
+- `redux/images/ST_cube02_1.jpg`
+- `redux/images/ST_cube02_2.jpg`
+- `redux/images/ST_cube02_3.jpg`
+- `redux/images/ST_cube02_4.jpg`
+- `redux/images/ST_cube02_5.jpg`
+- `redux/MMD.js/motion/tsuna/tsuna_run.vmd`
+- `redux/MMD.js/motion/sleep/sleep01.vmd`
+- `redux/MMD.js/motion/walk_n_run/run_H46_f60-180.vmd`
+- `redux/MMD.js/motion/_kiss_blush.vmd`
+- `redux/MMD.js/motion/_kiss2_blush.vmd`
+- `redux/MMD.js/motion/_kiss2_blush_v01.vmd`
+
+Resultado:
+- ~0.82MB menos acumulados en el bloque.
+- `redux` pasa de ~55M a ~54M.
+- Preflight Fase 3 en OK.
+- `XR_Animator` en `200`.
+
+Riesgo/compatibilidad:
+- Posible impacto únicamente en presets legacy que referencien explícitamente esas texturas/motions.
+
+Rollback rápido:
+- Re-copiar esos archivos desde el árbol original a sus mismos paths dentro de `redux/`.
+
+## Block X — desactivar P2P/chat opcional (2026-02-20)
+
+Objetivo: reducir scripts no críticos para flujo XR/tracking en build redux slim.
+
+Cambios:
+- `redux/js/core_extra.js`
+	- Eliminada inyección condicional de:
+		- `js/peerjs.min.js`
+		- `js/chatbox.js`
+	- Eliminada asignación `ChatboxAT.channel` dependiente de `P2P_network`.
+
+Eliminado:
+- `redux/js/peerjs.min.js`
+- `redux/js/chatbox.js`
+
+Resultado:
+- ~188KB menos.
+- `du` redondea `redux` en ~54M.
+- Preflight Fase 3 en OK.
+- `XR_Animator` en `200`.
+
+Riesgo/compatibilidad:
+- Se deshabilitan sesiones P2P/chatbox en el runtime redux slim.
+
+Rollback rápido:
+- Re-copiar ambos archivos desde `js/` original a `redux/js/`.
+- Restaurar en `redux/js/core_extra.js` los bloques de carga condicional de PeerJS/Chatbox.
+
+## Block Y — electron preload no-web (2026-02-20)
+
+Objetivo: recortar archivo específico de Electron sin uso en ruta web redux.
+
+Eliminado:
+- `redux/js/electron_web_browser_preload.js`
+
+Resultado:
+- Recorte pequeño (sin cambio visible por redondeo de `du`).
+- `XR_Animator` en `200`.
+- Preflight Fase 3 en OK.
+
+Riesgo/compatibilidad:
+- Impacta únicamente el flujo Electron preload; no afecta runtime web objetivo.
+
+Rollback rápido:
+- Re-copiar `electron_web_browser_preload.js` desde `js/` original a `redux/js/`.
+
+## Block Z — plugins jThree legacy no referenciados (2026-02-20)
+
+Objetivo: recortar plugins/shader backup legacy sin referencias directas en el runtime redux actual.
+
+Eliminado:
+- `redux/jThree/plugin/v2.1.2_jThree.Trackball.js`
+- `redux/jThree/MMDplugin/fshader_old.c`
+- `redux/jThree/plugin/three_AbstractCorridor.js`
+- `redux/jThree/plugin/three_SubterraneanFlyThrough.js`
+- `redux/jThree/plugin/three_NV15SpaceCurvature.js`
+
+Resultado:
+- `XR_Animator` en `200`.
+- Preflight Fase 3 en OK.
+- `redux/jThree` baja aprox. de ~7.5M a ~7.4M.
+
+Riesgo/compatibilidad:
+- Posible impacto solo en configuraciones legacy que invoquen explícitamente esos plugins.
+
+Rollback rápido:
+- Re-copiar los 5 archivos desde `jThree/` original a sus mismos paths dentro de `redux/jThree/`.
+
+## Block AA — imágenes opcionales no referenciadas (2026-02-20)
+
+Objetivo: recortar dos imágenes top-level no referenciadas por código en redux.
+
+Eliminado:
+- `redux/images/sign_construction.png`
+- `redux/images/watershader_water.jpg`
+
+Resultado:
+- `XR_Animator` en `200`.
+- Preflight Fase 3 en OK.
+- Reducción pequeña (sin cambio visible por redondeo en `du`).
+
+Riesgo/compatibilidad:
+- Solo podría afectar presets/efectos legacy que pidan esos assets por nombre exacto.
+
+Rollback rápido:
+- Re-copiar ambos archivos desde `images/` original a `redux/images/`.
+
+## Block AB — motions `.vmd` sueltos no referenciados (2026-02-20)
+
+Objetivo: recortar motions individuales no referenciados por nombre en el código redux.
+
+Eliminado:
+- `redux/MMD.js/motion/hit/w01_すべって尻もち.vmd`
+- `redux/MMD.js/motion/hit/r01_普通に転ぶ.vmd`
+- `redux/MMD.js/motion/hit/h01_何かにぶつかる小.vmd`
+- `redux/MMD.js/motion/walk_n_run/run_H16_f0-40.vmd`
+- `redux/MMD.js/motion/walk_n_run/run_H26_f20-60.vmd`
+- `redux/MMD.js/motion/walk_n_run/front flip.vmd`
+- `redux/MMD.js/motion/kidnap.vmd`
+- `redux/MMD.js/motion/PO_chest00.vmd`
+- `redux/MMD.js/motion/PO_chest.vmd`
+
+Resultado:
+- ~215KB menos.
+- `XR_Animator` en `200`.
+- Preflight Fase 3 en OK.
+
+Riesgo/compatibilidad:
+- Posible impacto en configuraciones legacy que usen esos nombres exactos.
+
+Rollback rápido:
+- Re-copiar esos 9 archivos desde `MMD.js/motion/` original a los mismos paths en `redux/MMD.js/motion/`.
+
+## Block AC — motions `_number_meter_*` no referenciados (2026-02-20)
+
+Objetivo: recorte incremental de motions standalone no referenciados por nombre en redux.
+
+Eliminado:
+- `redux/MMD.js/motion/_number_meter_1.vmd`
+- `redux/MMD.js/motion/_number_meter_2.vmd`
+- `redux/MMD.js/motion/_number_meter_3.vmd`
+- `redux/MMD.js/motion/_number_meter_4.vmd`
+- `redux/MMD.js/motion/_number_meter_5.vmd`
+
+Resultado:
+- ~105KB menos.
+- `XR_Animator` en `200`.
+- Preflight Fase 3 en OK.
+
+Riesgo/compatibilidad:
+- Posible impacto en presets legacy que usen esos nombres exactos.
+
+Rollback rápido:
+- Re-copiar esos 5 archivos desde `MMD.js/motion/` original a `redux/MMD.js/motion/`.
+
+## Block AD — motions casual/walk no referenciados (2026-02-20)
+
+Objetivo: recorte incremental de motions sueltos no referenciados por nombre en redux.
+
+Eliminado:
+- `redux/MMD.js/motion/casual/女の子座り→立ち上がる_gumi_v01.vmd`
+- `redux/MMD.js/motion/casual/へなへなと座り込む_gumi.vmd`
+- `redux/MMD.js/motion/walk_n_run/walk_A04_f0-40_s13.44.vmd`
+- `redux/MMD.js/motion/casual/OTL→立ち上がり.vmd`
+
+Resultado:
+- ~67KB menos.
+- `XR_Animator` en `200`.
+- Preflight Fase 3 en OK.
+
+Riesgo/compatibilidad:
+- Posible impacto en presets legacy que usen esos nombres exactos.
+
+Rollback rápido:
+- Re-copiar esos 4 archivos desde `MMD.js/motion/` original a sus mismos paths en `redux/MMD.js/motion/`.
+
+## Block AE — texturas ST no referenciadas (2026-02-20)
+
+Objetivo: recortar texturas top-level no referenciadas por nombre en redux.
+
+Eliminado:
+- `redux/images/ST_tex09.jpg`
+- `redux/images/ST_tex08.jpg`
+- `redux/images/ST_tex03.jpg`
+
+Resultado:
+- ~402KB menos.
+- `XR_Animator` en `200`.
+- Preflight Fase 3 en OK.
+- `redux/images` baja aprox. de ~4.4M a ~4.0M.
+
+Riesgo/compatibilidad:
+- Posible impacto en presets legacy que usen esos nombres exactos.
+
+Rollback rápido:
+- Re-copiar estos 3 archivos desde `images/` original a `redux/images/`.
+
+## Block AF — plugins de efectos jThree no referenciados (2026-02-20)
+
+Objetivo: recortar efectos visuales legacy no referenciados por nombre en redux.
+
+Eliminado:
+- `redux/jThree/plugin/three_RemnantX.js`
+- `redux/jThree/plugin/three_CheapCloudFlythrough.js`
+- `redux/jThree/plugin/three_Cubescape.js`
+- `redux/jThree/plugin/three_TransparentCubeField.js`
+- `redux/jThree/plugin/three_IntoTheVoid.js`
+
+Resultado:
+- `XR_Animator` en `200`.
+- Preflight Fase 3 en OK.
+- `redux` baja de ~55M a ~54M.
+- `redux/jThree` baja aprox. de ~7.4M a ~7.3M.
+
+Riesgo/compatibilidad:
+- Posible impacto en presets/escenas legacy que usen esos efectos explícitamente.
+
+Rollback rápido:
+- Re-copiar los 5 archivos desde `jThree/plugin/` original a `redux/jThree/plugin/`.
+
+## Block AG — plugins jThree FX adicionales no referenciados (2026-02-20)
+
+Objetivo: mantener poda conservadora removiendo efectos legacy sin referencias por nombre en redux.
+
+Eliminado:
+- `redux/jThree/plugin/three_FractalCondos.js`
+- `redux/jThree/plugin/three_CombustibleVoronoi.js`
+- `redux/jThree/plugin/three_EmbellishedAV.js`
+- `redux/jThree/plugin/three_FunkyDiscoBall.js`
+- `redux/jThree/plugin/three_Ribbons.js`
+
+Resultado:
+- `XR_Animator` en `200`.
+- Preflight Fase 3 en OK.
+- Reducción pequeña (sin cambio visible por redondeo de `du` en `redux`).
+
+Riesgo/compatibilidad:
+- Posible impacto en presets/escenas legacy que usen esos efectos explícitamente.
+
+Rollback rápido:
+- Re-copiar estos 5 archivos desde `jThree/plugin/` original a `redux/jThree/plugin/`.
+
+## Observabilidad de test (2026-02-20)
+
+Objetivo: confirmar visualmente en consola que el VRM cargó sin depender de inspección manual indirecta.
+
+Cambios:
+- `redux/MMD.js/MMD_SA.js`
+	- Auto-click de `LMMD_StartButton` en runtime redux para iniciar carga automáticamente al abrir la página.
+- `redux/js/mmd/threex-vrm.js`
+	- Log explícito de carga completada:
+		- `console.log('[XRA][VRM_LOADED]', { index, url, isVRM1, metaVersion })`
+
+Resultado:
+- Facilita validar si “cargó el VRM” durante testing de poda.
+- Mantiene `XR_Animator` y preflight en OK.
+
+## Block AH — motions `.vmd` pequeños no referenciados (2026-02-20)
+
+Objetivo: recortar motions sueltos no referenciados por nombre en redux.
+
+Eliminado:
+- `redux/MMD.js/motion/cover_chest_v02a.vmd`
+- `redux/MMD.js/motion/cover_chest_v02.vmd`
+- `redux/MMD.js/motion/cover_chest_v01.vmd`
+- `redux/MMD.js/motion/penguin_stand.vmd`
+
+Resultado:
+- ~34KB menos.
+- `XR_Animator` en `200`.
+- Preflight Fase 3 en OK.
+
+Riesgo/compatibilidad:
+- Posible impacto en presets legacy que usen esos nombres exactos.
+
+Rollback rápido:
+- Re-copiar esos 4 archivos desde `MMD.js/motion/` original a `redux/MMD.js/motion/`.
+
+## Validación automática VRM (2026-02-20)
+
+Objetivo: correr en cada bloque una prueba automática que verifique carga real del modelo, no solo `200` HTTP.
+
+Cambios:
+- `redux/scripts/vrm_console_check.mjs`
+	- Abre `redux/XR_Animator.html` en headless Chrome (Playwright Core).
+	- Escucha consola y falla si no aparece `[XRA][VRM_LOADED]` dentro del timeout.
+- `redux/scripts/phase3_preflight.sh`
+	- Ejecuta VRM console-check por defecto (`RUN_VRM_CHECK=1`).
+- `package.json`
+	- Agrega `playwright-core` en `devDependencies`.
+
+Resultado:
+- El preflight pasa solo si hay `200` en endpoints críticos **y** aparece `[XRA][VRM_LOADED]`.
+
+## Block AI — imágenes top-level no referenciadas (2026-02-20)
+
+Objetivo: recorte mínimo y conservador sobre assets chicos sin referencias textuales en `redux`.
+
+Eliminado:
+- `redux/images/cc4-by-nc-sa-80x15.png`
+- `redux/images/cc4-by-nc-sa-88x31.png`
+- `redux/images/icon_film_64x64.png`
+- `redux/images/icon_link_64x64.png`
+
+Resultado:
+- `9,646` bytes menos.
+- `XR_Animator` en `200`.
+- Preflight + VRM console-check en OK (`[XRA][VRM_LOADED]` detectado).
+
+Riesgo/compatibilidad:
+- Bajo; no se encontraron referencias textuales en runtime redux.
+
+Rollback rápido:
+- Re-copiar estos 4 archivos desde `images/` original a `redux/images/`.
+
+## Block AJ — imágenes grandes no referenciadas (2026-02-20)
+
+Objetivo: recortar imágenes de mayor tamaño sin referencias textuales en runtime redux.
+
+Eliminado:
+- `redux/images/ST_tex05.jpg`
+- `redux/images/kiss_mark_red.png`
+- `redux/images/ST_cube02_0.jpg`
+- `redux/images/icon_miku_64x64.png`
+- `redux/images/_bg_dummy/EQF_bars_bg0_o50.png`
+- `redux/images/_bg_dummy/EQF_bars_blue_bg0.png`
+
+Resultado:
+- `267,161` bytes menos.
+- `XR_Animator` en `200`.
+- Preflight + VRM console-check en OK (`[XRA][VRM_LOADED]` detectado).
+- Re-scan posterior del criterio heurístico: `0` imágenes candidatas restantes.
+
+Riesgo/compatibilidad:
+- Bajo; no se detectaron referencias textuales en runtime redux para esos nombres.
+
+Rollback rápido:
+- Re-copiar estos 6 archivos desde `images/` original a `redux/images/`.
+
+## Block AK — imágenes grandes no solicitadas en runtime XR (2026-02-20)
+
+Objetivo: poda guiada por requests reales de arranque de `XR_Animator` (no solo por `grep`).
+
+Método:
+- Script de auditoría agregado: `redux/scripts/xra_image_requests.mjs`.
+- Resultado de auditoría en arranque: solo se solicitaron 5 imágenes top-level (`SB_*` y `kiss_mark_red_o66.png`).
+
+Eliminado:
+- `redux/images/ST_tex01.jpg`
+- `redux/images/ST_tex02.jpg`
+- `redux/images/ST_tex11.png`
+- `redux/images/ST_tex12.png`
+- `redux/images/ST_tex16.png`
+- `redux/images/ST_tex19.png`
+- `redux/images/bg_abstract_1024x1024.jpg`
+- `redux/images/watershader_cloud.png`
+
+Resultado:
+- `881,408` bytes menos.
+- `XR_Animator` en `200`.
+- Preflight + VRM console-check en OK (`[XRA][VRM_LOADED]` detectado).
+- Snapshot: `redux 53M`, `redux/images 2.8M`.
+- No quedan imágenes grandes sueltas fuera de ZIP en `redux/images`.
+
+Riesgo/compatibilidad:
+- Medio-bajo: no solicitadas en el flujo de arranque XR validado, pero potencialmente usadas por presets legacy alternativos.
+
+Rollback rápido:
+- Re-copiar estos 8 archivos desde `images/` original a `redux/images/`.
+
+## Block AL — motions sueltos no referenciados remanentes (2026-02-20)
+
+Objetivo: cerrar la poda conservadora de motions sueltos con cero referencias textuales.
+
+Eliminado:
+- `redux/MMD.js/motion/_0s.vmd`
+- `redux/MMD.js/motion/penguin_dance.vmd`
+- `redux/MMD.js/motion/_0m.vmd`
+
+Resultado:
+- `7,751` bytes menos.
+- `XR_Animator` en `200`.
+- Preflight + VRM console-check en OK (`[XRA][VRM_LOADED]` detectado).
+
+Estado conservador actual:
+- Sin candidatos grandes restantes con criterio estricto de seguridad (sin referencia textual + no solicitado en arranque XR).
+- El peso restante está principalmente en assets/engines críticos del runtime.
+
+Rollback rápido:
+- Re-copiar estos 3 archivos desde `MMD.js/motion/` original a `redux/MMD.js/motion/`.
+
+## Block AM — ZIPs dungeon/SFX agresivos (2026-02-20)
+
+Objetivo: quitar funcionalidades consideradas no prioritarias (dungeon/SFX) aunque el runtime las solicite.
+
+Eliminado:
+- `redux/images/_dungeon/item_icon.zip`
+- `redux/sound/SFX_pack01.zip`
+
+Resultado:
+- `195,227` bytes menos.
+- `XR_Animator` en `200`.
+- Preflight + VRM console-check en OK (`[XRA][VRM_LOADED]` detectado).
+- Se registran `404/XMLHttpRequestZIP ERROR` esperables para esos recursos.
+
+Riesgo/compatibilidad:
+- Medio: funcionalidades dungeon/SFX quedan degradadas o inoperativas.
+
+Rollback rápido:
+- Re-copiar ambos ZIP desde `images/_dungeon/` y `sound/` originales a `redux/`.
+
+## Block AN — ZIPs effects/gameplay agresivos (2026-02-20)
+
+Objetivo: eliminar recursos de efectos/gameplay secundarios para mayor reducción.
+
+Eliminado:
+- `redux/images/sprite_sheet.zip`
+- `redux/MMD.js/motion/motion_rpg_pack01.zip`
+- `redux/images/XR Animator/assets/motion_misc.zip`
+
+Resultado:
+- `1,059,120` bytes menos.
+- `XR_Animator` en `200`.
+- Preflight + VRM console-check en OK (`[XRA][VRM_LOADED]` detectado).
+- Snapshot: `redux 52M`, `redux/images 2.1M`, `redux/MMD.js 2.8M`, `redux/jThree 7.3M`.
+- Se registran `404/XMLHttpRequestZIP ERROR` esperables para esos recursos.
+
+Riesgo/compatibilidad:
+- Medio-alto: recorte sobre recursos solicitados en runtime (aceptado por objetivo de poda agresiva).
+
+Rollback rápido:
+- Re-copiar estos 3 ZIP desde árbol original a sus paths en `redux/`.
+
+## Rollback AM/AN — regresión reportada (2026-02-20)
+
+Síntoma reportado:
+- Múltiples `404` y `XMLHttpRequestZIP ERROR` en carga de:
+	- `images/_dungeon/item_icon.zip`
+	- `sound/SFX_pack01.zip`
+	- `images/sprite_sheet.zip`
+	- `images/XR Animator/assets/motion_misc.zip`
+	- `MMD.js/motion/motion_rpg_pack01.zip`
+
+Acción correctiva:
+- Restauración de los 5 ZIPs desde `git` (HEAD) en `redux/`.
+
+Verificación:
+- `bash redux/scripts/phase3_preflight.sh` en OK.
+- `[XRA][VRM_LOADED]` detectado.
+- Los ZIPs restaurados vuelven a cargar (sin `404` para esos recursos).
+
+Estado:
+- Se revierte el bloque agresivo AM/AN para volver a baseline funcional.

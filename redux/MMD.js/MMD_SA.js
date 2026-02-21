@@ -506,6 +506,14 @@ const sb_func = async function () {
     if (returnBoolean("AutoItStayOnDesktop")) {
       sb.click();
     }
+
+    if (!returnBoolean("AutoItStayOnDesktop")) {
+      System._browser.on_animation_update.add(()=>{
+        if (document.body.contains(sb)) {
+          sb.click();
+        }
+      }, 1,0);
+    }
 };
 
 if (!MMD_SA_options.Dungeon)
