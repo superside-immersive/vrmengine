@@ -1105,11 +1105,7 @@ MMD_SA.Gamepad = MMD_SA_createGamepad();
 MMD_SA.Wallpaper3D = MMD_SA_createWallpaper3D();
 
 // Custom actions — loaded from js/mmd/custom-actions.js
-// (must be assigned before initDefaults, which triggers custom_default → dungeon.js cover_undies)
 Object.assign(MMD_SA, MMD_SA_createCustomActions());
-
-// Defaults — loaded from js/mmd/defaults.js
-MMD_SA_initDefaults();
 
 // WebGL2 conversion — loaded from js/mmd/webgl2-convert.js
 Object.assign(MMD_SA, MMD_SA_createWebGL2Convert());
@@ -1131,6 +1127,11 @@ Object.assign(MMD_SA, MMD_SA_createMirrors());
 
 // Shadowmap, VMD Spectrum, MME init — loaded from js/mmd/shadowmap-spectrum.js
 Object.assign(MMD_SA, MMD_SA_createShadowmapSpectrum());
+
+// Defaults — loaded from js/mmd/defaults.js
+// (must run AFTER all Object.assign calls — in pre-R3 code all properties
+//  were inline in the MMD_SA literal, so they existed before initDefaults)
+MMD_SA_initDefaults();
 
 // Matrix rain
 if (returnBoolean("UseMatrixRain") || use_MatrixRain) {
