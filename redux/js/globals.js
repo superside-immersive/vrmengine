@@ -314,4 +314,12 @@ SA.syncToGlobals = function () {
   self.use_SA_browser_mode = SA.ui.use_SA_browser_mode;
 };
 
+// --- Media control globals ---
+// Originally declared implicitly in html5.js / EQP_core.js (now quarantined).
+// Referenced by MMD_SA.js, motion-control.js, webxr.js, resize.js, and
+// SA_system_emulation.min.js.  Declaring them here prevents
+// "ReferenceError: SL_MC_video_obj is not defined" spam.
+if (typeof SL_MC_video_obj === 'undefined')  self.SL_MC_video_obj  = null;
+if (typeof SL_MC_simple_mode === 'undefined') self.SL_MC_simple_mode = false;
+
 console.log('[SA] Global state registry initialized');
