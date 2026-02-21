@@ -615,7 +615,7 @@ System._browser.virtual_numpad(e, 'keyup')
 
     if (use_inline_dialog) {
       menu_html +=
-  '<iframe id="Idialog" src="z_blank2.html" frameborder="0" style="position:absolute; z-index:999; visibility:hidden;"></iframe>\n'
+  '<iframe id="Idialog" src="z_blank.html" frameborder="0" style="position:absolute; z-index:999; visibility:hidden;"></iframe>\n'
     }
   }
 

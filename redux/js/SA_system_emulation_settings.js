@@ -66,7 +66,7 @@ function SA_Settings_OK() {
 
   if (use_inline_dialog) {
     self.returnValue = true
-    self.location.replace("z_blank2.html")
+    self.location.replace("z_blank.html")
   }
   else {
     self.returnValue = return_window.returnValue = true
