@@ -814,6 +814,11 @@ _THREE.MMD.getModels().forEach((model,i)=>{
 // Model_obj, MMD_dummy_obj, MMD (PMX loader) — loaded from js/mmd/threex-model.js
 // (factory call after TX is defined below)
 
+// three-vrm 1.0
+  const use_VRM1 = !MMD_SA_options.THREEX_options || (MMD_SA_options.THREEX_options.use_VRM1 !== false);
+
+  var GLTF_loader;
+
 // Shared state object for extracted THREEX sub-modules.
 // Uses getter/setter pairs so sub-modules read/write the same closure vars.
   const TX = {};
@@ -971,7 +976,7 @@ if (!MMD_SA_options.MMD_disabled) {
   }
 
   if (!MMD_SA_options.THREEX_options.model_path) {
-    MMD_SA_options.THREEX_options.model_path = System.Gadget.path + '/three.js/model/AliciaSolid.zip#/AliciaSolid.vrm'
+    MMD_SA_options.THREEX_options.model_path = System.Gadget.path + '/jThree/model/AliciaSolid.zip#/AliciaSolid.vrm'
     MMD_SA_options.THREEX_options.model_para['AliciaSolid.vrm'] = Object.assign(MMD_SA_options.THREEX_options.model_para['AliciaSolid.vrm']||{}, {
       icon_path: 'icon_v01.jpg'
     });
@@ -1099,6 +1104,10 @@ MMD_SA.Gamepad = MMD_SA_createGamepad();
 // Wallpaper3D — loaded from js/mmd/wallpaper3d.js
 MMD_SA.Wallpaper3D = MMD_SA_createWallpaper3D();
 
+// Custom actions — loaded from js/mmd/custom-actions.js
+// (must be assigned before initDefaults, which triggers custom_default → dungeon.js cover_undies)
+Object.assign(MMD_SA, MMD_SA_createCustomActions());
+
 // Defaults — loaded from js/mmd/defaults.js
 MMD_SA_initDefaults();
 
@@ -1107,9 +1116,6 @@ Object.assign(MMD_SA, MMD_SA_createWebGL2Convert());
 
 // Bone utils — loaded from js/mmd/bone-utils.js
 Object.assign(MMD_SA, MMD_SA_createBoneUtils());
-
-// Custom actions — loaded from js/mmd/custom-actions.js
-Object.assign(MMD_SA, MMD_SA_createCustomActions());
 
 // Motion control — loaded from js/mmd/motion-control.js
 Object.assign(MMD_SA, MMD_SA_createMotionControl());
