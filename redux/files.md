@@ -7,7 +7,7 @@ Top 10 — Más grandes
 2	three.js/libs/mmdparser.module.js	11,531	Parser de formatos MMD (PMD/PMX/VMD)
 3	js/dungeon.js	8,143	Sistema de juego dungeon
 4	js/mp3.js	7,754	Decoder MP3 (Aurora.js)
-5	MMD.js/MMD_SA.js	2,500	Lógica principal del motor 3D MMD (era 5,412 → 3,279 → 2,500 — refactorizado R1+R2)
+5	MMD.js/MMD_SA.js	1,139	Lógica principal del motor 3D MMD (era 5,412 → 3,279 → 2,500 → 1,139 — refactorizado R1+R2+R3)
 6	three.js/loaders/GLTFLoader.js	4,723	Loader GLTF/GLB
 7	js/aac.js	4,655	Decoder AAC (Aurora.js)
 8	three.js/loaders/FBXLoader.js	4,315	Loader FBX
@@ -118,3 +118,58 @@ audio.js, bone-utils.js, camera-shake.js, custom-actions.js, defaults.js, gamepa
 ### Total de módulos en js/mmd/: 26
 
 audio.js, bone-utils.js, camera-mod.js, camera-shake.js, custom-actions.js, defaults.js, gamepad.js, mirrors.js, mme-render.js, mme-shaders.js, motion-control.js, osc.js, ripple.js, sfx.js, speech-bubble.js, sprite.js, threex-gui.js, threex-motion.js, threex-ppe.js, threex-utils.js, threex-vrm.js, tray-menu.js, vfx.js, wallpaper3d.js, webgl2-convert.js, webxr.js
+
+---
+
+## Refactorización de MMD_SA.js — Ronda 3 (completada)
+
+### Módulos extraídos (5)
+
+| # | Módulo | Líneas | Patrón | Contenido |
+|---|--------|--------|--------|-----------|
+| 1 | camera-view.js | 137 | setup (defineProperty) | camera_auto_adjust_scale/fov, center_view, center_view_lookAt |
+| 2 | shadowmap-spectrum.js | 171 | factory (Object.assign) | toggle_shadowMap, VMDSpectrum_*, light_list, MME_init |
+| 3 | threex-model.js | 561 | factory TX (IIFE) | Model_obj, Animation, MMD_dummy_obj, find_bone, MMD (PMX loader) |
+| 4 | threex-scene.js | 262 | factory TX (Object.assign) | mesh_obj system, GOML head/scene list processing, x_object loading |
+| 5 | threex-render-system.js | 304 | factory TX (Object.assign) | renderer (WebGL, devicePixelRatio, render pipeline), camera (clone/update/resize), light (DirectionalLight, AmbientLight, shadow) |
+
+**Resultado R3:** 2,500 → 1,139 líneas (−1,361, −54%)
+**Resultado acumulado R1+R2+R3:** 5,412 → 1,139 líneas (−4,273, −79%)
+
+### Total de módulos en js/mmd/: 31
+
+audio.js, bone-utils.js, camera-mod.js, camera-shake.js, camera-view.js, custom-actions.js, defaults.js, gamepad.js, mirrors.js, mme-render.js, mme-shaders.js, motion-control.js, osc.js, ripple.js, sfx.js, shadowmap-spectrum.js, speech-bubble.js, sprite.js, threex-gui.js, threex-model.js, threex-motion.js, threex-ppe.js, threex-render-system.js, threex-scene.js, threex-utils.js, threex-vrm.js, tray-menu.js, vfx.js, wallpaper3d.js, webgl2-convert.js, webxr.js
+
+---
+
+## MMD_SA.js — Mapa estructural actual (1,139 líneas)
+
+### Fuera de THREEX IIFE (~650 líneas)
+
+| Rango | Líneas | Sección | Notas |
+|-------|--------|---------|-------|
+| 1-7 | 7 | Header, vars globales | — |
+| 8-37 | 30 | MMD_SA object literal (core props) | Esqueleto mínimo |
+| 38-267 | 230 | `MMD_SA.init()` body | Canvas setup, startup screen, media control, audio, camera-view setup call |
+| 268-442 | 175 | Propiedades: music_mode, delegation, playbackRate, morphTargets | — |
+| 443-530 | 88 | `tray_menu_func`, `ripple_process`, `WebXR` refs | Sólo llamadas a factory |
+| 531-648 | 118 | `load_texture`, `BVHLoader`, `VMD_FileWriter`, `Camera_MOD`, `get_bounding_host`, `mouse_to_ray`, `init_my_model`, Audio3D, Sprite, CameraShake | Wiring/helpers |
+| 649-1090 | 441 | THREEX IIFE completa | Ver detalle abajo |
+| 1091-1140 | 49 | Wiring (Object.assign × 9, matrix rain, WebGL 2D) | — |
+
+### Dentro de THREEX IIFE (441 líneas)
+
+| Rango | Líneas | Sección | Notas |
+|-------|--------|---------|-------|
+| 651-719 | 69 | `init()` — carga Three.js módulos, crea renderer | — |
+| 720-777 | 58 | `init_common` — inicialización común post-carga | — |
+| 778-813 | 36 | `init_on_MMDStarted` — setup por modelo al iniciar | — |
+| 814-816 | 3 | Comentario: Model_obj extraído | — |
+| 817-858 | 42 | TX shared state object (getter/setter pairs) | Proxy a closure vars |
+| 859-870 | 12 | Factory calls (Model_obj, VRM) + TX assignments | — |
+| 871-895 | 25 | `var` declarations (models, mesh_obj_by_id, SLX, etc.) | Hoisted |
+| 896-997 | 102 | `threeX` object start (props, getters, init, PPE) | — |
+| 998-999 | 2 | Comentarios: mesh_obj + renderer/camera/light extraídos | — |
+| 1000-1070 | 71 | VRM, GLTF_loader, utils.press_key | — |
+| 1071-1087 | 17 | Object.assign merges (GUI, Scene, RenderSystem, Utils, Motion) | — |
+| 1088-1090 | 3 | `return threeX; })();` | — |
