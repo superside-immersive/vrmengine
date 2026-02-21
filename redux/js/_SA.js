@@ -636,6 +636,16 @@ function loadFolder_CORE() {
     SA.loader.loadScriptSync('js/mmd/threex-motion.js')
     SA.loader.loadScriptSync('js/mmd/threex-utils.js')
     SA.loader.loadScriptSync('js/mmd/threex-gui.js')
+    SA.loader.loadScriptSync('js/mmd/webgl2-convert.js')
+    SA.loader.loadScriptSync('js/mmd/ripple.js')
+    SA.loader.loadScriptSync('js/mmd/bone-utils.js')
+    SA.loader.loadScriptSync('js/mmd/tray-menu.js')
+    SA.loader.loadScriptSync('js/mmd/custom-actions.js')
+    SA.loader.loadScriptSync('js/mmd/motion-control.js')
+    SA.loader.loadScriptSync('js/mmd/mme-shaders.js')
+    SA.loader.loadScriptSync('js/mmd/mme-render.js')
+    SA.loader.loadScriptSync('js/mmd/mirrors.js')
+    SA.loader.loadScriptSync('js/mmd/camera-mod.js')
   }
 
   if (gallery_js)
