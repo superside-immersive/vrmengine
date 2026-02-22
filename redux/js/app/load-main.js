@@ -2,11 +2,11 @@
 
 function loadMain() {
   Settings.EventToMonitor = System.Gadget.Settings.readString("EventToMonitor")
-  if (!Settings.EventToMonitor)
+  if (!Settings.EventToMonitor || /^SOUND/.test(Settings.EventToMonitor))
     Settings.EventToMonitor = Settings_default.EventToMonitor
 
   Settings.EventToMonitorVF = System.Gadget.Settings.readString("EventToMonitorVF")
-  if (!Settings.EventToMonitorVF)
+  if (!Settings.EventToMonitorVF || /^SOUND/.test(Settings.EventToMonitorVF))
     Settings.EventToMonitorVF = Settings_default.EventToMonitorVF
 
   Settings.MonitorSensitivity = System.Gadget.Settings.readString("MonitorSensitivity")
@@ -98,31 +98,17 @@ function loadMain() {
   if (Settings.CSSTransform3DBillboard)
     parent.document.getElementById("Ichild_animation" + SA_child_animation_id)._rotate3d_billboard = [[0,0,0], [0,0,0]]
 
-  Settings.BDSpectrumToBeat = System.Gadget.Settings.readString("BDSpectrumToBeat")
-  if (!Settings.BDSpectrumToBeat)
-    Settings.BDSpectrumToBeat = Settings_default.BDSpectrumToBeat
-
-  if (returnBoolean("Use32BandSpectrum") && /SOUND/.test(Settings.EventToMonitor) && (Settings.UseAudioFFT || (is_SA_child_animation && webkit_mode))) { // [9E] xul_version always 0
-    Settings.Use32BandSpectrum = true
-    DEBUG_show("Use 32-band spectrum", 2)
-  }
+  Settings.BDSpectrumToBeat = Settings_default.BDSpectrumToBeat
+  Settings.Use32BandSpectrum = false
 
 //  Settings.BPMByWebAudioAPI = returnBoolean("BPMByWebAudioAPI")
   Settings.BPMByWebAudioAPI = (w3c_mode) && !returnBoolean("AutoItBPMByBASS")
 
-  Settings.EnableBeatDetection = returnBoolean("EnableBeatDetection")
-  Settings.BDScale = System.Gadget.Settings.readString("BDScale")
-  if (!Settings.BDScale)
-    Settings.BDScale = Settings_default.BDScale
-  Settings.BDDecay = System.Gadget.Settings.readString("BDDecay")
-  if (!Settings.BDDecay)
-    Settings.BDDecay =  Settings_default.BDDecay
-  Settings.BDOpacity = System.Gadget.Settings.readString("BDOpacity")
-  if (!Settings.BDOpacity)
-    Settings.BDOpacity =  Settings_default.BDOpacity
-  Settings.BDBassKick = System.Gadget.Settings.readString("BDBassKick")
-  if (!Settings.BDBassKick)
-    Settings.BDBassKick =  Settings_default.BDBassKick
+  Settings.EnableBeatDetection = false
+  Settings.BDScale = Settings_default.BDScale
+  Settings.BDDecay = Settings_default.BDDecay
+  Settings.BDOpacity = Settings_default.BDOpacity
+  Settings.BDBassKick = Settings_default.BDBassKick
 
   Settings.BDSpectrumToBeat = parseInt(Settings.BDSpectrumToBeat)
   Settings.BDScale    = parseInt(Settings.BDScale)

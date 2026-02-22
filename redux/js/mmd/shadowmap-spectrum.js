@@ -6,57 +6,11 @@ window.MMD_SA_createShadowmapSpectrum = function() {
   return {
 
   VMDSpectrum_EV_usage_PROCESS: function (obj, u, decay_factor) {
-u /= 100
-if (use_full_fps)
-  decay_factor *= ((RAF_animation_frame_unlimited)?1:2)/EV_sync_update.count_to_10fps_
-
-// decay control
-if (Settings.ReverseAnimation) {
-  if (u - decay_factor > obj.u_last)
-    u = obj.u_last + decay_factor
-}
-else {
-  if (u + decay_factor < obj.u_last)
-    u = obj.u_last - decay_factor
-}
-obj.u_last = u
-
-return u// * 100
+return 0
   }
 
  ,VMDSpectrum_process: function (model, model_para) {
-if (!model_para.VMDSpectrum_initialized) {
-  model_para.VMDSpectrum_initialized = true
-
-  if (!model_para.VMDSpectrum_band) {
-    model_para.VMDSpectrum_band = []
-    for (var m_name in model_para.morph_default) {
-      if (/^band(\d+)$/.test(m_name))
-        model_para.VMDSpectrum_band.push(parseInt(RegExp.$1))
-    }
-  }
-  model_para._VMDSpectrum_decay = []
-  model_para.VMDSpectrum_band.forEach(function (b) {
-    model_para._VMDSpectrum_decay.push({})
-  });
-}
-
-if (!MMD_SA.music_mode)
-  return
-
-model_para._custom_morph = []
-model_para.VMDSpectrum_band.forEach(function (i, idx) {
-  var v = 0
-  model_para.VMDSpectrum_band16_to_band[i-1].forEach(function (band) {
-    v += EV_usage_sub.sound_raw[band].usage_raw
-  });
-  var weight = MMD_SA.VMDSpectrum_EV_usage_PROCESS(model_para._VMDSpectrum_decay[idx], Math.min(v/model_para.VMDSpectrum_band16_to_band[i-1].length,100), 0.2)
-
-  var m_name = "band" + i
-  var _m_idx = model.pmx.morphs_index_by_name[m_name]
-  var _m = model.pmx.morphs[_m_idx]
-  model_para._custom_morph.push({ key:{ name:m_name, weight:weight, morph_type:_m.type, morph_index:_m_idx }, idx:model.morph.target_index_by_name[m_name] })
-});
+// [AUDIO REMOVED]
   }
 
 // shadowMap

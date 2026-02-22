@@ -1052,8 +1052,6 @@ try {
   let json = WebKit_object.monitor_winamp._json = JSON.parse(para)
 //  console.log(!!json.playing)
 } catch (err) { console.error(err, data_str, para) }
-
-  self.Audio_BPM && Audio_BPM._CheckWinamp()
 });
 
 p.stderr.on('data', (data) => {

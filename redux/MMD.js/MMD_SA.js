@@ -165,8 +165,7 @@ SL._mouse_event_main = function () {
     var cw = document.getElementById("Ichild_animation" + DragDrop.relay_id).contentWindow
     if (!cw.SL._mouse_event_main()) {
       if (SL_MC_video_obj) {
-// prevent stack overflow when some functions in audio_onended may run SL._mouse_event_main again
-        setTimeout(function () { Audio_BPM.vo.audio_onended() }, 0)
+// [AUDIO REMOVED]
       }
       return false
     }
@@ -179,7 +178,7 @@ SL._mouse_event_main = function () {
     if (!SL._media_player) {
 SL_MC_simple_mode = true
 
-var m = cw.SL_MC_video_obj||cw.WMP.player.audio_obj
+var m = cw.SL_MC_video_obj
 SL._media_player = {
   get muted()  {
     return m && m.muted
@@ -250,11 +249,18 @@ Lbody_host.onmouseout = m.onmouseout = function () {
 }
 // END
 
-// audio — loaded from js/mmd/audio.js
-var _audio_result = MMD_SA_initAudio();
-var sender = _audio_result.sender;
-var vo = _audio_result.vo;
-// audio END (delegate)
+// [AUDIO REMOVED] — stubs for sender and vo
+var sender = { playbackRate: 1 };
+var vo = {
+  BPM_mode: false,
+  motion_by_song_name_mode: false,
+  beat_reference: 0,
+  audio_obj: null,
+  playbackRate_scale: 1,
+  audio_onended: function() {},
+  _audio_BPM_detection_finished: function() {}
+};
+self.Audio_BPM = { audio_obj: null, vo: vo };
 
 /*
 c = this.canvas_webgl = document.createElement("canvas")
@@ -417,11 +423,11 @@ if (MMD_SA_options.MMD_disabled) {
     mode = w_obj.SL && w_obj.SL._mouse_event_main && w_obj.SL._mouse_event_main()
   }
   else {
-    mode = !!(SL._media_player && SL._media_player.currentTime) || (self.AudioFFT && AudioFFT.use_live_input)
+    mode = !!(SL._media_player && SL._media_player.currentTime)
   }
 }
 else {
-  mode = Audio_BPM.vo.BPM_mode || Audio_BPM.vo.motion_by_song_name_mode
+  mode = false
 }
 return mode
   }
@@ -634,8 +640,8 @@ MMD_SA.init_my_model = function (zip_path, path_local) {
 };
 
 
-// Audio3D — loaded from js/mmd/sfx.js
-MMD_SA.Audio3D = MMD_SA_createAudio3D();
+// [AUDIO REMOVED] — Audio3D stub
+MMD_SA.Audio3D = { audio_object_by_name: {} };
 
 
 

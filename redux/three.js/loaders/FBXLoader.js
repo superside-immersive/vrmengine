@@ -44,7 +44,7 @@ import {
 	ShapeUtils
 } from 'three';
 import * as fflate from '../libs/fflate.module.js';
-import { NURBSCurve } from '../curves/NURBSCurve.js';
+import { NURBSCurve } from '../libs/NURBSCurve.js';
 
 /**
  * Loader loads FBX file and generates Group representing FBX scene.

@@ -194,7 +194,7 @@ self.THREE.XLoader = TX._THREE.XLoader;
 
 if (MMD_SA_options.THREEX_options.use_OutlineEffect) {
 // Jun 10, 2023
-  const OutlineEffect_module = await import(System.Gadget.path + '/three.js/effects/OutlineEffect.js');
+  const OutlineEffect_module = await import(System.Gadget.path + '/three.js/postprocessing/OutlineEffect.js');
   Object.assign(self.THREE, OutlineEffect_module);
   console.log('OutlineEffect.js loaded')
 }
@@ -214,7 +214,7 @@ if (MMD_SA_options.THREEX_options.use_MMD) {
 const GLTFLoader_module = await import(System.Gadget.path + '/three.js/loaders/GLTFLoader.js');
 Object.assign(self.THREE, GLTFLoader_module);
 
-//const GLTFExporter_module = await import(System.Gadget.path + '/three.js/exporters/GLTFExporter.js');
+//const GLTFExporter_module = await import(System.Gadget.path + '/three.js/loaders/GLTFExporter.js');
 //Object.assign(self.THREE, GLTFExporter_module);
 
 // three-vrm 1.0

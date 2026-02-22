@@ -321,7 +321,7 @@ System.Gadget.Settings.writeString("ChildDragDisabled", ((bool)?"non_default":""
       break
 
     case "MEDIA_CONTROL":
-self["SL_MC_" + value]()
+  // [AUDIO REMOVED]
       break
 
     case "MMD":
@@ -397,10 +397,9 @@ console.log("IPC message:" + decodeURIComponent(type))
   if (use_SVG_Clock)
     document.write('<script language="JavaScript" src="js/svg_clock.js"></scr'+'ipt>')
 
-  Settings.UseAudioFFT = (webkit_mode && (returnBoolean("UseAudioFFT") || (self.MMD_SA_options && MMD_SA_options.use_CircularSpectrum)/* || returnBoolean("AutoItWinampMode")*/)) // [9E] xul_version always 0
-  Settings.UseAudioFFTLiveInput = Settings.UseAudioFFT && (returnBoolean("UseAudioFFTLiveInput") || returnBoolean("AutoItWinampMode"))
-  if (Settings.UseAudioFFT)
-    document.write('<script language="JavaScript" src="js/audio_fft.js"></scr'+'ipt>')
+  // [AUDIO REMOVED] AudioFFT disabled
+  Settings.UseAudioFFT = false
+  Settings.UseAudioFFTLiveInput = false
 
   Settings.CSSTransform3DBoxAnimate = parseInt(System.Gadget.Settings.readString("CSSTransform3DBoxAnimate"))
   if (!Settings.CSSTransform3DBoxAnimate)
@@ -468,11 +467,7 @@ var ipcRenderer = require('electron').ipcRenderer
 
 //ipcRenderer.removeAllListeners()
 
-ipcRenderer.on('audio_BPM_detection_finished', function (event, message) {
-  var data_all = JSON.parse(message)
-  var win = (data_all.window_id == -1) ? self : document.getElementById("Ichild_animation" + data_all.window_id).contentWindow
-  win.Audio_BPM.vo._audio_BPM_detection_finished(data_all.data)
-});
+// [AUDIO REMOVED] audio_BPM_detection_finished IPC handler removed
 
 ipcRenderer.on('DragDrop', function (event, path) {
   IPC.active_IPC.ipcRenderer_DragDrop(event, path)

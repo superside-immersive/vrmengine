@@ -316,7 +316,7 @@ return this.model_para_obj.MME || this._MME
   MMD_SA_options.model_para_obj.MME.PostProcessingEffects = MMD_SA_options.model_para_obj.MME.PostProcessingEffects || MMD_SA_options._MME.PostProcessingEffects
 
   try {
-    var _file = FSO_OBJ.OpenTextFile(System.Gadget.path + '\\TEMP\\MMD_MME_by_model.json', 1);
+    var _file = FSO_OBJ.OpenTextFile(System.Gadget.path + '\\MMD.js\\data\\MMD_MME_by_model.json', 1);
     var _json = _file.ReadAll()
     _file.Close()
     MMD_SA_options.MME_saved = JSON.parse(_json)
@@ -1362,8 +1362,8 @@ var js_prefix = "v2.1.2_"
 if (MMD_SA.use_jThree) {
 //MMD_SA_options.ammo_version="2.82"
   js = [
-  "jThree/script/jquery.min.js"
-/*//  "jThree/script/jquery-2.1.1.min.js"*/
+  "jThree/jquery.min.js"
+/*//  "jThree/jquery-2.1.1.min.js"*/
   ];
 
   if (MMD_SA_options.MMD_disabled) {}
@@ -1503,7 +1503,7 @@ Array.prototype.shuffle = function () {
     'imports': {
       'three': './three.js/' + MMD_SA.THREEX.three_filename,
       './libs/': './three.js/libs/',
-      './curves/': './three.js/curves/',
+      './curves/': './three.js/libs/',
       './math/': './three.js/',
       './postprocessing/': './three.js/postprocessing/',
       './shaders/': './three.js/shaders/',
@@ -1522,9 +1522,6 @@ JSON.stringify(import_map),
 
   document.write(html);
 
-  // media control
-  document.write('<script language="JavaScript" src="js/SA_media_control.js"></scr'+'ipt>');
-
-  document.write('<script language="JavaScript" src="js/audio_BPM.js"></scr'+'ipt>');
+  // [AUDIO REMOVED] media/audio controls removed
   document.write('<script type="text/goml"></scr'+'ipt>');
 };

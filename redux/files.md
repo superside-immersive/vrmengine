@@ -1,46 +1,109 @@
 Archivos con más de 1000 líneas en redux
-Se encontraron 33 archivos que superan las 1000 líneas. Todos son cargados (directa o dinámicamente) por XR_Animator.html.
+Se encontraron 37 archivos que superan las 1000 líneas. Todos son cargados (directa o dinámicamente) por XR_Animator.html.
+
+---
+
+## Poda XR_Animator (2026-02-21)
+
+### Estado
+- Poda incremental aplicada con validación automática (`redux/js/phase3_preflight.sh`) y rollback inmediato si falla.
+- Endpoint y runtime objetivo mantenidos: `XR_Animator.html` + detección `[XRA][VRM_LOADED]`.
+- Limpieza no funcional aplicada: eliminación de metadatos macOS `.DS_Store` en `redux/` (6 archivos), sin impacto runtime.
+- Limpieza no funcional aplicada: eliminación de `MMD.js/motion/walk_n_run/Readme.txt` y `rules.txt` (docs auxiliares), sin impacto runtime.
+- Limpieza no funcional aplicada: movidos a cuarentena `jThree/MMDplugin/fshader.c` y `jThree/MMDplugin/vshader.c` en `redux/_quarantine_assets/`.
+- Limpieza no funcional aplicada: movidos a cuarentena `MMD.js/motion/{landing,tsuna,model,talk}/readme.txt` en `redux/_quarantine_assets/`, sin impacto runtime.
+- Barrido adicional (docs/metadata/sources) sin nuevos candidatos activos de bajo riesgo en `redux/`.
+- Limpieza no funcional aplicada: movida a cuarentena la carpeta vacía `MMD.js/motion/sleep` en `redux/_quarantine_assets/`, sin impacto runtime.
+- Prueba agresiva controlada (1 archivo): movido a cuarentena `images/icon_document.png` (referencia sólo comentada), preflight OK sin impacto runtime.
+- Prueba agresiva controlada (1 archivo): movido a cuarentena `images/icon_folder.png` (referencia sólo comentada), preflight OK sin impacto runtime.
+- Prueba agresiva controlada (1 archivo): movido a cuarentena `images/icon_gallery.png` (referencia sólo comentada), preflight OK sin impacto runtime.
+- Prueba agresiva controlada (1 archivo): movido a cuarentena `images/icon_setting.png` (referencia sólo comentada), preflight OK sin impacto runtime.
+- Prueba agresiva controlada (1 archivo): movido a cuarentena `images/icon_closing.png` (referencia sólo comentada), preflight OK sin impacto runtime.
+- Batch agresivo controlado (2 archivos): movidos a cuarentena `images/_bg_dummy/EQF_bars_bg0.png` y `images/_bg_dummy/EQF_bars_bg0_o66.png` (referencias sólo en `EQP_gallery.js` ya cuarentenado), preflight OK sin impacto runtime.
+- Batch por funcionalidad (speech-bubble, 4 archivos): movidos a cuarentena `images/SB_irregular01.png`, `images/SB_kakukaku01.png`, `images/SB_mokumoku01.png`, `images/SB_mokumoku01a.png`; preflight OK sin impacto runtime.
+- Reversión de emergencia aplicada: restaurados `images/SB_irregular01.png`, `images/SB_kakukaku01.png`, `images/SB_mokumoku01.png`, `images/SB_mokumoku01a.png` desde cuarentena por 404 en runtime; preflight + `[XRA][VRM_LOADED]` OK.
+- Batch por funcionalidad (background/fallback, 3 archivos): movidos a cuarentena `images/bg.png`, `images/_bg_dummy/1x1.png`, `images/empty.gif`; preflight OK sin impacto runtime.
+- Limpieza no funcional aplicada: eliminado `images/_dungeon/.DS_Store` (metadata macOS), preflight OK sin impacto runtime.
+- Barrido de remanentes en `images/` completado: sin nuevos candidatos de bajo riesgo (activos restantes con referencias runtime; `_bg_dummy/` vacío se mantiene por compatibilidad de rutas históricas).
+
+### Archivos movidos a cuarentena (estables)
+- `js/settings_WE.js`
+- `js/pico.worker.js`
+- `js/facemesh_lib.js`
+- `js/EQP_core.js`
+- `js/EQP_gallery.js`
+- `js/dungeon-generator.js`
+- `js/mersenne-twister.js`
+- `js/terrain.js`
+- `js/EQP.js`
+- `js/html5.js`
+- `js/jszip.js`
+- `js/aac.js`
+- `js/mp3.js`
+- `js/aurora_web_audio.js`
+- `js/facemesh_triangulation.json`
+- `js/aurora.js`
+
+### Archivos restaurados por riesgo (mantener activos)
+- `js/beatdetektor.js`
+- `js/jsmediatags.js`
+- `js/dungeon.js`
+- `js/SA_gimage_emulation.js`
+- `js/path_demo.json`
+- `js/SA_webkit.js`
+- `js/SA_system_emulation_ext.js`
+
+### Archivos críticos detectados (NO mover)
+- `js/SA_system_emulation.min.js` (al faltar: `System is not defined`, falla bootstrap)
+- `js/_core.00.min.js` (al faltar: `imgCache_Object` / `DragDrop` no definidos)
+
+### Regla operativa
+- Si cualquier batch no logra `[XRA][VRM_LOADED]`, revertir de inmediato y marcar los archivos como críticos o de riesgo alto.
 
 Top 10 — Más grandes
 #	Archivo	Líneas	Propósito
-1	js/jszip.js	11,577	Librería JSZip (crear/leer zips)
-2	three.js/libs/mmdparser.module.js	11,531	Parser de formatos MMD (PMD/PMX/VMD)
-3	js/dungeon.js	8,143	Sistema de juego dungeon
-4	js/mp3.js	7,754	Decoder MP3 (Aurora.js)
-5	MMD.js/MMD_SA.js	1,139	Lógica principal del motor 3D MMD (era 5,412 → 3,279 → 2,500 → 1,139 — refactorizado R1+R2+R3)
-6	three.js/loaders/GLTFLoader.js	4,723	Loader GLTF/GLB
-7	js/aac.js	4,655	Decoder AAC (Aurora.js)
-8	three.js/loaders/FBXLoader.js	4,315	Loader FBX
-9	js/aurora.js	3,968	Framework de audio Aurora.js
-10	js/EQP_gallery.js	3,535	Sistema de galería/ecualizador
-Archivos 11-33
+1	js/jszip.js	11,576	Librería JSZip (crear/leer zips)
+2	three.js/libs/mmdparser.module.js	11,530	Parser de formatos MMD (PMD/PMX/VMD)
+3	js/dungeon.js	8,142	Sistema de juego dungeon
+4	js/mp3.js	7,753	Decoder MP3 (Aurora.js)
+5	three.js/loaders/GLTFLoader.js	4,722	Loader GLTF/GLB
+6	js/aac.js	4,654	Decoder AAC (Aurora.js)
+7	three.js/loaders/FBXLoader.js	4,314	Loader FBX
+8	js/aurora.js	3,967	Framework de audio Aurora.js
+9	js/EQP_gallery.js	3,534	Sistema de galería/ecualizador
+10	three.js/exporters/GLTFExporter.js	3,380	Exportador GLTF
+Archivos 11-37
 #	Archivo	Líneas	Propósito
-11	three.js/exporters/GLTFExporter.js	3,381	Exportador GLTF
-12	settings.html	2,829	Página de settings (UI)
-13	three.js/libs/fflate.module.js	2,673	Compresión/descompresión rápida
-14	three.js/loaders/EXRLoader.js	2,564	Loader de imágenes HDR EXR
-15	js/jsmediatags.js	2,535	Lector de metadata (ID3)
-16	three.js/loaders/MMDLoader.js	2,238	Loader de modelos MMD
-17	three.js/three-vrm-animation.module.js	2,030	Animación VRM
-18	three.js/Geometry.js	1,953	Geometry legacy de Three.js
-19	three.js/postprocessing/N8AO.js	1,740	Ambient Occlusion
-20	js/dungeon-generator.js	1,731	Generador procedural de dungeons
-21	js/mmd/defaults.js	1,531	Configs por defecto MMD
-22	js/mmd/wallpaper3d.js	1,509	Fondos 3D con profundidad
-23	jThree/index.js	1,462	Framework jThree (carga modelos/motion)
-24	js/mmd/threex-vrm.js	1,413	Carga VRM, mapeo de huesos
-25	js/SA_webkit.js	1,405	Integración WebKit/Electron
-26	three.js/animation/MMDPhysics.js	1,401	Física MMD (rigid bodies)
-27	js/mmd/threex-motion.js	1,348	Import/export de motion (BVH/VMD)
-28	js/html5.js	1,288	Canvas/media HTML5
-29	js/html5_webgl2d.js	1,249	Motor de render 2D con WebGL
-30	three.js/animation/MMDAnimationHelper.js	1,208	Helper de animación MMD (IK, física)
-31	js/mmd/threex-ppe.js	1,085	Post-procesamiento (DOF, Bloom)
-32	js/mmd/speech-bubble.js	1,075	Burbujas de diálogo
-33	js/dungeon/map.js	1,001	Renderizado del mapa dungeon
+11	settings.html	2,828	Página de settings (UI)
+12	three.js/libs/fflate.module.js	2,672	Compresión/descompresión rápida
+13	three.js/loaders/EXRLoader.js	2,563	Loader de imágenes HDR EXR
+14	js/jsmediatags.js	2,534	Lector de metadata (ID3)
+15	three.js/loaders/MMDLoader.js	2,237	Loader de modelos MMD
+16	three.js/three-vrm-animation.module.js	2,029	Animación VRM
+17	three.js/Geometry.js	1,952	Geometry legacy de Three.js
+18	three.js/postprocessing/N8AO.js	1,739	Ambient Occlusion
+19	js/dungeon-generator.js	1,730	Generador procedural de dungeons
+20	js/scene_auto_fit.js	1,622	Auto-fit de escena 3D (posición/escala adaptativa)
+21	js/mmd/defaults.js	1,530	Configs por defecto MMD
+22	js/mmd/wallpaper3d.js	1,508	Fondos 3D con profundidad
+23	jThree/index.js	1,461	Framework jThree (carga modelos/motion)
+24	js/mmd/threex-vrm.js	1,412	Carga VRM, mapeo de huesos
+25	js/SA_webkit.js	1,404	Integración WebKit/Electron
+26	js/dungeon/restart.js	1,404	Sistema de reinicio/restart del dungeon
+27	three.js/animation/MMDPhysics.js	1,400	Física MMD (rigid bodies)
+28	three.js/utils/BufferGeometryUtils.js	1,371	Utilidades de geometría (merge, compute tangents)
+29	js/mmd/threex-motion.js	1,347	Import/export de motion (BVH/VMD)
+30	js/html5.js	1,287	Canvas/media HTML5
+31	js/html5_webgl2d.js	1,248	Motor de render 2D con WebGL
+32	three.js/animation/MMDAnimationHelper.js	1,207	Helper de animación MMD (IK, física)
+33	jThree/MMDplugin/ammo_proxy.js	1,169	Proxy para librería de física Ammo.js
+34	MMD.js/MMD_SA.js	1,139	Lógica principal del motor 3D MMD (era 5,412 → 1,139 — refactorizado R1+R2+R3)
+35	js/mmd/threex-ppe.js	1,084	Post-procesamiento (DOF, Bloom)
+36	js/mmd/speech-bubble.js	1,074	Burbujas de diálogo
+37	js/dungeon/map.js	1,000	Renderizado del mapa dungeon
 Clasificación por tipo
-Librerías de terceros (no tocar): jszip, mmdparser, mp3, aac, aurora, fflate, jsmediatags, fingerpose, GLTFLoader, FBXLoader, EXRLoader, GLTFExporter, N8AO — ~14 archivos
-Código propio/modificado del proyecto: MMD_SA, EQP_gallery, settings.html, defaults, wallpaper3d, jThree/index, threex-vrm, SA_webkit, threex-motion, html5, html5_webgl2d, threex-ppe, speech-bubble, dungeon, dungeon-generator, dungeon/map, Geometry — ~17 archivos
+Librerías de terceros (no tocar): jszip, mmdparser, mp3, aac, aurora, fflate, jsmediatags, GLTFLoader, FBXLoader, EXRLoader, GLTFExporter, N8AO, BufferGeometryUtils — ~13 archivos
+Código propio/modificado del proyecto: MMD_SA, EQP_gallery, settings.html, defaults, wallpaper3d, jThree/index, threex-vrm, SA_webkit, threex-motion, html5, html5_webgl2d, threex-ppe, speech-bubble, dungeon, dungeon-generator, dungeon/map, dungeon/restart, scene_auto_fit, ammo_proxy, Geometry — ~20 archivos
 Three.js adaptados: MMDLoader, MMDPhysics, MMDAnimationHelper, three-vrm-animation — ~4 archivos
 Nota sobre archivos minificados
 Archivos como three.js/three.module.min.js, jThree/three.core.min.js, y js/SA_system_emulation.min.js son enormes en bytes pero tienen pocas líneas por estar minificados — no aparecen en el conteo pero representan código masivo.

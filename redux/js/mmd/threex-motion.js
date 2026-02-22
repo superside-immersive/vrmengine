@@ -1266,7 +1266,7 @@ System._browser.on_animation_update.add(async ()=>{
 if (TX.THREE.GLTFExporter) return;
 
 // April 27, 2024
-const GLTFExporter_module = await System._browser.load_script(System.Gadget.path + '/three.js/exporters/GLTFExporter.js', true);
+const GLTFExporter_module = await System._browser.load_script(System.Gadget.path + '/three.js/loaders/GLTFExporter.js', true);
 for (const name in GLTFExporter_module) TX.THREE[name] = GLTFExporter_module[name];
 
 exporter = new THREEX.GLTFExporter();

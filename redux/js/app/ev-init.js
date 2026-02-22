@@ -27,7 +27,7 @@ function parseEventToMonitor(str) {
     ev = 'HDD_ALL'
   }
   else if (/SOUND/.test(ev))
-    ev = 'SOUND'
+    ev = 'CPU'
 
   return ev
 }

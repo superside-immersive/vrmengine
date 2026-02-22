@@ -406,7 +406,7 @@ target_current = target;
       load_octree: async function () {
 await TX.threeX.utils.load_THREEX();
 
-const Octree_module = await System._browser.load_script(System.Gadget.path + '/three.js/math/Octree.js', true);
+const Octree_module = await System._browser.load_script(System.Gadget.path + '/three.js/libs/Octree.js', true);
 for (const name in Octree_module) TX.THREE[name] = Octree_module[name];
       },
 

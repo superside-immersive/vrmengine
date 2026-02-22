@@ -151,7 +151,7 @@ self.EV_b_height = h_max
         self.MMD_SA_options = { model_path: path }
       }
       else if (/_gimage\.\w+$/i.test(path)) {
-        if (use_HTML5 && (returnBoolean("UseMatrixRain") || Settings.UseAudioFFT)) {
+        if (use_HTML5 && (returnBoolean("UseMatrixRain") || false /* [AUDIO REMOVED] */)) {
 var dim = loadImageDim(path)
 var w = dim.w
 var h = dim.h
@@ -246,13 +246,10 @@ self.EV_b_height = h_max_org * image_ratio
 // [LEGACY REMOVED 1B] else { use_Silverlight = true } branch removed (ie9_mode always true)
   EQP_use_HTML5_video = true
   if (!gallery_js) {
-    self.EQP_video_options = { play_sound:true, loop_forever:true }
+    self.EQP_video_options = { play_sound:false, loop_forever:true } // [AUDIO REMOVED]
     self.EQP_bg_border = "2px solid black"
-    var ev = System.Gadget.Settings.readString("EventToMonitor")
-    if (!ev || !/SOUND/.test(Settings_default.EventToMonitor)) {
-      EQP_video_options.hide_EQ = true
-      Settings.Display = "0"
-    }
+    EQP_video_options.hide_EQ = true
+    Settings.Display = "0"
   }
         }
       }
@@ -620,9 +617,9 @@ function loadFolder_CORE() {
 
   // Load mmd/ dependencies before any path that loads MMD_SA.js
   if (gallery_js || self.MMD_SA_options) {
-    SA.loader.loadScriptSync('js/mmd/audio.js')
-    SA.loader.loadScriptSync('js/mmd/sfx.js')
+    // [AUDIO REMOVED] audio.js and sfx.js no longer loaded
     SA.loader.loadScriptSync('js/mmd/speech-bubble.js')
+    SA.loader.loadScriptSync('js/ui/panel-manager.js')
     SA.loader.loadScriptSync('js/mmd/vfx.js')
     SA.loader.loadScriptSync('js/mmd/webxr.js')
     SA.loader.loadScriptSync('js/mmd/osc.js')
@@ -659,5 +656,5 @@ function loadFolder_CORE() {
     SA.loader.loadScriptSync('MMD.js/MMD_SA.js')
   }
   else if (!EQP_gallery && returnBoolean("UseFilters"))
-    SA.loader.loadScriptSync('js_filters/animate.js')
+    SA.loader.loadScriptSync('js/animate_filters.js')
 })();

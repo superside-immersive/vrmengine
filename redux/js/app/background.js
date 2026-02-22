@@ -140,7 +140,7 @@ function OP_change_event() {
 // END
 
 
-var Canvas_BDDraw_disabled = !returnBoolean("EnableBeatDetection") || !returnBoolean("EnableMotionEffectForAnimatedPicture")
+var Canvas_BDDraw_disabled = true // [AUDIO REMOVED]
 
 function Canvas_BDDraw(canvas, beat) {
   var cw = canvas.width

@@ -8,7 +8,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 import * as THREE from "three";
-import { GLTFExporter } from "../exporters/GLTFExporter.js";
+import { GLTFExporter } from "../loaders/GLTFExporter.js";
 import { getRootBone } from "./getRootBone.js";
 import { mapSkeletonToVRM } from "./mapSkeletonToVRM.js";
 import { VRMAnimationExporterPlugin } from "./VRMAnimationExporterPlugin.js";

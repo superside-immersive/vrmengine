@@ -62,7 +62,7 @@ if (webkit_electron_mode&& MMD_SA_options.Dungeon_options) {
       path:'MMD.js\\motion\\motion_rpg_pack01.zip#\\misc\\this_is_power.vmd'
      ,para: { adjust_center_view_disabled:true, onended: function () { MMD_SA._no_fading=true; }
  ,onstart: function () {
-MMD_SA_options.Dungeon.sound.audio_object_by_name["gura_reflect_op"].play()//THREE.MMD.getModels()[0].mesh)
+// [AUDIO REMOVED]
   }
  ,onplaying: (function () {
     var power_SFX = {
@@ -222,11 +222,7 @@ MMD_SA._force_motion_shuffle = true
       }
     };
 
-    MMD_SA_options.Dungeon_options.sound.push({
-      url: 'D:\\My Files\\Videos\\TEMP\\wav\\REFLECT - OP_v01.wav'
-     ,name: "gura_reflect_op"
-     ,channel: "SFX"
-    });
+    // [AUDIO REMOVED]
   }
 }
 

@@ -561,18 +561,13 @@ var is_chrome = /chrome/i.test( navigator.userAgent );
 
     document.write(
   '<script type="text/javascript" language="javascript" src="js/SA_webkit.js"></scr'+'ipt>\n'
- ,'<script src="js/jsmediatags.js"></scr'+'ipt>\n'
     )
 
-Settings_default._custom_.EventToMonitor = "SOUND_ALL"
+// [AUDIO REMOVED] SOUND_ALL, UseAudioFFT, Use32BandSpectrum defaults removed
 Settings_default._custom_.WallpaperAsBG = "non_default"
-Settings_default._custom_.UseAudioFFT = "non_default"
 Settings_default._custom_.Use30FPS = "non_default"
-Settings_default._custom_.Use32BandSpectrum = "non_default"
-//Object.defineProperty(Settings_default._custom_, "UseAudioFFTLiveInput", { get: function () { return this.UseAudioFFT } });
 Settings_default._custom_.UpdateInterval = "1"
 Settings_default._custom_.Display = "-1"
-//Settings_default._custom_.UseAudioFFTLiveInput = "non_default"
 
     console.log("browser-native mode:ON")
 
@@ -630,40 +625,19 @@ else {
   '<script type="text/javascript" language="javascript" src="js/SA_webkit.js"></scr'+'ipt>\n'
     )
 
-Settings_default._custom_.EventToMonitor = "SOUND_ALL"
+// [AUDIO REMOVED] SOUND_ALL, UseAudioFFT, Use32BandSpectrum defaults removed
 Settings_default._custom_.WallpaperAsBG = "non_default"
-Settings_default._custom_.UseAudioFFT = "non_default"
 Settings_default._custom_.Use30FPS = "non_default"
-Settings_default._custom_.Use32BandSpectrum = "non_default"
-//Object.defineProperty(Settings_default._custom_, "UseAudioFFTLiveInput", { get: function () { return this.UseAudioFFT } });
 Settings_default._custom_.UpdateInterval = "1"
 Settings_default._custom_.Display = "-1"
-if (!browser_native_mode) {
-  Settings_default._custom_.UseAudioFFTLiveInput = "non_default"
-}
 
     if (browser_native_mode) {
-      document.write(
-  '<script src="js/jsmediatags.js"></scr'+'ipt>\n'
-      )
+      // [AUDIO REMOVED] jsmediatags no longer loaded
       console.log("browser-native mode:ON")
       return
     }
 
-    if (parent.Aurora) {
-      self.Aurora = parent.Aurora
-//      self.jsmediatags = parent.jsmediatags
-    }
-    else {
-      document.write(
-  '<script src="js/aurora.js"></scr'+'ipt>\n'
-+ '<script src="js/mp3.js"></scr'+'ipt>\n'
-+ '<script src="js/aac.js"></scr'+'ipt>\n'
-+ '<script src="js/aurora_web_audio.js"></scr'+'ipt>\n'
-+ '<script src="js/jsmediatags.js"></scr'+'ipt>\n'
-//+ '<script src="js/id3.js"></scr'+'ipt>\n'
-      )
-    }
+    // [AUDIO REMOVED] Aurora, mp3, aac, aurora_web_audio, jsmediatags no longer loaded
 
 /*
     window.TextEncoder = window.TextDecoder = null

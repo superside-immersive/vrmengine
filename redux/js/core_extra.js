@@ -36,7 +36,7 @@ var ie9_native = /Trident.[5-9]/i.test(navigator.userAgent) // [9D] false in all
 document.write('<script type="text/javascript" language="javascript" src="js/SA_system_emulation_ext.js"></scr'+'ipt>\n')
 if (!self.System) {
   use_SA_system_emulation = true
-  document.write('<script type="text/javascript" language="javascript" src="' + ((localhost_mode || (webkit_electron_mode && /AT_SystemAnimator_v0001\.gadget/.test(toLocalPath(self.location.href).replace(/[\/\\][^\/\\]+$/, "")))) ? "_private/js/SA_system_emulation.js" : "js/SA_system_emulation.min.js") + '"></scr'+'ipt>\n')
+  document.write('<script type="text/javascript" language="javascript" src="js/SA_system_emulation.min.js"></scr'+'ipt>\n')
 }
 if (WallpaperEngine_CEF_mode && !browser_native_mode) {
   document.write('<script src="js/settings_WE.js"></scr'+'ipt>\n')
@@ -496,17 +496,11 @@ function SA_load_body() {
 + '</div>\n'
 
 + '<div id="Lmenu_host" style="position:absolute; top:0px; left:0px;">\n'
++ '<link rel="stylesheet" href="css/panels.css" />'+'\n'
++ '<div id="Lxra_panels" style="position:fixed;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:1200;"></div>'+'\n'
++ '<div id="C_media_control" style="display:none"></div>\n'
 
-+ '<div id="C_media_control" onmousedown="event.stopPropagation();" style="position:absolute; width:150px; height:45px; border:1px solid black; font-family:Symbola; font-size:20px; color:black; background-color:rgba(255,255,255,0.5); z-index:498; visibility:hidden">\n'
-+ '<div class="MC_button" style="left:0px"  ><span class="MC_button_s" id="MC_play"     onclick="SL_MC_Play()"     onmouseover="SL_MC_MouseEnter({Name:this.id})">&#x23EF;</span></div>\n'
-+ '<div class="MC_button" style="left:30px" ><span class="MC_button_s" id="MC_stop"     onclick="SL_MC_Stop()"     onmouseover="SL_MC_MouseEnter({Name:this.id})">&#x25A0;</span></div>\n'
-+ '<div class="MC_button" style="left:60px" ><span class="MC_button_s" id="MC_backward" onclick="SL_MC_Backward()" onmouseover="SL_MC_MouseEnter({Name:this.id})">&#x23EA;</span></div>\n'
-+ '<div class="MC_button" style="left:90px" ><span class="MC_button_s" id="MC_forward"  onclick="SL_MC_Forward()"  onmouseover="SL_MC_MouseEnter({Name:this.id})">&#x23E9;</span></div>\n'
-+ '<div class="MC_button" style="left:120px"><span class="MC_button_s" id="MC_sound"    onclick="SL_MC_Sound()"    onmouseover="SL_MC_MouseEnter({Name:this.id})">&#x1F50A;</span></div>\n'
-+ '<div style="position:absolute; top:30px; left:0px;"><input id="MC_seek" class="MC_button_s" style="width:140px; height:20px;" type="range" min="0" max="100" step="1" value="0" onmouseover="SL_MC_MouseEnter({Name:this.id})" onmousedown="this._update_disabled=true" onmouseup="this._update_disabled=false" onchange="try { if (this._media_obj) { var t=parseInt(this.value)/100*this._media_obj.duration; var mod=(t-this._media_obj.currentTime)/30; if (mod) SL_MC_Seek(mod, true, true); } } catch (err) {}" /></div>\n'
-+ '</div>\n'
-
-+ '<div id="Lquick_menu" style="position:absolute; visibility:hidden; background-color:rgba(68,79,91, 0.66); left:2px; width:' + (18*((is_mobile)?2:1)*5+2) + 'px; height:20px; z-index:499; border:1px solid gray; border-radius:5px; transform-origin:0% 50%;">\n'
++ '<div id="Lquick_menu" style="position:absolute; display:none; background-color:rgba(68,79,91, 0.66); left:2px; width:' + (18*((is_mobile)?2:1)*5+2) + 'px; height:20px; z-index:499; border:1px solid gray; border-radius:5px; transform-origin:0% 50%;">\n'
 + ' <div style="position:absolute; top:1px; left:1px">\n'
 + '  <div id="Lquick_menu_close_button" class="QuickMenu_button" style="left:' + ((is_mobile)?'0px;width:36px;':'0px') + '" onclick="System._browser.confirmClose(true)" title="Close">\n'
 //+ '   <img src="images/icon_closing.png" class="QuickMenu_image" />\n'
@@ -538,7 +532,7 @@ function SA_load_body() {
 + '#LbuttonMinimize:hover { background-color:rgba(255,255,255,0.5); }\n'
 + '</style>\n'
 
-+ '<div id="LbuttonTL" style="position:absolute; top:0px; left:0px; cursor:pointer; z-index:599; visibility:hidden;">\n'
++ '<div id="LbuttonTL" style="position:absolute; top:0px; left:0px; cursor:pointer; z-index:599; display:none;">'+'\n'
 + ' <div id="LbuttonFullscreen" style="position:absolute; top:0px; left:12px; width:10px; height:8px; border-color:rgba(0,0,0,0.75); border-style:solid; border-width:1px; border-top-width:3px; background-color:rgba(255,255,255,0.5)" class="Tooltip_TR" title="Maximize"></div>\n'
 + ' <div id="LbuttonRestore" style="position:absolute; top:0px; left:12px; width:10px; height:8px; visibility:hidden;" class="Tooltip_TR" title="Restore">\n'
 + '  <div style="position:absolute; top:0px; left:3px; width:5px; height:5px; border-color:rgba(0,0,0,0.75); border-style:solid; border-width:1px; border-top-width:2px; background-color:rgba(255,255,255,0.5)"></div>\n'
@@ -615,7 +609,7 @@ System._browser.virtual_numpad(e, 'keyup')
 
     if (use_inline_dialog) {
       menu_html +=
-  '<iframe id="Idialog" src="z_blank.html" frameborder="0" style="position:absolute; z-index:999; visibility:hidden;"></iframe>\n'
+  '<iframe id="Idialog" src="about:blank" frameborder="0" style="position:absolute; z-index:999; visibility:hidden;"></iframe>\n'
     }
   }
 
