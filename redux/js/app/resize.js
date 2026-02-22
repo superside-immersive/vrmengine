@@ -537,22 +537,14 @@ if (fullscreen) {
   oBody.pixelHeight = B_content_height
 
   if (use_SA_system_emulation) {
-    let ls = Lquick_menu.style
-    let qmb_list = document.getElementsByClassName("QuickMenu_button")
+    // [XRA] Old quick menu layout replaced by unified toolbar
+    // let ls = Lquick_menu.style
+    // let qmb_list = ...
     let qmb_count = 6
-    if ((B_content_height > screen_h-10)/* || fullscreen*/) {
-      ls.posTop = 20+4
-      for (var i = 0; i < qmb_list.length; i++)
-        qmb_list[i].className = "QuickMenu_button QuickMenu_button_TL"
-    }
-    else {
-      ls.posTop = ((browser_native_mode) ? screen_h : B_content_height) - (20+4)
-      for (var i = 0; i < qmb_list.length; i++)
-        qmb_list[i].className = "QuickMenu_button"
-    }
 
-    LbuttonTL.style.posLeft = ((browser_native_mode) ? screen_w : Math.min(B_content_width, screen_w)) - 24 - 12
-    LbuttonTL.style.posTop  = 12
+    // [XRA] LbuttonTL replaced by toolbar
+    // LbuttonTL.style.posLeft = ...
+    // LbuttonTL.style.posTop  = 12
     if (is_mobile && (is_SA_child_animation_host || self.MMD_SA)) {
       if (document.fullscreenElement) {
         LbuttonFullscreen.style.visibility = "hidden"
@@ -577,26 +569,27 @@ if (fullscreen) {
     LbuttonLR.style.posLeft = ((browser_native_mode) ? screen_w : Math.min(B_content_width, screen_w)) - 24
     LbuttonLR.style.posTop  = ((browser_native_mode) ? screen_h : Math.min(B_content_height, screen.availHeight)) - 24
 
-    if (!self.EQP_dragdrop_target) {
-      Lquick_menu_gallery_button.style.display = "none"
-      qmb_count--
-    }
+    // [XRA] Old quick menu buttons replaced by toolbar
+    // if (!self.EQP_dragdrop_target) {
+    //   Lquick_menu_gallery_button.style.display = "none"
+    //   qmb_count--
+    // }
 
-    if (!self.MMD_SA_options || !MMD_SA_options.WebXR || !MMD_SA_options.WebXR.AR) {
-      Lquick_menu_ar_button.style.display = "none"
-      qmb_count--
-    }
-//    ls.visibility = "inherit"
+    // if (!self.MMD_SA_options || !MMD_SA_options.WebXR || !MMD_SA_options.WebXR.AR) {
+    //   Lquick_menu_ar_button.style.display = "none"
+    //   qmb_count--
+    // }
 
-    if (WallpaperEngine_mode) {
-      ls.posLeft = Math.min(B_content_width, screen_w) - (18*5+2)
-      ls.posTop  = Math.min(B_content_height, screen.availHeight) - 24
-    }
+    // if (WallpaperEngine_mode) {
+    //   ls.posLeft = ...
+    //   ls.posTop  = ...
+    // }
 
-    ls.pixelWidth = (18*((is_mobile)?2:1)*qmb_count+2)
+    // ls.pixelWidth = ...
 
     if (is_mobile) {
-      Lquick_menu.style.transform = Idialog.style.transform = "scale(" + (System._browser.css_scale*2) + ")"
+      // [XRA] keep Idialog scaling, skip Lquick_menu
+      Idialog.style.transform = "scale(" + (System._browser.css_scale*2) + ")"
     }
     if (is_mobile && self.MMD_SA_options) {
       Lnumpad.style.posLeft = B_content_width - 200

@@ -149,8 +149,9 @@ return true
 
   if (is_mobile) {
     if (!is_SA_child_animation) {
-      Lquick_menu.style.visibility = "inherit"
-      Lquick_menu._activated = true
+      // [XRA] Old quick menu replaced by unified toolbar
+      // Lquick_menu.style.visibility = "inherit"
+      // Lquick_menu._activated = true
     }
 /*
     window.addEventListener('blur', function () {

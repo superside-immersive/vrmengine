@@ -3,6 +3,14 @@
    Replaces RPG-style speech bubble system with modern CSS panels
    ============================================================ */
 
+/* ── Kill old quick menu (replaced by .xra-toolbar-unified) ── */
+#Lquick_menu,
+#LbuttonTL {
+  display: none !important;
+  visibility: hidden !important;
+  pointer-events: none !important;
+}
+
 /* ── Base Panel ── */
 .xra-panel {
   position: fixed;

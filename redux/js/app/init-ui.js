@@ -11,8 +11,9 @@ function SA_init_browser_ui() {
 // in SA_child_animation_host mode, hide the menu of parent window
 if (is_SA_child_animation_host && !is_SA_child_animation) return
 
-Lquick_menu.style.visibility = "inherit"
-Lquick_menu._activated = true
+// [XRA] Old quick menu replaced by unified toolbar
+// Lquick_menu.style.visibility = "inherit"
+// Lquick_menu._activated = true
 
 if (this._onmouseout_waiting_custom0_timerID) {
   clearTimeout(this._onmouseout_waiting_custom0_timerID)
@@ -22,8 +23,9 @@ if (this._onmouseout_waiting_custom0_timerID) {
 if (this._drag_disabled)
   return
 
-if ((B_content_width > 64) && (B_content_height > 64))
-  LbuttonTL.style.visibility = "inherit"
+// [XRA] LbuttonTL hidden — toolbar replaces it
+// if ((B_content_width > 64) && (B_content_height > 64))
+//   LbuttonTL.style.visibility = "inherit"
 if ((B_content_width > 64) && (B_content_height > 32))
   LbuttonLR.style.visibility = "inherit"
     }]
@@ -31,7 +33,7 @@ if ((B_content_width > 64) && (B_content_height > 32))
     sb._onmouseout_waiting_custom0_timerID = null
     sb._onmouseout_waiting_custom = [
 (function () {
-  var hide = function () { Lquick_menu.style.visibility = LbuttonTL.style.visibility = LbuttonLR.style.visibility = "hidden" }
+  var hide = function () { /* [XRA] quick menu replaced */ LbuttonLR.style.visibility = "hidden" }
   return function () {
 if (returnBoolean("IgnoreMouseEventsPartial")) {
   if (sb._onmouseout_waiting_custom0_timerID)
