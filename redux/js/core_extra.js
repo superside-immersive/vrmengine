@@ -43,8 +43,107 @@ if (WallpaperEngine_CEF_mode && !browser_native_mode) {
 }
 
 var path_demo, path_demo_by_url
+var SA_startup_context
+
+function SA_update_startup_context(patch) {
+  if (!SA_startup_context) {
+    SA_startup_context = {
+      resolvedFolder: "",
+      source: "",
+      selectedEntry: "",
+      entrySource: "",
+      warnings: [],
+      legacyFallbackUsed: false
+    }
+  }
+
+  if (patch) {
+    if (patch.warnings && patch.warnings.length) {
+      SA_startup_context.warnings = SA_startup_context.warnings.concat(patch.warnings)
+      delete patch.warnings
+    }
+    Object.assign(SA_startup_context, patch)
+  }
+
+  self.SA_startup_context = SA_startup_context
+  if (self.SA) {
+    SA.startup = SA.startup || {}
+    SA.startup.context = SA_startup_context
+  }
+  return SA_startup_context
+}
+
+function SA_startup_log(stage, extra) {
+  var payload = Object.assign({ stage: stage }, SA_update_startup_context(), extra || {})
+  try {
+    console.log('[SA][startup] ' + JSON.stringify(payload))
+  }
+  catch (err) {
+    console.log('[SA][startup]', stage, payload)
+  }
+}
+
+function SA_encode_cmd_line_args(args) {
+  var cmd_line = []
+  args.forEach(function (v) {
+    cmd_line.push(encodeURI(v))
+  })
+  return cmd_line
+}
+
+function SA_resolve_startup_folder(params, argv_list) {
+  var warnings = []
+  var resolvedFolder = ""
+  var source = ""
+
+  if (is_SA_child_animation && params.f) {
+    resolvedFolder = decodeURIComponent(params.f)
+    source = "url:f"
+  }
+
+  if (!resolvedFolder && argv_list && argv_list.length) {
+    var wsh_index = argv_list.length - 1
+    var hta_index = wsh_index
+    if (argv_list[wsh_index] == "wsh") {
+      SystemEXT.enforce_WSH = true
+      hta_index -= 1
+    }
+    if ((hta_index >= 0) && /^(\/|[\w\-]+\:|demo\d+$)/.test(argv_list[hta_index])) {
+      resolvedFolder = argv_list[hta_index]
+      source = (params.cmd_line) ? "url:cmd_line" : "runtime:argv"
+    }
+  }
+
+  if (resolvedFolder) {
+    if (/^system-animator\:\/\//.test(resolvedFolder)) {
+      resolvedFolder = decodeURIComponent(resolvedFolder.replace(/^system-animator\:\/\/+/, "")).replace(/[\/\\]$/, "")
+    }
+    else if ((browser_native_mode || (self._url_search_params_ && self._url_search_params_.cmd_line)) && /^\//.test(resolvedFolder)) {
+      resolvedFolder = System.Gadget.path + resolvedFolder
+    }
+    resolvedFolder = path_demo[resolvedFolder] || resolvedFolder
+  }
+
+  if (!resolvedFolder)
+    warnings.push('No startup folder from URL/cmd_line/argv; will continue with persisted fallback if available.')
+
+  return {
+    resolvedFolder: resolvedFolder,
+    source: source,
+    warnings: warnings
+  }
+}
 
 function SA_load_scripts() {
+  SA_update_startup_context({
+    resolvedFolder: "",
+    source: "",
+    selectedEntry: "",
+    entrySource: "",
+    warnings: [],
+    legacyFallbackUsed: false
+  })
+
   if (is_SA_child_animation) {
     path_demo = parent.path_demo
     path_demo_by_url = parent.path_demo_by_url
@@ -92,7 +191,6 @@ function SA_load_scripts() {
 
     var p
     if (is_SA_child_animation && params.f) {
-      SA_HTA_folder = decodeURIComponent(params.f)
       SA_child_animation_id = (params.id && parseInt(params.id)) || 0
     }
     else if ((browser_native_mode && !webkit_window) || params.cmd_line) {
@@ -113,28 +211,15 @@ function SA_load_scripts() {
     if (is_SA_child_animation)
       WallpaperEngine_mode = parent.WallpaperEngine_mode
 
-    if (p) {
-      if ((p[0] == "-parentHWND") || (webkit_electron_mode && webkit_electron_remote.getGlobal("WallpaperEngine_mode")))
-        WallpaperEngine_mode = true
+    if (p && ((p[0] == "-parentHWND") || (webkit_electron_mode && webkit_electron_remote.getGlobal("WallpaperEngine_mode"))))
+      WallpaperEngine_mode = true
 
-      var wsh_index, hta_index
-      wsh_index = hta_index = p.length - 1
-      if (p[wsh_index] == "wsh") {
-        SystemEXT.enforce_WSH = true
-        hta_index -= 1
-      }
-      if ((hta_index >= 0) && /^(\/|[\w\-]+\:|demo\d+$)/.test(p[hta_index])) {
-        SA_HTA_folder = p[hta_index]
-        if (/^system-animator\:\/+/.test(SA_HTA_folder))
-          SA_HTA_folder = decodeURIComponent(SA_HTA_folder.replace(/^system-animator\:\/+/, "")).replace(/[\/\\]$/, "")
-        else if ((browser_native_mode || (self._url_search_params_ && self._url_search_params_.cmd_line)) && /^\//.test(SA_HTA_folder))
-          SA_HTA_folder = System.Gadget.path + SA_HTA_folder
-        SA_HTA_folder = path_demo[SA_HTA_folder] || SA_HTA_folder
-//console.log(SA_HTA_folder, self.location.href)
-      }
-//console.log(params,p,System.Gadget.path)
-//else console.log(p[hta_index])
-    }
+    var startupResolved = SA_resolve_startup_folder(params, p)
+    SA_HTA_folder = startupResolved.resolvedFolder
+    SA_update_startup_context({
+      source: startupResolved.source || SA_startup_context.source,
+      warnings: startupResolved.warnings
+    })
 
 // settings from localStorage
     var Settings_default_by_path, Settings_by_path, update_LS
@@ -178,18 +263,27 @@ function SA_load_scripts() {
         try {
           if (/^demo\d+$/.test(ani_path)) {
             SA_HTA_folder = path_demo[ani_path]
+            SA_update_startup_context({ source: "persisted:animation_path_default_demo" })
           }
           else {
             if (!/^[\w\-]+\:/.test(ani_path))
               ani_path = System.Gadget.path + toLocalPath('\\' + ani_path)
-            if (fs.existsSync(ani_path + ((WallpaperEngine_CEF_mode)?toLocalPath('\\animate.js'):'')))
+            if (fs.existsSync(ani_path + ((WallpaperEngine_CEF_mode)?toLocalPath('\\animate.js'):''))) {
               SA_HTA_folder = ani_path
+              SA_update_startup_context({ source: "persisted:animation_path_default" })
+            }
           }
         }
         catch (err) {}
       }
-      if (!SA_HTA_folder && WallpaperEngine_mode)
+      if (!SA_HTA_folder && WallpaperEngine_mode) {
         SA_HTA_folder = path_demo["demo11"]
+        SA_update_startup_context({
+          source: "legacy:wallpaperengine-demo11",
+          legacyFallbackUsed: true,
+          warnings: ['Using legacy Wallpaper Engine fallback: demo11']
+        })
+      }
     }
 
     if (SA_HTA_folder) {
@@ -305,6 +399,12 @@ if (!WallpaperEngine_CEF_mode) {
 System.Gadget.Settings._settings_default = {
   "Folder": path_demo_by_url[SA_HTA_folder] || ("$SA_HTA_folder$" + ((SA_HTA_folder_full == SA_HTA_folder) ? "" : encodeURIComponent(SA_HTA_folder_full.substr(SA_HTA_folder.length))))
 };
+
+SA_update_startup_context({
+  resolvedFolder: SA_HTA_folder,
+  source: SA_startup_context.source || "resolved:direct"
+})
+SA_startup_log('folder-resolved')
 
 if (c_js && !save_settings_by_localStorage) {
   // direct eval for XUL
@@ -522,7 +622,7 @@ function SA_load_body() {
 //+ '   <img src="images/icon_gallery.png" class="QuickMenu_image" />\n'
 + '<span>🖼️</span>'
 + '  </div>\n'
-+ '  <div id="Lquick_menu_ar_button" class="QuickMenu_button" style="left:' + ((is_mobile)?'144px;width:36px;':'72px') + '" onclick="MMD_SA.WebXR.enter_AR()" title="AR mode">\n'
++ '  <div id="Lquick_menu_ar_button" class="QuickMenu_button" style="left:' + ((is_mobile)?'144px;width:36px;':'72px') + '" onclick="(AvatarRuntime||MMD_SA).WebXR.enter_AR()" title="AR mode">\n'
 + '<span>📱️</span>'
 + '  </div>\n'
 + ' </div>\n'

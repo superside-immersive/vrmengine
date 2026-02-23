@@ -190,6 +190,19 @@ function DragDrop_install(item) {
 
 function SA_Reload_PRE(path, path_folder, restart_app) {
   var path_to_launch = (webkit_mode) ? path : path_folder
+  if (typeof SA_update_startup_context === 'function') {
+    SA_update_startup_context({
+      reloadRequest: {
+        source: 'dragdrop',
+        path: path,
+        path_folder: path_folder,
+        path_to_launch: path_to_launch
+      }
+    })
+  }
+  if (typeof SA_startup_log === 'function')
+    SA_startup_log('reload-requested')
+
   if (use_SA_browser_mode && !is_SA_child_animation) {
     if (SA_top_window.is_SA_hosted) {
       setTimeout(function () { SA_top_window.opener.new_animation_path = path_to_launch; SA_top_window.close(); }, 0)
@@ -238,11 +251,7 @@ if (!self.oHTA) {
     }
   }
 
-  const cmd_line = []
-  args.forEach(function (v) {
-// use encodeURI instead of encodeURIComponent
-    cmd_line.push(encodeURI(v))
-  })
+  const cmd_line = (typeof SA_encode_cmd_line_args === 'function') ? SA_encode_cmd_line_args(args) : args.map(function (v) { return encodeURI(v) })
   setTimeout(function () { self.location.replace(self.location.href.replace(/\?.+$/, "") + "?cmd_line=" + cmd_line.join("|")) }, 0)
   return
 }

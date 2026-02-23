@@ -105,6 +105,55 @@ var EQP_gallery
 
 var gallery_cache_obj = new imgCache_Object("img_obj", "Lmain_animation")
 
+function SA_select_entry(path, source, options) {
+  options = options || {}
+
+  if (typeof SA_update_startup_context === 'function') {
+    SA_update_startup_context({
+      selectedEntry: path || "",
+      entrySource: source || "",
+      legacyFallbackUsed: !!options.legacyFallbackUsed,
+      warnings: (options.warning) ? [options.warning] : []
+    })
+  }
+
+  if (typeof SA_startup_log === 'function') {
+    SA_startup_log('entry-selected', {
+      selectedEntry: path || "",
+      entrySource: source || ""
+    })
+  }
+
+  if (options.warning)
+    console.warn('[SA][startup] ' + options.warning)
+}
+
+function SA_get_declared_entry_path(folderPath) {
+  if (!folderPath || !SA_project_JSON)
+    return ""
+
+  var declared = SA_project_JSON.entry_js || SA_project_JSON.entry || SA_project_JSON.startup_entry
+  if (!declared)
+    return ""
+
+  declared = decodeURIComponent((declared + "").replace(/^\s+|\s+$/g, ""))
+  if (!declared)
+    return ""
+
+  var entryPath = declared
+  if (!/^[\w\-]+\:/.test(entryPath) && !/^([A-Za-z]\:)?[\\\/]/.test(entryPath))
+    entryPath = folderPath + toLocalPath('\\' + entryPath)
+
+  if (ValidatePath(entryPath))
+    return entryPath
+
+  SA_select_entry("", "declared_entry_missing", {
+    legacyFallbackUsed: true,
+    warning: 'Declared entry not found (' + declared + '), falling back to legacy auto-discovery.'
+  })
+  return ""
+}
+
 function ValidatePath(path) {
   var p = null
   try {
@@ -131,13 +180,35 @@ function ItemsFromFolder(path, is_root) {
   }
 
   if (is_root) {
+    var declared_entry_path = ""
+    if (f && f.isFolder && !(is_SA_child_animation_host && !is_SA_child_animation)) {
+      declared_entry_path = SA_get_declared_entry_path(f.path)
+      if (declared_entry_path) {
+        gallery_js = declared_entry_path
+        SA_select_entry(gallery_js, 'declared_entry')
+      }
+    }
+
     if (!f.isFolder && f.isFileSystem) {
       var path = f.path
       Settings.f_path_folder = Settings.f_path.replace(/[\/\\][^\/\\]+$/, "")
 
+      if (!gallery_js) {
+        var explicit_entry_path = SA_get_declared_entry_path(Settings.f_path_folder)
+        if (explicit_entry_path) {
+          gallery_js = explicit_entry_path
+          SA_select_entry(gallery_js, 'declared_entry')
+        }
+      }
+
       var animate_js = Settings.f_path_folder + toLocalPath('\\animate.js')
-      if (!(is_SA_child_animation_host && !is_SA_child_animation) && ValidatePath(animate_js))
+      if (!gallery_js && !(is_SA_child_animation_host && !is_SA_child_animation) && ValidatePath(animate_js)) {
         gallery_js = animate_js
+        SA_select_entry(gallery_js, 'legacy_auto_discovery', {
+          legacyFallbackUsed: true,
+          warning: 'Using legacy auto-discovery (animate.js in folder).'
+        })
+      }
 
       if (/\.gif$/i.test(path)) {
         gallery = [{frame:0, path:path, path_file:toFileProtocol(path)}]
@@ -148,7 +219,8 @@ self.EV_b_height = h_max
         }
       }
       else if (/\.(pmd|pmx)$/i.test(path) && !gallery_js) {
-        self.MMD_SA_options = { model_path: path }
+        var runtimeOptions = { model_path: path }
+        self.AvatarRuntimeOptions = self.MMD_SA_options = runtimeOptions
       }
       else if (/_gimage\.\w+$/i.test(path)) {
         if (use_HTML5 && (returnBoolean("UseMatrixRain") || false /* [AUDIO REMOVED] */)) {
@@ -337,8 +409,13 @@ self.EV_b_height = h_max_org * image_ratio
       var path = item.path
 
       if (is_root && /animate\.js$/i.test(path)) {
-        if (!(is_SA_child_animation_host && !is_SA_child_animation))
+        if (!gallery_js && !(is_SA_child_animation_host && !is_SA_child_animation)) {
           gallery_js = path
+          SA_select_entry(gallery_js, 'legacy_auto_discovery', {
+            legacyFallbackUsed: true,
+            warning: 'Using legacy auto-discovery (folder scan found animate.js).'
+          })
+        }
         continue
       }
 
@@ -610,13 +687,13 @@ function loadFolder_CORE() {
     return
   }
 
-  if (!(is_SA_child_animation_host && !is_SA_child_animation) && !gallery_js && !gallery.length && (!EQP_gallery || !EQP_gallery.length) && !self.MMD_SA_options) {
+  if (!(is_SA_child_animation_host && !is_SA_child_animation) && !gallery_js && !gallery.length && (!EQP_gallery || !EQP_gallery.length) && !(self.AvatarRuntimeOptions || self.MMD_SA_options)) {
     EQP_gallery = null
     ItemsFromFolder(f_path_default, true)
   }
 
   // Load mmd/ dependencies before any path that loads MMD_SA.js
-  if (gallery_js || self.MMD_SA_options) {
+  if (gallery_js || (self.AvatarRuntimeOptions || self.MMD_SA_options)) {
     // [AUDIO REMOVED] audio.js and sfx.js no longer loaded
     SA.loader.loadScriptSync('js/mmd/speech-bubble.js')
     SA.loader.loadScriptSync('js/ui/panel-manager.js')
@@ -652,7 +729,8 @@ function loadFolder_CORE() {
 
   if (gallery_js)
     document.write(SystemEXT.ReadJS(gallery_js, true))
-  else if (self.MMD_SA_options) {
+  else if (self.AvatarRuntimeOptions || self.MMD_SA_options) {
+    SA_select_entry('MMD.js/MMD_SA.js', 'mmd_runtime_fallback')
     SA.loader.loadScriptSync('MMD.js/MMD_SA.js')
   }
   else if (!EQP_gallery && returnBoolean("UseFilters"))
