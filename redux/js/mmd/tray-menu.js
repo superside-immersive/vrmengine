@@ -101,8 +101,6 @@ switch (para[0]) {
         MMD_SA_options.MME.SAO = { disabled_by_material:[] }
         var PPE = MMD_SA_options.MME.PostProcessingEffects
         PPE.use_SAO = PPE.use_Diffusion = PPE.use_BloomPostProcess = false
-        System.Gadget.Settings.writeString('Use3DSAO', '')
-        System.Gadget.Settings.writeString('Use3DDiffusion', '')
         MMD_SA._MME_uniforms_updated_ = Date.now()
         System._browser.update_tray()
         break
@@ -115,9 +113,6 @@ switch (para[0]) {
         MMD_SA_options.MME.SAO = { disabled_by_material:[] }
         var PPE = MMD_SA_options.MME.PostProcessingEffects
         PPE.enabled = PPE.use_SAO = PPE.use_Diffusion = PPE.use_BloomPostProcess = false
-        System.Gadget.Settings.writeString('Use3DPPE', '')
-        System.Gadget.Settings.writeString('Use3DSAO', '')
-        System.Gadget.Settings.writeString('Use3DDiffusion', '')
         System.Gadget.Settings.writeString('MMDLightColor', '')
         System.Gadget.Settings.writeString('MMDLightPosition', '')
         System.Gadget.Settings.writeString('MMDShadow', '')
@@ -206,69 +201,8 @@ switch (para[0]) {
         }
         break
       case "PPE":
-        var PPE = MMD_SA_options.MME.PostProcessingEffects
-        switch (para[2]) {
-          case "enabled":
-            PPE.enabled = MMD_SA_options._PPE_enabled = !!parseInt(para[3])
-            System.Gadget.Settings.writeString('Use3DPPE', ((PPE.enabled)?"non_default":""))
-            System._browser.update_tray()
-            break
-          case "SAO":
-            switch (para[3]) {
-              case "disabled_by_material":
-                var m_name = para[4]
-                var disabled_by_material = MMD_SA_options.MME.SAO.disabled_by_material
-                if (parseInt(para[5])) {
-                  if (disabled_by_material.indexOf(m_name) == -1)
-                    disabled_by_material.push(m_name)
-                }
-                else
-                  MMD_SA_options.MME.SAO.disabled_by_material = disabled_by_material.filter(function (v) { return (v != m_name) })
-                System._browser.update_tray()
-                DEBUG_show('(Click "Save default" to save changes.)', 5)
-                break
-              default:
-                PPE.use_SAO = !!parseInt(para[3])
-                System.Gadget.Settings.writeString('Use3DSAO', ((PPE.use_SAO)?"non_default":""))
-                break
-            }
-            break
-          case "Diffusion":
-            PPE.use_Diffusion = !!parseInt(para[3])
-            System.Gadget.Settings.writeString('Use3DDiffusion', ((PPE.use_Diffusion)?"non_default":""))
-            break
-          case "BloomPostProcess":
-            switch (para[3]) {
-              case "blur_size":
-                var v = parseFloat(para[4])
-                if (v == -1)
-                  return
-                PPE.effects_by_name["BloomPostProcess"].blur_size = v
-                System.Gadget.Settings.writeString('Use3DBloomPostProcessBlurSize', (v==0.5)?"":v)
-                break
-              case "threshold":
-                var v = parseFloat(para[4])
-                if (v == -1)
-                  return
-                PPE.effects_by_name["BloomPostProcess"].threshold = v
-                System.Gadget.Settings.writeString('Use3DBloomPostProcessThreshold', (v==0.5)?"":v)
-                break
-              case "intensity":
-                var v = parseFloat(para[4])
-                if (v == -1)
-                  return
-                PPE.effects_by_name["BloomPostProcess"].intensity = v
-                System.Gadget.Settings.writeString('Use3DBloomPostProcessIntensity', (v==0.5)?"":v)
-                break
-              default:
-                PPE.use_BloomPostProcess = !!parseInt(para[3])
-                System.Gadget.Settings.writeString('Use3DBloomPostProcess', ((PPE.use_BloomPostProcess)?"non_default":""))
-                System._browser.update_tray()
-                break
-            }
-            break
-        }
-        break
+        DEBUG_show("(Post-processing effects are removed from this build.)", 4)
+        return
       case "SelfOverlay":
         var mme = MMD_SA_options.MME.self_overlay
         switch (para[2]) {

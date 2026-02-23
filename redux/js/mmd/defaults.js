@@ -518,7 +518,10 @@ return u
   }
 
   var PPE = MMD_SA_options.MME.PostProcessingEffects = MMD_SA_options.MME.PostProcessingEffects || { enabled:false }
-  PPE.enabled = !!(PPE.enabled || returnBoolean("Use3DPPE"))
+  PPE.enabled = false
+  PPE.use_SAO = false
+  PPE.use_Diffusion = false
+  PPE.use_BloomPostProcess = false
 
   PPE.effects_by_name = {}
   if (!PPE.shuffle_group)
@@ -529,7 +532,7 @@ return u
     PPE.SeriousShader_OverBright_adjust = MMD_SA_options.SeriousShader_OverBright_adjust || 0.05
 
   if (!PPE.effects.some(function (e) { return e.name=="SAOShader" })) {
-    var _enabled = !!(PPE.use_SAO || returnBoolean("Use3DSAO"))
+    var _enabled = false
     PPE.effects.unshift(
   { name:"SAOShader", enabled:_enabled }
 , { name:"DepthLimitedBlurShaderV", enabled:_enabled }
@@ -541,7 +544,7 @@ return u
   }
 
   if (!PPE.effects.some(function (e) { return e.name=="DiffusionX" })) {
-    var _enabled = (PPE.use_Diffusion || returnBoolean("Use3DDiffusion")) ? [1,1,0] : [0,0,((PPE.effects.some(function (e) { return e.name=="BloomPass" }))?0:1)]
+    var _enabled = PPE.use_Diffusion ? [1,1,0] : [0,0,((PPE.effects.some(function (e) { return e.name=="BloomPass" }))?0:1)]
     PPE.effects.push(
   { name:"DiffusionX", enabled:_enabled[0] }
  ,{ name:"DiffusionY", enabled:_enabled[1] }
@@ -550,9 +553,9 @@ return u
   }
 
   if (!PPE.effects.some(function (e) { return e.name=="BloomPostProcess" })) {
-    var _enabled = !!(PPE.use_BloomPostProcess || returnBoolean("Use3DBloomPostProcess"))
+    var _enabled = false
     var difusionX_index = PPE.effects.findIndex(function (e) { return e.name=="DiffusionX" })
-    PPE.effects = PPE.effects.slice(0, difusionX_index).concat({ name:"BloomPostProcess", enabled:_enabled, blur_size:parseFloat(System.Gadget.Settings.readString("Use3DBloomPostProcessBlurSize")||0.5), threshold:parseFloat(System.Gadget.Settings.readString("Use3DBloomPostProcessThreshold")||0.5), intensity:parseFloat(System.Gadget.Settings.readString("Use3DBloomPostProcessIntensity")||0.5) }, PPE.effects.slice(difusionX_index))
+    PPE.effects = PPE.effects.slice(0, difusionX_index).concat({ name:"BloomPostProcess", enabled:_enabled, blur_size:0.5, threshold:0.5, intensity:0.5 }, PPE.effects.slice(difusionX_index))
   }
 
   PPE.effects.forEach(function (effect) {

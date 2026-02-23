@@ -25,7 +25,6 @@ var Setting_name_list = [
   "UseAudioFFTLiveInputGain",
   "UseCanvasNotebookDrawings_Style",
   "UseCanvasPPEQuality", "UseCanvasPPEContrast", "UseCanvasPPEBrightness",
-  "Use3DBloomPostProcessBlurSize", "Use3DBloomPostProcessThreshold", "Use3DBloomPostProcessIntensity",
   "MMDLightColor", "MMDLightPosition", "MMDShadow", "MMDEdgeScale",
   "CSSTransformScale", "CSSTransformRotate", "CSSTransform3D", "CSSTransform3DBoxAnimate",
   "BDSpectrumToBeat", "BDScale", "BDDecay", "BDOpacity", "BDBassKick"
@@ -40,7 +39,7 @@ var Setting_name_list_boolean = [
   "UseSVGClock", "UseAudioFFT", "UseAudioFFTLiveInput",
   "AutoItRunAsAU3", "AutoItAlwaysOnTop", "AutoItStayOnDesktop", "AutoItWinampMode", "AutoItBPMByBASS", "AutoItAutoPause",
   "Use32BandSpectrum", "EnableBeatDetection", "EnableMotionEffectForAnimatedPicture", "EnableMotionEffectForSEQVideo",
-  "Use3DPPE", "Use3DSAO", "Use3DDiffusion", "Use3DBloomPostProcess", "MMDLookAtCamera", "MMDLookAtMouse", "MMDTrackballCamera", "MMDRandomCamera", "MMDOverrideDefaultForExternalModel",
+  "MMDLookAtCamera", "MMDLookAtMouse", "MMDTrackballCamera", "MMDRandomCamera", "MMDOverrideDefaultForExternalModel",
   "AllowExternalCommand",
 
   "SwapRegistryCheck", "UseSilverlight", "UseSL_windowless", "XULSilverlightAuto", "BPMByWebAudioAPI"
@@ -141,13 +140,6 @@ var Settings_default = {
 
   ,AllowExternalCommand: false
 
-  ,Use3DPPE: false
-  ,Use3DSAO: false
-  ,Use3DDiffusion: false
-  ,Use3DBloomPostProcess: false
-  ,Use3DBloomPostProcessBlurSize:  "0.5"
-  ,Use3DBloomPostProcessThreshold: "0.5"
-  ,Use3DBloomPostProcessIntensity: "0.5"
   ,MMDLookAtCamera: true
   ,MMDLookAtMouse: true
   ,MMDTrackballCamera: true

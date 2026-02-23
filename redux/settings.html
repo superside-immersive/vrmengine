@@ -502,11 +502,6 @@ System.Gadget.onSettingsClosing = SettingsClosing;
     toggleElement(T_3D_MMD)
   }
   else {
-    var PPE = parent_window.MMD_SA_options.MME.PostProcessingEffects
-    Use3DPPE.checked = PPE.enabled
-    Use3DSAO.checked = PPE.use_SAO
-    Use3DDiffusion.checked = PPE.use_Diffusion
-    Use3DPPE.onchange()
     MMDLookAtCamera.checked = parent_window.MMD_SA_options._look_at_screen
     if (!webkit_electron_mode) {
       toggleElement(L_MMDLookAtMouse)
@@ -2226,38 +2221,19 @@ Brightness:
 		<tr>
 			<td>&nbsp;</td>
 			<td style="padding-top:4px;">
-<h5 style="padding:0px; margin-bottom:8px">Post-processing shader effects:
+<h5 style="padding:0px; margin-bottom:8px">Post-processing shader effects (removed from this build):
 <a href="#" onclick="return false" title="Optional shader effects are available for MMD/3D animations which improves visuals in various ways, at the expense of extra GPU usage.\n\nNOTE: These options take effect immediately once you click the checkboxes. You may press Cancel and close the settings panel, and the effects will still be active.">(?)</a>
 :</h5>
-
-<span id="L_Use3DPPE">
-	<input name="Use3DPPE" type="checkbox" id="Use3DPPE" value="checkbox" onclick="parent.MMD_SA_options.MME.PostProcessingEffects.enabled=this.checked; System.Gadget.Settings.writeString('Use3DPPE', returnYesNo('Use3DPPE', this.checked)); parent_window.System._browser.update_tray();" onchange="toggleElement(L_Use3DSAO, this.checked); toggleElement(L_Use3DDiffusion, this.checked);" />
-	<label id="L_Use3DPPE_TEXT" for="Use3DPPE">Enabled <a href="#" onclick="return false" title="This option must be enabled for any post-processing shader to take effect.">(?)</a></label>
-</span>
+<span>Post-processing options have been removed from this build.</span>
 			</td>
 		</tr>
 
-		<tr>
-			<td>&nbsp;</td>
-			<td style="padding-top:4px;">
-<span id="L_Use3DSAO">
-	<input name="Use3DSAO" type="checkbox" id="Use3DSAO" value="checkbox" onclick="parent.MMD_SA_options.MME.PostProcessingEffects.use_SAO=this.checked; System.Gadget.Settings.writeString('Use3DSAO', returnYesNo('Use3DSAO', this.checked)); parent_window.System._browser.update_tray();" />
-	<label id="L_Use3DSAO_TEXT" for="Use3DSAO">SAO (Scalable Ambient Obscurance) <a href="#" onclick="return false" title="&quot;Ambient Occlusion&quot; is a shading and rendering technique used to calculate how exposed each point in a scene is to ambient lighting. In short, it makes the lighting of a 3D scene look more realistic, by darkening areas where they should be (besides normal shadowing). SAO is an advanced AO technique which produces high-quality results in real time.">(?)</a></label>
-</span>
-			</td>
-		</tr>
-
-		<tr>
-			<td>&nbsp;</td>
-			<td style="padding-top:4px;">
-<span id="L_Use3DDiffusion">
-	<input name="Use3DDiffusion" type="checkbox" id="Use3DDiffusion" value="checkbox" onclick="parent_window.MMD_SA_options.MME.PostProcessingEffects.use_Diffusion=this.checked; System.Gadget.Settings.writeString('Use3DDiffusion', returnYesNo('Use3DDiffusion', this.checked)); parent_window.System._browser.update_tray();" />
-	<label id="L_Use3DDiffusion_TEXT" for="Use3DDiffusion">Diffusion <a href="#" onclick="return false" title="&quot;Diffusion&quot; generally softens a 3D scene with slight bloom effects.">(?)</a></label>
-</span>
-
+    <tr>
+      <td>&nbsp;</td>
+      <td style="padding-top:4px;">
 <hr size=1 noshade style="position:relative; left:-10px; width:90%" />
-			</td>
-		</tr>
+      </td>
+    </tr>
 	</table>
 </div>
 <div class="tabbertab" title="MikuMikuDance">
