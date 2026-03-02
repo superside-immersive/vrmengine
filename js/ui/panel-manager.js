@@ -646,9 +646,13 @@
     var mc = document.getElementById('C_media_control');
     if (!mc) return;
 
+    if (window.XRA_SHOW_TRACKING_ON_BUTTON) {
+      XRA._ensureTrackingStreamerBottomButton({ hideLegacy: false });
+    }
+
     if (window.XRA_TRACKING_BOTTOM_STREAMER_ONLY) {
       XRA._hideTrackingBottomBarLegacy();
-      XRA._ensureTrackingStreamerBottomButton();
+      XRA._ensureTrackingStreamerBottomButton({ hideLegacy: true });
       return;
     }
 
@@ -675,8 +679,11 @@
     obs.observe(mc, { attributes: true, attributeFilter: ['style', 'class'], childList: true });
   };
 
-  XRA._ensureTrackingStreamerBottomButton = function () {
+  XRA._ensureTrackingStreamerBottomButton = function (opts) {
     if (document.getElementById('xra_tracking_streamer_btn')) return;
+
+    opts = opts || {};
+    var hideLegacy = !!opts.hideLegacy;
 
     var btn = document.createElement('button');
     btn.id = 'xra_tracking_streamer_btn';
@@ -705,19 +712,29 @@
     });
     document.body.appendChild(btn);
 
-    XRA._hideTrackingBottomBarLegacy();
+    if (hideLegacy) {
+      XRA._hideTrackingBottomBarLegacy();
+    }
   };
 
   XRA._hideTrackingBottomBarLegacy = function () {
     if (!window.XRA_TRACKING_BOTTOM_STREAMER_ONLY) return;
 
     function hideNow() {
-      var mc = document.getElementById('C_media_control');
-      if (!mc || !mc.style) return;
-      mc.style.setProperty('display', 'none', 'important');
-      mc.style.setProperty('visibility', 'hidden', 'important');
-      mc.style.setProperty('opacity', '0', 'important');
-      mc.style.setProperty('pointer-events', 'none', 'important');
+      [
+        'C_media_control',
+        'Ldungeon_UI',
+        'Ldungeon_inventory',
+        'Ldungeon_inventory_backpack',
+        'Ljoystick'
+      ].forEach(function (id) {
+        var el = document.getElementById(id);
+        if (!el || !el.style) return;
+        el.style.setProperty('display', 'none', 'important');
+        el.style.setProperty('visibility', 'hidden', 'important');
+        el.style.setProperty('opacity', '0', 'important');
+        el.style.setProperty('pointer-events', 'none', 'important');
+      });
     }
 
     hideNow();
@@ -736,7 +753,16 @@
 
   XRA._hideLegacyHUD = function () {
     function hideLegacy() {
-      ['Lquick_menu', 'LbuttonTL', 'LbuttonLR', 'Cdungeon_status_bar'].forEach(function (id) {
+      [
+        'Lquick_menu',
+        'LbuttonTL',
+        'LbuttonLR',
+        'Cdungeon_status_bar',
+        'Ldungeon_UI',
+        'Ldungeon_inventory',
+        'Ldungeon_inventory_backpack',
+        'Ljoystick'
+      ].forEach(function (id) {
         var el = document.getElementById(id);
         if (!el || !el.style) return;
         el.style.setProperty('display', 'none', 'important');
