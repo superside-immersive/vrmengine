@@ -49,6 +49,9 @@
 
     // Apply glass-morphism to media control bar
     XRA._styleMediaBar();
+
+    // Force-hide legacy top-left HUD elements (some are recreated later by dungeon UI)
+    XRA._hideLegacyHUD();
   };
 
   // ── Install monkey-patches on every SpeechBubble instance ──
@@ -602,6 +605,31 @@
       }
     });
     obs.observe(mc, { attributes: true, attributeFilter: ['style', 'class'], childList: true });
+  };
+
+  XRA._hideLegacyHUD = function () {
+    function hideLegacy() {
+      ['Lquick_menu', 'LbuttonTL', 'LbuttonLR', 'Cdungeon_status_bar'].forEach(function (id) {
+        var el = document.getElementById(id);
+        if (!el || !el.style) return;
+        el.style.setProperty('display', 'none', 'important');
+        el.style.setProperty('visibility', 'hidden', 'important');
+        el.style.setProperty('pointer-events', 'none', 'important');
+      });
+    }
+
+    hideLegacy();
+
+    if (!XRA._legacyHudObserver && document.body && window.MutationObserver) {
+      XRA._legacyHudObserver = new MutationObserver(function () {
+        hideLegacy();
+      });
+      XRA._legacyHudObserver.observe(document.body, { childList: true, subtree: true });
+    }
+
+    if (!XRA._legacyHudInterval) {
+      XRA._legacyHudInterval = setInterval(hideLegacy, 1000);
+    }
   };
 
   // ── Utility ──
