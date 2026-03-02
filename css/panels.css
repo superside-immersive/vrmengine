@@ -1,0 +1,688 @@
+/* ============================================================
+   XRA Panel System – Glass-Morphism UI
+   Replaces RPG-style speech bubble system with modern CSS panels
+   ============================================================ */
+
+/* ── Kill old quick menu (replaced by .xra-toolbar-unified) ── */
+#Lquick_menu,
+#LbuttonTL {
+  display: none !important;
+  visibility: hidden !important;
+  pointer-events: none !important;
+}
+
+/* ── Kill legacy dialogs: settings iframe, minimize/restore button ── */
+#Idialog {
+  display: none !important;
+  visibility: hidden !important;
+  pointer-events: none !important;
+}
+
+/* The old LbuttonLR (hover-reveal mini menu) is no longer needed */
+#LbuttonLR {
+  display: none !important;
+  visibility: hidden !important;
+  pointer-events: none !important;
+}
+
+/* ── Hide dungeon RPG character icon (circular status bar) ── */
+#Cdungeon_status_bar {
+  display: none !important;
+  visibility: hidden !important;
+  pointer-events: none !important;
+}
+
+/* ── Restyle the native debug box (Ldebug) to match glass-morphism theme ── */
+#Ldebug {
+  background: rgba(10, 13, 20, 0.82) !important;
+  color: #c8d4e0 !important;
+  border: 1px solid rgba(255,255,255,0.10) !important;
+  border-radius: 8px !important;
+  padding: 6px 10px !important;
+  font-family: "SF Mono", "Cascadia Code", "Consolas", monospace !important;
+  font-size: 11px !important;
+  line-height: 1.5 !important;
+  backdrop-filter: blur(10px) !important;
+  -webkit-backdrop-filter: blur(10px) !important;
+  box-shadow: 0 4px 16px rgba(0,0,0,0.45) !important;
+  transition: opacity 0.15s;
+}
+
+/* ── Extra performance panel (rFPS, heap, GPU) ── */
+#xra_perf_extra {
+  position: fixed;
+  top: 0px;
+  left: 0px;
+  z-index: 9998;
+  display: none;        /* shown/positioned dynamically by JS */
+  background: rgba(8, 12, 20, 0.88);
+  color: #6ec9e8;
+  border: 1px solid rgba(81, 198, 226, 0.15);
+  border-radius: 0 0 8px 8px;
+  padding: 4px 10px 6px;
+  font-family: "SF Mono", "Cascadia Code", "Consolas", monospace;
+  font-size: 10.5px;
+  line-height: 1.55;
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.35);
+  white-space: pre;
+  pointer-events: none;
+  user-select: none;
+  -webkit-user-select: none;
+  animation: none;
+}
+
+/* ── Base Panel ── */
+.xra-panel {
+  position: fixed;
+  z-index: 1200;
+  background: rgba(16, 20, 30, 0.88);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 14px;
+  box-shadow:
+    0 8px 32px rgba(0, 0, 0, 0.45),
+    inset 0 1px 0 rgba(255, 255, 255, 0.06);
+  color: #e8eaf0;
+  font-family: "Segoe UI", Roboto, Ubuntu, "SF Pro", system-ui, sans-serif;
+  font-size: 13px;
+  line-height: 1.45;
+  padding: 0;
+  pointer-events: auto;
+  user-select: none;
+  -webkit-user-select: none;
+
+  /* entry animation */
+  animation: xra-panel-in 0.22s cubic-bezier(0.16, 1, 0.3, 1);
+  transform-origin: bottom center;
+}
+
+.xra-panel.xra-panel--closing {
+  animation: xra-panel-out 0.16s cubic-bezier(0.5, 0, 1, 0.5) forwards;
+}
+
+@keyframes xra-panel-in {
+  from { opacity: 0; transform: translateY(12px) scale(0.96); }
+  to   { opacity: 1; transform: translateY(0)   scale(1);     }
+}
+
+@keyframes xra-panel-out {
+  from { opacity: 1; transform: translateY(0)   scale(1);     }
+  to   { opacity: 0; transform: translateY(8px) scale(0.97);  }
+}
+
+/* ── Panel Header ── */
+.xra-panel__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 16px 8px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.xra-panel__title {
+  font-size: 14px;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  color: #f0f2f5;
+  margin: 0;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.xra-panel__title-icon {
+  font-size: 18px;
+  line-height: 1;
+}
+
+.xra-panel__close {
+  width: 28px;
+  height: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  background: rgba(255, 255, 255, 0.06);
+  color: #aab0bf;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 16px;
+  line-height: 1;
+  transition: background 0.15s, color 0.15s;
+  flex-shrink: 0;
+}
+
+.xra-panel__close:hover {
+  background: rgba(255, 80, 80, 0.25);
+  color: #ff6b6b;
+}
+
+/* ── Panel Body ── */
+.xra-panel__body {
+  padding: 8px 6px 10px;
+  max-height: 60vh;
+  overflow-y: auto;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(255,255,255,0.15) transparent;
+}
+
+.xra-panel__body::-webkit-scrollbar {
+  width: 5px;
+}
+.xra-panel__body::-webkit-scrollbar-thumb {
+  background: rgba(255,255,255,0.15);
+  border-radius: 4px;
+}
+
+/* ── Option Items (numbered choices) ── */
+.xra-option {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 9px 14px;
+  margin: 2px 6px;
+  border-radius: 9px;
+  cursor: pointer;
+  transition: background 0.13s, transform 0.1s;
+  position: relative;
+}
+
+.xra-option:hover {
+  background: rgba(81, 198, 226, 0.12);
+}
+
+.xra-option:active {
+  background: rgba(81, 198, 226, 0.22);
+  transform: scale(0.985);
+}
+
+.xra-option--focused {
+  background: rgba(81, 198, 226, 0.10);
+  outline: 1px solid rgba(81, 198, 226, 0.35);
+  outline-offset: -1px;
+}
+
+.xra-option__badge {
+  width: 24px;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(81, 198, 226, 0.15);
+  color: #51c6e2;
+  border-radius: 7px;
+  font-size: 12px;
+  font-weight: 700;
+  flex-shrink: 0;
+  letter-spacing: -0.02em;
+}
+
+.xra-option__label {
+  flex: 1;
+  color: #d4d8e0;
+  font-size: 13px;
+}
+
+.xra-option:hover .xra-option__label {
+  color: #f0f2f5;
+}
+
+.xra-option__hint {
+  font-size: 11px;
+  color: #6b7080;
+  flex-shrink: 0;
+}
+
+/* ── Separator ── */
+.xra-separator {
+  height: 1px;
+  background: rgba(255, 255, 255, 0.06);
+  margin: 6px 16px;
+}
+
+/* ── Cancel / Special Options ── */
+.xra-option--cancel .xra-option__badge {
+  background: rgba(255, 100, 100, 0.12);
+  color: #ff7b7b;
+}
+
+.xra-option--cancel:hover {
+  background: rgba(255, 100, 100, 0.10);
+}
+
+/* ── Section headers inside body ── */
+.xra-section-label {
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: #5a5f70;
+  padding: 8px 20px 4px;
+  margin-top: 4px;
+}
+
+/* ── Toast Notification ── */
+.xra-toast {
+  position: fixed;
+  z-index: 1300;
+  left: 50%;
+  transform: translateX(-50%);
+  bottom: 90px;
+  background: rgba(16, 20, 30, 0.92);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.07);
+  border-radius: 10px;
+  padding: 10px 20px;
+  color: #e0e2ea;
+  font-family: "Segoe UI", Roboto, Ubuntu, "SF Pro", system-ui, sans-serif;
+  font-size: 13px;
+  box-shadow: 0 6px 24px rgba(0, 0, 0, 0.4);
+  pointer-events: none;
+  white-space: pre-wrap;
+  max-width: 420px;
+  text-align: center;
+  animation: xra-toast-in 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.xra-toast--closing {
+  animation: xra-toast-out 0.2s ease forwards;
+}
+
+@keyframes xra-toast-in {
+  from { opacity: 0; transform: translateX(-50%) translateY(10px); }
+  to   { opacity: 1; transform: translateX(-50%) translateY(0);    }
+}
+
+@keyframes xra-toast-out {
+  from { opacity: 1; transform: translateX(-50%) translateY(0);    }
+  to   { opacity: 0; transform: translateX(-50%) translateY(-8px); }
+}
+
+/* ── Progress Panel (Streamer Mode) ── */
+.xra-progress {
+  min-width: 280px;
+  max-width: 360px;
+}
+
+.xra-progress__step {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 8px 16px;
+  font-size: 13px;
+  color: #8a8f9f;
+}
+
+.xra-progress__step--done {
+  color: #4ade80;
+}
+
+.xra-progress__step--active {
+  color: #51c6e2;
+}
+
+.xra-progress__step--error {
+  color: #ff6b6b;
+}
+
+.xra-progress__icon {
+  flex-shrink: 0;
+  width: 20px;
+  text-align: center;
+  font-size: 14px;
+}
+
+.xra-progress__text {
+  flex: 1;
+}
+
+.xra-progress__bar {
+  height: 3px;
+  background: rgba(255, 255, 255, 0.06);
+  border-radius: 2px;
+  margin: 4px 16px 10px;
+  overflow: hidden;
+}
+
+.xra-progress__bar-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #51c6e2, #4ade80);
+  border-radius: 2px;
+  transition: width 0.3s ease;
+  width: 0%;
+}
+
+/* ── Info Panel (secondary, positioned side) ── */
+.xra-info-panel {
+  position: fixed;
+  z-index: 1199;
+  background: rgba(16, 20, 30, 0.85);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 12px;
+  padding: 12px 16px;
+  color: #c4c8d4;
+  font-family: "Segoe UI", Roboto, Ubuntu, "SF Pro", system-ui, sans-serif;
+  font-size: 12px;
+  line-height: 1.5;
+  max-width: 300px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.35);
+  white-space: pre-wrap;
+  animation: xra-panel-in 0.22s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* ── Confirm Dialog ── */
+.xra-panel--confirm .xra-panel__body {
+  padding: 14px 20px;
+  text-align: center;
+}
+
+.xra-confirm__text {
+  margin-bottom: 16px;
+  font-size: 14px;
+  color: #d4d8e0;
+}
+
+.xra-confirm__actions {
+  display: flex;
+  gap: 10px;
+  justify-content: center;
+}
+
+.xra-btn {
+  padding: 8px 20px;
+  border: none;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.15s, transform 0.1s;
+}
+
+.xra-btn:active {
+  transform: scale(0.96);
+}
+
+.xra-btn--primary {
+  background: rgba(81, 198, 226, 0.2);
+  color: #51c6e2;
+}
+
+.xra-btn--primary:hover {
+  background: rgba(81, 198, 226, 0.3);
+}
+
+.xra-btn--secondary {
+  background: rgba(255, 255, 255, 0.06);
+  color: #aab0bf;
+}
+
+.xra-btn--secondary:hover {
+  background: rgba(255, 255, 255, 0.12);
+}
+
+/* ── Panel Positioning ── */
+.xra-panel--bottom-center {
+  bottom: 80px;
+  left: 50%;
+  transform: translateX(-50%);
+  min-width: 260px;
+  max-width: 400px;
+}
+
+.xra-panel--bottom-center.xra-panel--closing {
+  transform: translateX(-50%) translateY(8px) scale(0.97);
+}
+
+.xra-panel--center {
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+
+.xra-panel--center.xra-panel--closing {
+  transform: translate(-50%, -48%) scale(0.97);
+}
+
+/* ── Wide panel for complex menus ── */
+.xra-panel--wide {
+  min-width: 320px;
+  max-width: 480px;
+}
+
+/* ── Toolbar Restyling ── */
+.xra-toolbar-unified {
+  position: fixed !important;
+  bottom: 12px !important;
+  right: 12px !important;
+  left: auto !important;
+  transform: none !important;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  padding: 8px 6px;
+  background: rgba(16, 20, 30, 0.80);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  border: 1px solid rgba(255, 255, 255, 0.07);
+  border-radius: 14px;
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.35);
+  z-index: 1100;
+  pointer-events: auto;
+  animation: xra-toolbar-in 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes xra-toolbar-in {
+  from { opacity: 0; transform: translateX(20px); }
+  to   { opacity: 1; transform: translateX(0);    }
+}
+
+/* ── Toolbar Buttons ── */
+.xra-toolbar-btn {
+  width: 34px;
+  height: 34px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  background: transparent;
+  color: #9ba1b0;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 17px;
+  line-height: 1;
+  transition: background 0.15s, color 0.15s, transform 0.1s;
+  padding: 0;
+  position: relative;
+}
+
+.xra-toolbar-btn:hover {
+  background: rgba(81, 198, 226, 0.12);
+  color: #e0e4ec;
+}
+
+.xra-toolbar-btn:active {
+  background: rgba(81, 198, 226, 0.22);
+  transform: scale(0.92);
+}
+
+.xra-toolbar-btn--accent {
+  color: #51c6e2;
+}
+
+.xra-toolbar-btn--accent:hover {
+  background: rgba(81, 198, 226, 0.18);
+  color: #7dd8ee;
+}
+
+.xra-toolbar-btn--danger {
+  color: #a0a5b4;
+}
+
+.xra-toolbar-btn--danger:hover {
+  background: rgba(255, 100, 100, 0.12);
+  color: #ff7b7b;
+}
+
+/* VRM Direct toggle */
+.xra-toolbar-btn--vrm-direct {
+  color: #a0d8a0;
+}
+
+.xra-toolbar-btn--vrm-direct:hover {
+  background: rgba(100, 220, 130, 0.15);
+  color: #c0f0c0;
+}
+
+.xra-toolbar-btn--active {
+  background: rgba(80, 220, 120, 0.25) !important;
+  color: #50ff90 !important;
+  box-shadow: 0 0 8px rgba(80, 220, 120, 0.4);
+}
+
+/* Tooltip */
+.xra-toolbar-btn[title] {
+  position: relative;
+}
+
+.xra-toolbar-btn::after {
+  content: attr(title);
+  position: absolute;
+  top: 50%;
+  right: calc(100% + 8px);
+  transform: translateY(-50%);
+  padding: 4px 10px;
+  background: rgba(10, 12, 18, 0.94);
+  color: #d4d8e0;
+  font-size: 11px;
+  font-family: "Segoe UI", Roboto, system-ui, sans-serif;
+  white-space: nowrap;
+  border-radius: 6px;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.15s;
+  z-index: 1200;
+}
+
+.xra-toolbar-btn:hover::after {
+  opacity: 1;
+}
+
+/* Separator between groups */
+.xra-toolbar-sep {
+  width: 22px;
+  height: 1px;
+  background: rgba(255, 255, 255, 0.08);
+  margin: 2px 0;
+  flex-shrink: 0;
+}
+
+/* ── Media Control Bar Restyled ── */
+.xra-media-bar {
+  background: rgba(16, 20, 30, 0.85) !important;
+  backdrop-filter: blur(12px) !important;
+  -webkit-backdrop-filter: blur(12px) !important;
+  border: 1px solid rgba(255, 255, 255, 0.07) !important;
+  border-radius: 10px !important;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3) !important;
+  color: #e0e2ea !important;
+  padding: 6px 12px !important;
+  position: fixed !important;
+  bottom: 52px !important;
+  left: 50% !important;
+  transform: translateX(-50%) !important;
+  z-index: 1090 !important;
+}
+
+.xra-media-bar .MC_button_s {
+  color: #d0d4dc !important;
+  transition: color 0.15s;
+}
+
+.xra-media-bar .MC_button_s:hover {
+  color: #51c6e2 !important;
+}
+
+/* ── Toolbar ── */
+#Lxra_toolbar {
+  pointer-events: auto;
+}
+
+/* ── Panel Container ── */
+#Lxra_panels {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 1200;
+}
+
+/* ── Mobile adjustments ── */
+@media (max-width: 600px), (pointer: coarse) {
+  .xra-panel--bottom-center {
+    bottom: 72px;
+    left: 8px;
+    right: 8px;
+    transform: none;
+    min-width: auto;
+    max-width: none;
+  }
+
+  .xra-panel__body {
+    max-height: 50vh;
+  }
+
+  .xra-option {
+    padding: 12px 14px;
+    gap: 12px;
+  }
+
+  .xra-option__badge {
+    width: 28px;
+    height: 28px;
+    font-size: 14px;
+  }
+
+  .xra-option__label {
+    font-size: 14px;
+  }
+
+  .xra-toast {
+    left: 16px;
+    right: 16px;
+    transform: none;
+    max-width: none;
+    bottom: 80px;
+  }
+
+  .xra-toolbar-unified {
+    padding: 6px 5px;
+    gap: 1px;
+    bottom: 8px !important;
+    right: 8px !important;
+  }
+
+  .xra-toolbar-btn {
+    width: 38px;
+    height: 38px;
+    font-size: 19px;
+  }
+
+  @keyframes xra-toast-in {
+    from { opacity: 0; transform: translateY(10px); }
+    to   { opacity: 1; transform: translateY(0);    }
+  }
+
+  @keyframes xra-toast-out {
+    from { opacity: 1; transform: translateY(0);    }
+    to   { opacity: 0; transform: translateY(-8px); }
+  }
+}
