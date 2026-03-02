@@ -16,6 +16,10 @@ export function fm_path_adjusted(url) {
 }
 
 export async function fm_load_scripts(S, url) {
+  if (/^https?:\/\//i.test(url)) {
+    throw new Error('External script URL blocked by privacy mode: ' + url);
+  }
+
   if (S.is_worker) {
     // Worker is at js/tracking/, resources are at js/ — prepend ../
     if (!/^\w+\:/i.test(url) && !/^\.\.\//.test(url)) {
@@ -86,9 +90,7 @@ export async function fm_load_lib(S, options) {
   }
   else {
 // https://github.com/nickthedude/nicksern.es/blob/84e6aab81a32f4c3a6ab16ff18bda77746f77c33/nicksern.es/static/js/wasm-check.js
-    await fm_load_scripts(S, 'https://unpkg.com/wasm-feature-detect/dist/umd/index.js');
-
-    S.use_SIMD = await wasmFeatureDetect.simd();
+    S.use_SIMD = false;
 
     if (S.use_human_facemesh) {
       process = undefined
@@ -163,18 +165,8 @@ export async function fm_load_lib(S, options) {
 
   if (!S.use_faceLandmarksDetection) {
 // https://tehnokv.com/posts/puploc-with-trees/demo/
-    await fm_load_scripts(S, "lploc.js");
-
     S.do_puploc = function(r, c, s, nperturbs, pixels, nrows, ncols, ldim) { return [-1.0, -1.0]; };
-    const puplocurl = 'https://drone.nenadmarkus.com/data/blog-stuff/puploc.bin';
-    fetch(puplocurl).then(function(response) {
-      response.arrayBuffer().then(function(buffer) {
-        var bytes = new Int8Array(buffer);
-        S.do_puploc = lploc.unpack_localizer(bytes);
-        console.log('* puploc loaded');
-        S.postMessageAT('(Use lploc.js)');
-      })
-    });
+    S.postMessageAT('(puploc disabled - external download blocked)');
   }
 
   S.facemesh_initialized = true

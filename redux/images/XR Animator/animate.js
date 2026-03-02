@@ -3336,13 +3336,8 @@ window.addEventListener('SA_Dungeon_onstart', ()=>{
   document.addEventListener('dblclick', cancel_intro, {once:true});
   document.addEventListener('keydown', cancel_intro, {once:true});
 
-  MMD_SA.SpeechBubble.message(0, System._browser.translation.get('XR_Animator.intro.welcome'), 3*1000, {group_index:0, group:{name:"onstart", loop:2}});
-  if (webkit_electron_mode) MMD_SA.SpeechBubble.message(0, System._browser.translation.get('XR_Animator.intro.move'), 4*1000, {group:{name:"onstart"}});
-  MMD_SA.SpeechBubble.message(0, System._browser.translation.get('XR_Animator.intro.camera'), 5*1000, {group:{name:"onstart"}});
-  MMD_SA.SpeechBubble.message(0, System._browser.translation.get('XR_Animator.intro.mocap'), 4*1000, {group:{name:"onstart"}});
-  MMD_SA.SpeechBubble.message(0, System._browser.translation.get('XR_Animator.intro.webcam'), 4*1000, {no_word_break:true, group:{name:"onstart"}});
-  MMD_SA.SpeechBubble.message(0, System._browser.translation.get('XR_Animator.intro.motion'), 4*1000, {group:{name:"onstart"}});
-  MMD_SA.SpeechBubble.message(0, System._browser.translation.get('XR_Animator.intro.AR'), 4*1000, {group:{name:"onstart"}});
+  // intro speech bubbles removed — XRA panel manager handles UI now
+  cancel_intro();
 
   System._browser.on_animation_update.add(()=>{
     window.addEventListener('MMDCameraReset_after', cancel_intro, {once:true});
@@ -15337,33 +15332,33 @@ MMD_SA.Camera_MOD.adjust_camera('auto_zoom', pos);
     }
 
     const state = {
-      enabled: true,
-      count: 600,
-      resolution: 5,
+      enabled: false,
+      count: 6350,
+      resolution: 8,
       max_count: 20000,
       min_count: 100,
       max_resolution: 64,
       min_resolution: 2,
       segment_length: 0.08,
-      rope_length: 0.40,
+      rope_length: 0.45,
       min_rope_length: 0.05,
       max_rope_length: 2.00,
       gravity: -0.003,
       damping: 0.08,
       solver_iterations: 2,
-      color: '#00ffff',
-      opacity: 0.95,
+      color: '#ffffff',
+      opacity: 0.45,
       line_width: 0.012,
       max_line_width: 0.1,
       min_line_width: 0.001,
-      floor_enabled: true,
-      gravity_scale: 1.0,
-      root_tension: 0.55,
-      root_tension_span: 0.38,
+      floor_enabled: false,
+      gravity_scale: 0.35,
+      root_tension: 0.00,
+      root_tension_span: 0.05,
       mesh_collision: true,
       mesh_collision_radius_scale: 0.85,
       mesh_collision_surface: 0.30,
-      mesh_collision_hardness: 1.0,
+      mesh_collision_hardness: 1.00,
       mesh_collision_offset: 0.08,
       turbulence: 0.0,
       taper: 0.85,
@@ -15403,12 +15398,22 @@ MMD_SA.Camera_MOD.adjust_camera('auto_zoom', pos);
     }
 
     function get_modelX() {
+      // ALWAYS prefer VRM Direct stub — ropes should live on the VRM model
+      if (self.VRMDirectModelStub && self.VRMDirectModelStub.mesh) {
+        return self.VRMDirectModelStub;
+      }
+      // Fallback to MMD only if VRM is not loaded
       try {
         return MMD_SA?.THREEX?.get_model?.(0);
       }
       catch (err) {
         return null;
       }
+    }
+
+    function has_any_model() {
+      if (self.VRMDirectModelStub && self.VRMDirectModelStub.mesh) return true;
+      try { return !!(THREE.MMD?.getModels?.()?.length); } catch(e) { return false; }
     }
 
     function get_model_scale() {
@@ -15419,6 +15424,20 @@ MMD_SA.Camera_MOD.adjust_camera('auto_zoom', pos);
     /* ── mesh-surface helpers ── */
 
     function collect_skinned_meshes() {
+      // ALWAYS prefer VRM meshes — ropes must attach to VRM, not MMD
+      if (self.VRMDirectModelStub && self.VRMDirectModelStub.mesh) {
+        const out = [];
+        const root = self.VRMDirectModelStub.mesh;
+        if (root.traverse) {
+          root.traverse((c) => {
+            if ((c.isSkinnedMesh || c.isMesh) && c.geometry &&
+                c.geometry.getAttribute && c.geometry.getAttribute('position'))
+              out.push(c);
+          });
+        }
+        if (out.length > 0) return out;
+      }
+      // Fallback: no VRM loaded, use MMD model
       const modelX = get_modelX();
       if (!modelX || !modelX.mesh) return [];
       const out = [];
@@ -16361,7 +16380,7 @@ MMD_SA.Camera_MOD.adjust_camera('auto_zoom', pos);
       if (!state.enabled)
         return;
 
-      if (!THREE.MMD.getModels?.()?.length)
+      if (!has_any_model())
         return;
 
       if (data.needs_rebuild || !data.mesh)

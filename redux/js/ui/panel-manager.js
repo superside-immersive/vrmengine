@@ -44,6 +44,9 @@
     // Build the unified bottom toolbar
     XRA._createToolbar();
 
+    // Extra performance HUD
+    XRA._createPerfHUD();
+
     // Apply glass-morphism to media control bar
     XRA._styleMediaBar();
   };
@@ -363,20 +366,18 @@
     _toolbar.className = 'xra-toolbar-unified';
     _toolbar.id = 'Lxra_toolbar';
 
-    var isNative = typeof browser_native_mode !== 'undefined' && browser_native_mode;
-
     var buttons = [
-      { icon: isNative ? '⟳' : '✕', title: isNative ? 'Reload' : 'Close', cls: 'xra-toolbar-btn--danger',
-        action: function () { System._browser.confirmClose(true); } },
+      // ── Start/Stop Tracking (sends 'C' key to SA system) ──
+      { icon: '📷', title: 'Tracking Menu', id: 'btn_tracking', cls: 'xra-toolbar-btn--accent',
+        action: function () { XRA._openTrackingMenu(); } },
       'sep',
-      { icon: '⚙️', title: 'Settings',
-        action: function () { System._browser.onSettings(); } },
-      { icon: '📁', title: 'Folder',
-        action: function () { if (typeof SA_OnFolder === 'function') SA_OnFolder(); } },
-      { icon: '📄', title: 'File',
-        action: function () { if (typeof SA_OnDocument === 'function') SA_OnDocument(); } },
-      { icon: '🖼️', title: 'Gallery',
-        action: function () { if (typeof SA_OnGallery === 'function') SA_OnGallery(); } },
+      // ── Performance HUD toggle ──
+      { icon: '📊', title: 'Performance HUD', id: 'btn_perf_toggle', cls: '',
+        action: function () { XRA._toggleDebugPanel(); } },
+      'sep',
+      // ── Ropes toggle ──
+      { icon: '🪢', title: 'Ropes UI', id: 'btn_ropes_toggle', cls: 'xra-toolbar-btn--vrm-direct',
+        action: function () { XRA._toggleRopesPanel(); } },
     ];
 
     // AR button only when WebXR API is available
@@ -402,6 +403,7 @@
       var btn = document.createElement('button');
       btn.className = 'xra-toolbar-btn' + (b.cls ? ' ' + b.cls : '');
       btn.setAttribute('title', b.title);
+      if (b.id) btn.id = b.id;
       btn.innerHTML = '<span>' + b.icon + '</span>';
       btn.addEventListener('click', function (e) {
         e.stopPropagation();
@@ -412,6 +414,170 @@
     });
 
     document.body.appendChild(_toolbar);
+
+    // Init perf button as active (panel is visible by default)
+    var perfBtn = document.getElementById('btn_perf_toggle');
+    if (perfBtn) perfBtn.classList.add('xra-toolbar-btn--active');
+  };
+
+  // ── Debug / Performance panel toggle ──
+  XRA._debugHidden = false;
+  XRA._debugPatched = false;
+
+  XRA._toggleDebugPanel = function () {
+    XRA._debugHidden = !XRA._debugHidden;
+
+    // Patch DEBUG_show once so our hide state survives every update call
+    if (!XRA._debugPatched && typeof window.DEBUG_show === 'function') {
+      var _orig = window.DEBUG_show;
+      window.DEBUG_show = function (msg, hide_sec, always_visible) {
+        _orig.apply(this, arguments);
+        if (XRA._debugHidden) {
+          var el = document.getElementById('Ldebug');
+          if (el) el.style.visibility = 'hidden';
+        }
+      };
+      XRA._debugPatched = true;
+    }
+
+    // Apply immediately
+    var el = document.getElementById('Ldebug');
+    if (el) {
+      if (XRA._debugHidden) {
+        el.style.visibility = 'hidden';
+      }
+      // When un-hiding: don't force visible — let the next DEBUG_show call restore it
+      // This avoids flashing a stale/empty box
+    }
+
+    // Extra perf panel: always hide when suppressing; let the interval re-show when restoring
+    var extra = document.getElementById('xra_perf_extra');
+    if (extra && XRA._debugHidden) extra.style.display = 'none';
+
+    var btn = document.getElementById('btn_perf_toggle');
+    if (btn) btn.classList.toggle('xra-toolbar-btn--active', !XRA._debugHidden);
+  };
+
+  // ── Extra Performance HUD ──
+  var _perfRafHandle = null;
+  var _perfFrameCount = 0;
+  var _perfLastTime = 0;
+  var _perfFPS = 0;
+  var _perfFrameMs = 0;
+  var _perfGPU = null;
+
+  XRA._createPerfHUD = function () {
+    if (document.getElementById('xra_perf_extra')) return;
+
+    // Detect GPU renderer once
+    try {
+      var cv = document.createElement('canvas');
+      var gl = cv.getContext('webgl') || cv.getContext('experimental-webgl');
+      if (gl) {
+        var ext = gl.getExtension('WEBGL_debug_renderer_info');
+        _perfGPU = ext ? gl.getParameter(ext.UNMASKED_RENDERER_WEBGL) : null;
+        // shorten long GPU strings
+        if (_perfGPU) _perfGPU = _perfGPU.replace(/\s*\/\s*.*$/, '').replace('ANGLE (', '').replace(')', '').trim();
+      }
+    } catch (e) { _perfGPU = null; }
+
+    var panel = document.createElement('div');
+    panel.id = 'xra_perf_extra';
+    document.body.appendChild(panel);
+
+    // FPS counter via RAF
+    function _rafTick(ts) {
+      if (_perfLastTime) {
+        var delta = ts - _perfLastTime;
+        _perfFrameMs = delta;
+        _perfFrameCount++;
+      }
+      _perfLastTime = ts;
+      _perfRafHandle = requestAnimationFrame(_rafTick);
+    }
+    _perfRafHandle = requestAnimationFrame(_rafTick);
+
+    // Update panel text every 500ms
+    var _smoothFps = 0;
+    setInterval(function () {
+      if (panel.style.display === 'none') return;
+
+      // FPS
+      _smoothFps = _smoothFps * 0.4 + (_perfFrameCount * 2) * 0.6; // * 2 because 500ms interval
+      _perfFrameCount = 0;
+
+      var fps = _smoothFps.toFixed(1);
+      var ft  = _perfFrameMs.toFixed(1);
+
+      // Memory (Chrome only)
+      var memLine = '';
+      if (window.performance && performance.memory) {
+        var used  = (performance.memory.usedJSHeapSize  / 1048576).toFixed(0);
+        var total = (performance.memory.jsHeapSizeLimit / 1048576).toFixed(0);
+        memLine = '\nMem: ' + used + '/' + total + ' MB';
+      }
+
+      // GPU
+      var gpuLine = _perfGPU ? ('\nGPU: ' + _perfGPU) : '';
+
+      // Tracking FPS from camera object (if available)
+      var trackLine = '';
+      try {
+        var cam = window.System && System._browser && System._browser.camera;
+        if (cam) {
+          if (cam.poseNet && cam.poseNet.enabled && cam.poseNet.fps != null)
+            trackLine += '\nPose-FPS: ' + cam.poseNet.fps.toFixed(0);
+          if (cam.facemesh && cam.facemesh.enabled && cam.facemesh.fps != null)
+            trackLine += '\nFace-FPS: ' + cam.facemesh.fps.toFixed(0);
+          if (cam.ML_fps != null)
+            trackLine += '\nML-FPS: ' + cam.ML_fps.toFixed(0);
+        }
+      } catch(e) {}
+
+      panel.textContent = 'rFPS: ' + fps + '  ft: ' + ft + 'ms' + trackLine + memLine + gpuLine;
+
+      // Position panel directly below Ldebug
+      var dbg = document.getElementById('Ldebug');
+      if (dbg && dbg.style.visibility === 'inherit') {
+        var rect = dbg.getBoundingClientRect();
+        panel.style.top  = rect.bottom + 'px';
+        panel.style.left = rect.left   + 'px';
+        panel.style.minWidth = Math.max(rect.width, 160) + 'px';
+        panel.style.display = '';
+      } else {
+        // Hide extra panel when Ldebug is hidden (no tracking data yet)
+        panel.style.display = 'none';
+      }
+    }, 500);
+  };
+
+  // ── Tracking Menu trigger ──
+  // Simulates pressing 'C' to trigger the SA camera/tracking menu.
+  // The SA system's onkeydown handler shows the tracking options via SpeechBubble,
+  // which our panel hooks intercept and render as a clickable glass panel.
+  XRA._openTrackingMenu = function () {
+    if (typeof SA_OnKeyDown === 'function') {
+      SA_OnKeyDown({
+        keyCode: 67, key: 'c', code: 'KeyC',
+        preventDefault: function(){}, stopPropagation: function(){},
+        ctrlKey: false, shiftKey: false, altKey: false, metaKey: false
+      });
+    }
+  };
+
+  // ── Ropes panel toggle ──
+  XRA._ropesVisible = false;  // panel starts hidden; toggle button opens it
+  XRA._toggleRopesPanel = function () {
+    var panel = document.getElementById('XRA_rope_panel');
+    if (!panel) {
+      // Panel hasn't been created yet — nothing to toggle
+      return;
+    }
+    XRA._ropesVisible = !XRA._ropesVisible;
+    panel.style.display = XRA._ropesVisible ? '' : 'none';
+
+    var btn = document.getElementById('btn_ropes_toggle');
+    if (btn) btn.classList.toggle('xra-toolbar-btn--active', XRA._ropesVisible);
   };
 
   // ── Media Bar Glass-morphism ──
@@ -424,13 +590,18 @@
       mc.classList.add('xra-media-bar');
     }
 
-    // Watch for visibility changes to keep class applied
+    // Watch for child content being added — when the SA system populates
+    // C_media_control, force display:block so it becomes visible.
     var obs = new MutationObserver(function () {
       if (!mc.classList.contains('xra-media-bar')) {
         mc.classList.add('xra-media-bar');
       }
+      // If the SA system added content (buttons, etc.), make the bar visible
+      if (mc.children.length > 0 && mc.style.display === 'none') {
+        mc.style.display = 'block';
+      }
     });
-    obs.observe(mc, { attributes: true, attributeFilter: ['style', 'class'] });
+    obs.observe(mc, { attributes: true, attributeFilter: ['style', 'class'], childList: true });
   };
 
   // ── Utility ──
@@ -447,7 +618,39 @@
       if (!_hooked) {
         XRA.init();
       }
+      // Watch for ropes panel creation so we can sync button state
+      XRA._watchRopesPanel();
     }, 500);
   });
+
+  // ── Watch for XRA_rope_panel creation and sync button ──
+  XRA._watchRopesPanel = function () {
+    if (document.getElementById('XRA_rope_panel')) {
+      XRA._syncRopesButton();
+      return;
+    }
+    // Use MutationObserver to detect when panel is added to DOM
+    var observer = new MutationObserver(function (mutations) {
+      for (var i = 0; i < mutations.length; i++) {
+        var added = mutations[i].addedNodes;
+        for (var j = 0; j < added.length; j++) {
+          if (added[j].id === 'XRA_rope_panel') {
+            XRA._syncRopesButton();
+            observer.disconnect();
+            return;
+          }
+        }
+      }
+    });
+    observer.observe(document.body, { childList: true, subtree: true });
+  };
+
+  XRA._syncRopesButton = function () {
+    var btn = document.getElementById('btn_ropes_toggle');
+    if (btn) btn.classList.toggle('xra-toolbar-btn--active', XRA._ropesVisible);
+    // Also apply current visibility state to the panel itself
+    var panel = document.getElementById('XRA_rope_panel');
+    if (panel) panel.style.display = XRA._ropesVisible ? '' : 'none';
+  };
 
 })();

@@ -1,6 +1,13 @@
 // mocap-mediapipe-bridge.js — ML model loading: MediaPipe, TF.js, Human.js
 // Extracted from mocap_lib_module.js (Step 2B)
 
+function _privacy_local_only_url(url) {
+  if (/^https?:\/\//i.test(url)) {
+    throw new Error('External script URL blocked by privacy mode: ' + url);
+  }
+  return url;
+}
+
 /**
  * Load MediaPipe Vision common dependencies.
  * @param {Object} S - Shared state object
@@ -202,7 +209,7 @@ if (!S.use_mediapipe_pose_landmarker && !options.use_holistic && S.use_tfjs && !
   if (!(((S.use_mediapipe && S.use_blazepose) || S.use_human_pose) && S.use_mediapipe_hands)) {
 // https://blog.tensorflow.org/2020/03/face-and-hand-tracking-in-browser-with-mediapipe-and-tensorflowjs.html
     let tfjs_version = '';//'@3.9.0';//'@3.5.0';//'@3.3.0';//@2.8.5';
-    await S.load_scripts('https://cdn.jsdelivr.net/npm/@tensorflow/tfjs' + tfjs_version);
+    await S.load_scripts(_privacy_local_only_url('https://cdn.jsdelivr.net/npm/@tensorflow/tfjs' + tfjs_version));
     console.log('Use TFJS (pose/hands)')
   }
 }
@@ -381,7 +388,7 @@ estimatePoses: function (video, dummy, nowInMs) {
     }
   }
   else if (S.use_movenet) {
-    await S.load_scripts((S.use_mediapipe && S.use_blazepose)?'@mediapipe/pose-detection.js':'https://cdn.jsdelivr.net/npm/@tensorflow-models/pose-detection');
+    await S.load_scripts((S.use_mediapipe && S.use_blazepose)?'@mediapipe/pose-detection.js':_privacy_local_only_url('https://cdn.jsdelivr.net/npm/@tensorflow-models/pose-detection'));
 
     if (S.use_blazepose) {
       const detectorConfig = (S.use_mediapipe) ?
@@ -411,7 +418,7 @@ estimatePoses: function (video, dummy, nowInMs) {
     }
   }
   else {
-    await S.load_scripts('https://cdn.jsdelivr.net/npm/@tensorflow-models/posenet');
+    await S.load_scripts(_privacy_local_only_url('https://cdn.jsdelivr.net/npm/@tensorflow-models/posenet'));
 
     S.posenet_model = await S.posenet.load((S.use_mobilenet) ?
 {
