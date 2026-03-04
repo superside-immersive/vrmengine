@@ -300,6 +300,19 @@ else {
 
   S.postMessageAT(JSON.stringify({ posenet:pose, object_detection:S.object_detection_data, handpose:hands, facemesh:facemesh, _t:_t, fps:S.fps, _t_hands:_t_hands, fps_hands:fps_hands }));
 
+  // Broadcast raw 3D landmarks for VRMDirect Fase 2 (main thread reads via BroadcastChannel)
+  try {
+    if (pose && pose.keypoints3D && pose.keypoints3D.length) {
+      if (!self._vrmd_bc) self._vrmd_bc = new BroadcastChannel('vrm_pose');
+      // Prefer keypoints3D_raw (unmodified MediaPipe world-space) for better IK accuracy.
+      // Send scores separately so the solver can gate occluded joints.
+      var _lms = (pose.keypoints3D_raw && pose.keypoints3D_raw.length === pose.keypoints3D.length)
+        ? pose.keypoints3D_raw : pose.keypoints3D;
+      var _scores = pose.keypoints3D.map(function(l){ return l.score != null ? l.score : 1; });
+      self._vrmd_bc.postMessage({ lms: _lms, scores: _scores });
+    }
+  } catch(e) { /* non-critical — don't break the main pose pipeline */ }
+
   // cleanup
   if (rgba instanceof ImageBitmap) rgba.close();
   frame.rgba = undefined;

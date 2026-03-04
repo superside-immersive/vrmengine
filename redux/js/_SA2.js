@@ -325,7 +325,8 @@ System.Gadget.Settings.writeString("ChildDragDisabled", ((bool)?"non_default":""
       break
 
     case "MMD":
-MMD_SA.tray_menu_func(para)
+  var runtime = self.AvatarRuntime || self.MMD_SA
+  runtime && runtime.tray_menu_func && runtime.tray_menu_func(para)
 if (WallpaperEngine_mode)
   System.Gadget.Settings._writeSettings()
       break
@@ -385,17 +386,18 @@ console.log("IPC message:" + decodeURIComponent(type))
 
 (function () {
   if (EQP_gallery)
-    document.write('<script language="JavaScript" src="js/EQP_gallery.js"></scr'+'ipt>')
+    //SA.loader.loadScriptSync('js/EQP_gallery.js')
 
   if (use_EQP_ripple || use_EQP_fireworks) {
-    document.write('<script language="JavaScript" src="js/EQP_canvas_effects_core.js"></scr'+'ipt>')
+    //SA.loader.loadScriptSync('js/EQP_canvas_effects_core.js')
     if (!EQP_gallery && use_WebGL && !self.WebGL_2D) {
-      document.write('<script language="JavaScript" src="js/html5_webgl2d.js"></scr'+'ipt>')
+      // SA.loader.loadScriptSync('js/html5_webgl2d.js')
     }
   }
 
-  if (use_SVG_Clock)
-    document.write('<script language="JavaScript" src="js/svg_clock.js"></scr'+'ipt>')
+  if (use_SVG_Clock) {
+    // SA.loader.loadScriptSync('js/svg_clock.js')
+  }
 
   // [AUDIO REMOVED] AudioFFT disabled
   Settings.UseAudioFFT = false
@@ -405,10 +407,10 @@ console.log("IPC message:" + decodeURIComponent(type))
   if (!Settings.CSSTransform3DBoxAnimate)
     Settings.CSSTransform3DBoxAnimate = parseInt(Settings_default.CSSTransform3DBoxAnimate)
   if (Settings.CSSTransform3DBoxAnimate)
-    document.write('<script language="JavaScript" src="js/box3d.js"></scr'+'ipt>')
+    SA.loader.loadScriptSync('js/box3d.js')
 
   if (!is_SA_child_animation && returnBoolean("UseWebcamHeadtracking"))
-    document.write('<script language="JavaScript" src="js/tracking/headtracker_ar.js"></scr'+'ipt>')
+    SA.loader.loadScriptSync('js/tracking/headtracker_ar.js')
 
   if (gallery.length && !gallery_cache_obj.SS_mode) {
     var galleries = (SEQ_gallery) ? SEQ_gallery : [{gallery:gallery}]

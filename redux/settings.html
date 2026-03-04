@@ -513,6 +513,13 @@ System.Gadget.onSettingsClosing = SettingsClosing;
     MMDRandomCamera.checked = returnBoolean("MMDRandomCamera")
     MMDOverrideDefaultForExternalModel.checked = returnBoolean("MMDOverrideDefaultForExternalModel")
     MMDEdgeScale.value = MMDEdgeScale_VALUE.innerText = parseFloat(System.Gadget.Settings.readString("MMDEdgeScale") || Settings_default.MMDEdgeScale) * 100
+
+    // VRM Direct Tracking checkbox
+    if (parent_window.VRMDirect) {
+      VRMDirectEnabled.checked = parent_window.VRMDirect.isEnabled;
+    } else {
+      VRMDirectEnabled.checked = (System.Gadget.Settings.readString("VRMDirectEnabled") === "1");
+    }
   }
 
 
@@ -2276,6 +2283,14 @@ Brightness:
 			<td style="padding-top:4px;">
 	<input name="MMDOverrideDefaultForExternalModel" type="checkbox" id="MMDOverrideDefaultForExternalModel" value="checkbox" onclick="System.Gadget.Settings.writeString('MMDOverrideDefaultForExternalModel', returnYesNo('MMDOverrideDefaultForExternalModel', this.checked)); if (!this.checked) System.Gadget.Settings.writeString('LABEL_MMD_model_path', ''); parent_window.System._browser.update_tray();" />
 	<label id="L_MMDOverrideDefaultForExternalModel_TEXT" for="MMDOverrideDefaultForExternalModel">Override default for external model <a href="#" onclick="return false" title="Enable this option to allow external model path to be saved and override the default one for the current animation. Otherwise, external model path will be reset after animation restart.">(?)</a></label>
+			</td>
+		</tr>
+
+		<tr>
+			<td>&nbsp;</td>
+			<td style="padding-top:4px;">
+<label for="VRMDirectEnabled"><input type="checkbox" id="VRMDirectEnabled" onclick="if(this.checked){parent_window.VRMDirect&&parent_window.VRMDirect.enable();}else{parent_window.VRMDirect&&parent_window.VRMDirect.disable();} System.Gadget.Settings.writeString('VRMDirectEnabled',this.checked?'1':'0');" /> VRM Direct Tracking (second model)
+<a href="#" onclick="return false" title="Load a second VRM model (finalsnoo.vrm) that receives the same MediaPipe tracking data directly from the solver, displayed side-by-side with the main model.">(?)</a></label>
 			</td>
 		</tr>
 

@@ -264,7 +264,14 @@
               var scene = _getScene();
               if (scene) {
                 _mesh.visible = true;
-                scene.add(_mesh);
+                // Cross-THREE-build safe add (bypasses instanceof check)
+                if (_mesh.parent) {
+                  var _ri = _mesh.parent.children.indexOf(_mesh);
+                  if (_ri !== -1) _mesh.parent.children.splice(_ri, 1);
+                }
+                _mesh.parent = scene;
+                scene.children.push(_mesh);
+                if (_mesh.dispatchEvent) _mesh.dispatchEvent({ type: 'added' });
                 _mesh.updateMatrixWorld(true);
                 console.log('[VRMDirect] Added to scene, children:', scene.children.length);
               } else {

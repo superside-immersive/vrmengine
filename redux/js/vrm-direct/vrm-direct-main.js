@@ -8,6 +8,24 @@
 (function () {
   'use strict';
 
+  function _toNumber(v, fallback) {
+    var n = Number(v);
+    return Number.isFinite(n) ? n : fallback;
+  }
+
+  function _normalizeVrmUrl(v) {
+    if (typeof v !== 'string') return v;
+    var s = v.trim();
+    if (!s) return s;
+    return s.replace(/^#file:/i, '');
+  }
+
+  function _hideMMDDuringLoad() {
+    try {
+      if (window.MMD_SA) MMD_SA.hide_3D_avatar = true;
+    } catch (e) {}
+  }
+
   /* ---- private state ---- */
   var _enabled      = false;
   var _initializing = false;
@@ -20,6 +38,16 @@
     offsetY : 0,
     offsetZ : 0
   };
+
+  if (typeof window.XRA_VRM_URL === 'string' && window.XRA_VRM_URL.trim()) {
+    CONFIG.vrmUrl = _normalizeVrmUrl(window.XRA_VRM_URL.trim());
+  }
+
+  CONFIG.offsetY += _toNumber(window.XRA_VRM_OFFSET_Y, 0);
+  var HIDE_VRM_MODEL = !!window.XRA_HIDE_VRM_MODEL;
+
+  var PAGE_CAMERA_OFFSET_Y = _toNumber(window.XRA_CAMERA_OFFSET_Y, 0);
+  var PAGE_GROUND_OFFSET_Y = _toNumber(window.XRA_GROUND_OFFSET_Y, 0);
 
   /* ─── MMD offset helpers ─── */
   var _mmdOrigX = null;   // saved original MMD root X position
@@ -84,6 +112,8 @@
   function enable() {
     if (_enabled || _initializing) return;
 
+    _hideMMDDuringLoad();
+
     /* Verificar que tenemos una escena (propia o de MMD) */
     var sceneReady = !!(window._VRMDirectScene ||
                        (window.MMD_SA && window.MMD_SA.THREEX && MMD_SA.THREEX.scene));
@@ -106,6 +136,9 @@
 
     VRMDirectLoader.load(loadCfg)
       .then(function (handle) {
+        if (HIDE_VRM_MODEL && handle && handle.mesh) {
+          handle.mesh.visible = false;
+        }
         // Inyectar renderer y cámara al handle para que el animator pueda renderear
         handle.renderer = window._VRMDirectRenderer || null;
         handle.camera   = window._VRMDirectCamera   || null;
@@ -204,6 +237,9 @@
     if (!T) { setTimeout(_tryAutoEnable, 200); return; }
     if (!window._VRMDirectScene) {
       var ctx = VRMDirectLoader.createOwnContext();
+      if (PAGE_CAMERA_OFFSET_Y !== 0 && ctx && ctx.camera && ctx.camera.position) {
+        ctx.camera.position.y += PAGE_CAMERA_OFFSET_Y;
+      }
       window._VRMDirectScene    = ctx.scene;
       window._VRMDirectCamera   = ctx.camera;
       window._VRMDirectRenderer = ctx.renderer;
@@ -214,6 +250,30 @@
   if (window.addEventListener) {
     /* jThree_ready: MMD está listo — reusar su escena */
     window.addEventListener('jThree_ready', function () {
+      _hideMMDDuringLoad();
+      try {
+        if (PAGE_CAMERA_OFFSET_Y !== 0) {
+          if (window.MMD_SA && MMD_SA.camera_position) MMD_SA.camera_position.y += PAGE_CAMERA_OFFSET_Y;
+          if (window.MMD_SA && MMD_SA._trackball_camera && MMD_SA._trackball_camera.object) {
+            MMD_SA._trackball_camera.object.position.y += PAGE_CAMERA_OFFSET_Y;
+            if (typeof MMD_SA._trackball_camera.object.updateProjectionMatrix === 'function') {
+              MMD_SA._trackball_camera.object.updateProjectionMatrix();
+            }
+          }
+          if (window.MMD_SA_options && MMD_SA_options.camera_position) {
+            MMD_SA_options.camera_position[1] += PAGE_CAMERA_OFFSET_Y;
+          }
+          if (window.MMD_SA_options && MMD_SA_options.camera_position_base) {
+            MMD_SA_options.camera_position_base[1] += PAGE_CAMERA_OFFSET_Y;
+          }
+          if (window.MMD_SA_options && MMD_SA_options.camera_lookAt) {
+            MMD_SA_options.camera_lookAt[1] += PAGE_CAMERA_OFFSET_Y;
+          }
+        }
+        if (PAGE_GROUND_OFFSET_Y !== 0 && window.jThree && jThree.MMD && typeof jThree.MMD.groundLevel === 'number') {
+          jThree.MMD.groundLevel += PAGE_GROUND_OFFSET_Y;
+        }
+      } catch (e) {}
       window._VRMDirectScene    = null;  // _getScene() usará MMD_SA.THREEX.scene
       window._VRMDirectCamera   = null;
       window._VRMDirectRenderer = null;

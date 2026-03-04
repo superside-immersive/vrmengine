@@ -381,6 +381,15 @@ else {
 
   MMD_dummy_obj.prototype = Object.create( Model_obj.prototype );
 
+  // Fallback mesh used while MMD model is not yet available.
+  // Prevents runtime crashes from startup race conditions.
+  var _mmd_dummy_mesh_fallback = {
+    bones_by_name: {},
+    position: { x:0, y:0, z:0 },
+    quaternion: { x:0, y:0, z:0, w:1 },
+    scale: { x:1, y:1, z:1 }
+  };
+
   Object.defineProperties(MMD_dummy_obj.prototype, {
     type: {
       value: 'MMD_dummy'
@@ -391,15 +400,30 @@ else {
     },
 
     use_tongue_out: {
-      get: function () { return (MMD_SA_options.model_para_obj.facemesh_morph['ぺろっ']?.name in this.model.pmx.morphs_index_by_name); },
+      get: function () {
+        var model = this.model;
+        var tongueName = MMD_SA_options.model_para_obj.facemesh_morph['ぺろっ']?.name;
+        return !!(model && model.pmx && model.pmx.morphs_index_by_name && tongueName && (tongueName in model.pmx.morphs_index_by_name));
+      },
     },
 
     model: {
-      get: function () { return TX._THREE.MMD.getModels()[this.index]; }
+      get: function () {
+        try {
+          var models = TX._THREE && TX._THREE.MMD && TX._THREE.MMD.getModels && TX._THREE.MMD.getModels();
+          return (models && models[this.index]) || null;
+        }
+        catch (e) {
+          return null;
+        }
+      }
     },
 
     mesh: {
-      get: function () { return this.model.mesh; }
+      get: function () {
+        var model = this.model;
+        return (model && model.mesh) ? model.mesh : _mmd_dummy_mesh_fallback;
+      }
     },
 
     getBoneNode: {
@@ -407,7 +431,10 @@ else {
     },
 
     get_bone_by_MMD_name: {
-      value: function (name) { return this.mesh.bones_by_name[name]; }
+      value: function (name) {
+        var mesh = this.mesh;
+        return (mesh && mesh.bones_by_name) ? mesh.bones_by_name[name] : null;
+      }
     }
   });
 

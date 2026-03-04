@@ -24,6 +24,7 @@
   var _useSAScheduler  = false;  // true si se registró en on_animation_update
   var _bodyDiagDone    = false;  // one-time body diagnostic flag
   var _tickCount       = 0;      // frame counter for delayed diagnostics
+  var _collisionErrorLogged = false;  // one-time collision error flag
 
   // ──────────────────────────────────────────────
   //  Bone & face application
@@ -182,6 +183,14 @@
     var bodyData = VRMDirectSolver.solveBody(_handle.isVRM1);
     applyBody(_handle, bodyData);
 
+    // COLLISION: detect and correct BEFORE vrm.update so spring bones use corrected pose.
+    // Single-pass: reads current tracking pose, checks mesh, corrects arm if hand penetrates.
+    if (window.VRMCollision && VRMCollision.isEnabled()) {
+      try { VRMCollision.update(); } catch(e) {
+        if (!_collisionErrorLogged) { _collisionErrorLogged = true; console.warn('[VRMDirect] Collision error:', e); }
+      }
+    }
+
     // One-time body diagnostic — fires ~3 s after start so tracking has time to initialise
     if (!_bodyDiagDone) {
       _tickCount++;
@@ -219,6 +228,7 @@
     // Advance VRM runtime (spring bones, physics, expressions, lookAt)
     _handle.update(dt);
 
+
     // Renderear con el renderer propio si existe (standalone mode)
     if (_handle.renderer && _handle.camera && window._VRMDirectScene) {
       _handle.renderer.render(window._VRMDirectScene, _handle.camera);
@@ -243,6 +253,14 @@
     // Same as threex-vrm.js line 349
     if (_handle.isVRM1 && _handle.vrm && _handle.vrm.humanoid) {
       _handle.vrm.humanoid.autoUpdateHumanBones = true;
+    }
+
+    // Initialize body collision system
+    if (window.VRMCollision) {
+      try {
+        VRMCollision.init(_handle);
+        console.log('[VRMDirect] Body collision initialized:', VRMCollision.getStats());
+      } catch(e) { console.warn('[VRMDirect] Collision init failed:', e); }
     }
 
     // Store rest-pose hips position for offset calculation

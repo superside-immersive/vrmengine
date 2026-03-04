@@ -11,6 +11,68 @@
   pointer-events: none !important;
 }
 
+/* ── Kill legacy dialogs: settings iframe, minimize/restore button ── */
+#Idialog {
+  display: none !important;
+  visibility: hidden !important;
+  pointer-events: none !important;
+}
+
+/* The old LbuttonLR (hover-reveal mini menu) is no longer needed */
+#LbuttonLR {
+  display: none !important;
+  visibility: hidden !important;
+  pointer-events: none !important;
+}
+
+/* ── Hide dungeon RPG character icon (circular status bar) ── */
+#Cdungeon_status_bar {
+  display: none !important;
+  visibility: hidden !important;
+  pointer-events: none !important;
+}
+
+/* ── Restyle the native debug box (Ldebug) to match glass-morphism theme ── */
+#Ldebug {
+  background: rgba(10, 13, 20, 0.82) !important;
+  color: #c8d4e0 !important;
+  border: 1px solid rgba(255,255,255,0.10) !important;
+  border-radius: 8px !important;
+  padding: 6px 10px !important;
+  font-family: "SF Mono", "Cascadia Code", "Consolas", monospace !important;
+  font-size: 11px !important;
+  line-height: 1.5 !important;
+  backdrop-filter: blur(10px) !important;
+  -webkit-backdrop-filter: blur(10px) !important;
+  box-shadow: 0 4px 16px rgba(0,0,0,0.45) !important;
+  transition: opacity 0.15s;
+}
+
+/* ── Extra performance panel (rFPS, heap, GPU) ── */
+#xra_perf_extra {
+  position: fixed;
+  top: 0px;
+  left: 0px;
+  z-index: 9998;
+  display: none;        /* shown/positioned dynamically by JS */
+  background: rgba(8, 12, 20, 0.88);
+  color: #6ec9e8;
+  border: 1px solid rgba(81, 198, 226, 0.15);
+  border-radius: 0 0 8px 8px;
+  padding: 4px 10px 6px;
+  font-family: "SF Mono", "Cascadia Code", "Consolas", monospace;
+  font-size: 10.5px;
+  line-height: 1.55;
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.35);
+  white-space: pre;
+  pointer-events: none;
+  user-select: none;
+  -webkit-user-select: none;
+  animation: none;
+}
+
 /* ── Base Panel ── */
 .xra-panel {
   position: fixed;
@@ -466,6 +528,22 @@
 .xra-toolbar-btn--danger:hover {
   background: rgba(255, 100, 100, 0.12);
   color: #ff7b7b;
+}
+
+/* VRM Direct toggle */
+.xra-toolbar-btn--vrm-direct {
+  color: #a0d8a0;
+}
+
+.xra-toolbar-btn--vrm-direct:hover {
+  background: rgba(100, 220, 130, 0.15);
+  color: #c0f0c0;
+}
+
+.xra-toolbar-btn--active {
+  background: rgba(80, 220, 120, 0.25) !important;
+  color: #50ff90 !important;
+  box-shadow: 0 0 8px rgba(80, 220, 120, 0.4);
 }
 
 /* Tooltip */

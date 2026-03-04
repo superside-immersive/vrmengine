@@ -10,3 +10,9 @@ au3/*/*.exe
 # macOS Finder metadata
 .DS_Store
 **/.DS_Store
+
+# Auto-generated / large deps
+node_modules/playwright-core/
+node_modules/redux.zip
+node_modules/.bin/
+node_modules/.package-lock.json

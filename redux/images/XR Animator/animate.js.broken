@@ -1,0 +1,1801 @@
+// XR Animator
+// (2025-02-22)
+
+var MMD_SA_options = {
+
+  model_path: System.Gadget.path + "/jThree/model/alicia.min.zip#/Alicia_solid_v02.pmx"  //Appearance Miku.zip#/Appearance Miku_BDEF_mod-v04.pmx"//
+
+ ,motion: [
+
+//  { path:System.Gadget.path + '/MMD.js/motion/stand.vmd'}
+//  { path:System.Gadget.path + '/MMD.js/motion/swing.vmd'}
+  { must_load:true, no_shuffle:true, path:System.Gadget.path + '/MMD.js/motion/motion_basic_pack01.zip#/standmix2_modified.vmd'}
+//  { path:Settings.f_path + '/motion/_sleep90.vmd'}
+
+   ,{
+      path:System.Gadget.path + '/MMD.js/motion/motion_demo_pack01.zip#/demo/magic_of_xyz/magic_of_xyz.vmd'
+    }
+
+   ,{
+      path:System.Gadget.path + '/MMD.js/motion/demo/HeartBeats配布用.vmd'
+    }
+
+   ,{
+      path:System.Gadget.path + '/MMD.js/motion/motion_demo_pack01.zip#/demo/suki_yuki_maji_magic/suki_yuki_maji_magic.vmd'
+    }
+
+   ,{
+      path:System.Gadget.path + '/MMD.js/motion/motion_demo_pack01.zip#/demo/galaxias_motion/galaxias_miku_v2.vmd'
+    }
+
+   ,{
+      path:System.Gadget.path + '/MMD.js/motion/demo/after_school_stride/after_school_stride.vmd'
+    }
+
+   ,{
+      path:'F:\\MMD\\motions\\シューティングスター/SS_準標準ボーン必須.vmd'
+    }
+
+   ,{
+      path:System.Gadget.path + '/MMD.js/motion/demo/HAL Dance.vmd'
+    }
+
+   ,{
+      path:System.Gadget.path + '/MMD.js/motion/demo/恋空予報モーション.vmd'
+    }
+
+//   ,{ path:Settings.f_path + '/motion/sweetmagic-left.vmd' }
+   ,{
+      path:System.Gadget.path + '/MMD.js/motion/motion_demo_pack01.zip#/demo/STEP/1_step-motion1.vmd'
+    }
+
+   ,{
+      path:System.Gadget.path + '/MMD.js/motion/demo/wavefile_motion/wavefile_lat.vmd'
+    }
+
+   ,{
+      path:System.Gadget.path + '/MMD.js/motion/demo/HCPえりかver（Lat式用）.vmd'
+    }
+
+   ,{
+      path:System.Gadget.path + '/MMD.js/motion/demo/てるてる(通常モデル用).vmd'
+    }
+
+   ,{
+      path:System.Gadget.path + '/MMD.js/motion/demo/まっさらブルージーンズ.vmd'
+    }
+
+   ,{
+      path:System.Gadget.path + '/MMD.js/motion/demo/love&joyお面無しver.vmd'
+    }
+
+//15
+
+   ,{
+      path:System.Gadget.path + '/MMD.js/motion/motion_demo_pack01.zip#/demo/mozuya/monstar.vmd'
+    }
+
+   ,{
+      path:System.Gadget.path + '/MMD.js/motion/motion_demo_pack01.zip#/demo/mozuya/Walka_Not_A_Talka.vmd'
+    }
+
+   ,{
+      path:System.Gadget.path + '/MMD.js/motion/motion_demo_pack01.zip#/demo/mozuya/louboutins.vmd'
+    }
+
+   ,{
+      path:System.Gadget.path + '/MMD.js/motion/motion_demo_pack01.zip#/demo/mozuya/black_n_gold.vmd'
+    }
+
+   ,{
+      path:'F:\\MMD\\motions\\百舌谷 - motion\\motion\\Ass_On_The_Floor.vmd'
+    }
+
+
+   ,{
+      path:'F:\\MMD\\motions\\メダモーション\\メダロット・ハク.vmd'
+    }
+
+   ,{
+      path:'F:\\MMD\\motions\\Circus - Britney Spears\\Circus\\circus.vmd'
+    }
+
+   ,{
+      path:System.Gadget.path + '/MMD.js/motion/motion_demo_pack01.zip#/demo/lupin/lupin.vmd'
+    }
+
+   ,{
+      path:'F:\\MMD\\motions\\Good Feeling\\Good Feeling - Flo Rida\\Good Feeling.vmd'
+    }
+
+   ,{
+      path:'F:\\MMD\\motions\\It makes me ill - NSYNC\\It makes me ill - modified.vmd'
+    }
+
+   ,{
+      path:'F:\\MMD\\motions\\Do What U Want モーションセット（配布用）\\Do What U Want モーションセット\\DoWhatUWant（ダンスモーション）.vmd'
+    }
+
+   ,{
+      path:'F:\\MMD\\motions\\SlavetotheRhythm\\SlavetotheRhythmダンス.vmd'
+    }
+
+   ,{
+      path:'F:\\MMD\\motions\\Bout it - Yung Joc feat. 3LW\\bout it.vmd'
+    }
+
+
+   ,{
+      path:'F:\\MMD\\motions\\Tipsy - J-Kwon\\Tipsy.vmd'
+    }
+
+   ,{
+      path:'F:\\MMD\\motions\\ゆっきゆっきゆっきダンス・ライクーP\\ゆっきゆっきゆっきダンス・ライクーP.vmd'
+    }
+
+// 30
+
+// must-load list
+//  ,{ must_load:true, no_shuffle:true, path:'C:\\Users\\User\\Downloads\\MikuMikuDanceE_v739\\MikuMikuDanceE_v739\\UserFile\\Motion\\Muuubu Rin -Append-\\motion_BAL3.vmd'}
+//   ,{ must_load:true, no_shuffle:true, path:Settings.f_path + '/assets/assets.zip#/motion/model/gal_model_motion_with_legs-2_loop_v01.vmd' }
+   ,{ must_load:true, no_shuffle:true, path:Settings.f_path + '/assets/motion_misc.zip#/壁穴モーション/壁穴_モデルモーション_loop.vmd'}
+
+   ,{ must_load:true, no_shuffle:true, path:Settings.f_path + '/assets/assets.zip#/motion/emote/emote-mod_お辞儀1.vmd' }
+   ,{ must_load:true, no_shuffle:true, path:Settings.f_path + '/assets/assets.zip#/motion/emote/emote-mod_お辞儀2.vmd' }
+   ,{ must_load:true, no_shuffle:true, path:Settings.f_path + '/assets/assets.zip#/motion/emote/emote-mod_肯定する1.vmd' }
+   ,{ must_load:true, no_shuffle:true, path:Settings.f_path + '/assets/assets.zip#/motion/emote/emote-mod_肯定する2.vmd' }
+
+   ,{ must_load:true, no_shuffle:true, path:Settings.f_path + '/assets/assets.zip#/motion/emote/emote-mod_照れる1.vmd' }
+   ,{ must_load:true, no_shuffle:true, path:Settings.f_path + '/assets/assets.zip#/motion/emote/emote-mod_照れる2.vmd' }
+
+   ,{ must_load:true, no_shuffle:true, path:Settings.f_path + '/assets/assets.zip#/motion/surrender_v03.vmd' }
+   ,{ must_load:true, no_shuffle:true, path:Settings.f_path + '/assets/assets.zip#/motion/surrender-R_v03.vmd' }
+
+   ,{ must_load:true, no_shuffle:true, path:Settings.f_path + '/assets/assets.zip#/motion/emote/emote-mod_歓迎する1.vmd' }
+   ,{ must_load:true, no_shuffle:true, path:Settings.f_path + '/assets/assets.zip#/motion/emote/emote-mod_歓迎する2.vmd' }
+
+   ,{ must_load:true, no_shuffle:true, path:Settings.f_path + '/assets/assets.zip#/motion/emote/emote-mod_がっかり1.vmd' }
+   ,{ must_load:true, no_shuffle:true, path:Settings.f_path + '/assets/assets.zip#/motion/emote/emote-mod_がっかり2.vmd' }
+   ,{ must_load:true, no_shuffle:true, path:Settings.f_path + '/assets/assets.zip#/motion/emote/emote-mod_肩をすくめる1.vmd' }
+   ,{ must_load:true, no_shuffle:true, path:Settings.f_path + '/assets/assets.zip#/motion/emote/emote-mod_肩をすくめる2.vmd' }
+
+   ,{ must_load:true, no_shuffle:true, path:Settings.f_path + '/assets/assets.zip#/motion/emote/emote-mod_すねる1.vmd' }
+   ,{ must_load:true, no_shuffle:true, path:Settings.f_path + '/assets/assets.zip#/motion/emote/emote-mod_すねる2.vmd' }
+   ,{ must_load:true, no_shuffle:true, path:Settings.f_path + '/assets/assets.zip#/motion/emote/emote-mod_よろめく1.vmd' }
+   ,{ must_load:true, no_shuffle:true, path:Settings.f_path + '/assets/assets.zip#/motion/emote/emote-mod_よろめく2.vmd' }
+
+   ,{ must_load:true, no_shuffle:true, path:Settings.f_path + '/assets/assets.zip#/motion/emote/emote-mod_おどろく1.vmd' }
+
+   ,{ must_load:true, no_shuffle:true, path:Settings.f_path + '/assets/assets.zip#/motion/chair_sit01_armIK.vmd' }
+   ,{ must_load:true, no_shuffle:true, path:Settings.f_path + '/assets/assets.zip#/motion/i-shaped_balance/i-shaped_balance_TDA_f0-50.vmd' }
+   ,{ must_load:true, no_shuffle:true, path:Settings.f_path + '/assets/assets.zip#/motion/leg_hold.vmd' }
+   ,{ must_load:true, no_shuffle:true, path:Settings.f_path + '/assets/assets.zip#/stand_simple.vmd' }
+   ,{ must_load:true, no_shuffle:true, path:Settings.f_path + '/assets/assets.zip#/sit_simple.vmd' }
+
+   ,{ must_load:true, no_shuffle:true, path:Settings.f_path + '/assets/assets.zip#/motion/Mixamo - Sitting02.vmd' }
+   ,{ must_load:true, no_shuffle:true, path:Settings.f_path + '/assets/assets.zip#/motion/Mixamo - Sitting Idle01.vmd' }
+   ,{ must_load:true, no_shuffle:true, path:Settings.f_path + '/assets/assets.zip#/motion/Mixamo - Sitting Idle02.vmd' }
+   ,{ must_load:true, no_shuffle:true, path:Settings.f_path + '/assets/assets.zip#/motion/Mixamo - Female Sitting Pose01.vmd' }
+   ,{ must_load:true, no_shuffle:true, path:Settings.f_path + '/assets/assets.zip#/motion/Mixamo - Female Sitting Pose02.vmd' }
+   ,{ must_load:true, no_shuffle:true, path:Settings.f_path + '/assets/assets.zip#/motion/Mixamo - Happy Idle.vmd' }
+   ,{ must_load:true, no_shuffle:true, path:Settings.f_path + '/assets/assets.zip#/motion/Mixamo - Female Laying Pose01.vmd' }
+   ,{ must_load:true, no_shuffle:true, path:Settings.f_path + '/assets/assets.zip#/motion/sitting_sexy01.vmd' }
+   ,{ must_load:true, no_shuffle:true, path:Settings.f_path + '/assets/assets.zip#/motion/sitting_sexy02.vmd' }
+   ,{ must_load:true, no_shuffle:true, path:Settings.f_path + '/assets/assets.zip#/motion/sitting_sexy03.vmd' }
+   ,{ must_load:true, no_shuffle:true, path:Settings.f_path + '/assets/assets.zip#/motion/sitting_sexy04.vmd' }
+   ,{ must_load:true, no_shuffle:true, path:Settings.f_path + '/assets/assets.zip#/motion/sitting_sexy05.vmd' }
+   ,{ must_load:true, no_shuffle:true, path:Settings.f_path + '/assets/assets.zip#/motion/sitting_sexy06.vmd' }
+   ,{ must_load:true, no_shuffle:true, path:Settings.f_path + '/assets/assets.zip#/motion/sitting_sexy07.vmd' }
+   ,{ must_load:true, no_shuffle:true, path:Settings.f_path + '/assets/assets.zip#/motion/sitting_sexy08.vmd' }
+   ,{ must_load:true, no_shuffle:true, path:Settings.f_path + '/assets/assets.zip#/motion/sitting_sexy09.vmd' }
+   ,{ must_load:true, no_shuffle:true, path:Settings.f_path + '/assets/assets.zip#/motion/sitting_sexy10.vmd' }
+   ,{ must_load:true, no_shuffle:true, path:Settings.f_path + '/assets/assets.zip#/motion/sitting_sexy11.vmd' }
+   ,{ must_load:true, no_shuffle:true, path:Settings.f_path + '/assets/assets.zip#/motion/sitting_sexy12.vmd' }
+   ,{ must_load:true, no_shuffle:true, path:Settings.f_path + '/assets/assets.zip#/motion/prone_pose01.vmd' }
+   ,{ must_load:true, no_shuffle:true, path:Settings.f_path + '/assets/assets.zip#/motion/model_pose01.vmd' }
+   ,{ must_load:true, no_shuffle:true, path:Settings.f_path + '/assets/assets.zip#/motion/model_pose02.vmd' }
+   ,{ must_load:true, no_shuffle:true, path:Settings.f_path + '/assets/assets.zip#/motion/model_pose03.vmd' }
+
+   ,{ must_load:true, no_shuffle:true, path:Settings.f_path + '/assets/assets.zip#/motion/walk_n_run/walk_A34_f0-42.vmd' }
+   ,{ must_load:true, no_shuffle:true, path:Settings.f_path + '/assets/assets.zip#/motion/tsuna/モブ歩き男80f.vmd' }
+
+   ,{ must_load:true, no_shuffle:true, path:Settings.f_path + '/assets/assets.zip#/baseball_throw/baseball_throw.vmd' }
+
+// roomba
+//   ,{ must_load:true, no_shuffle:true, path:'F:\\Programs Portable\\node-webkit\\_TEMP\\gura_x_roomba\\data\\gura_sit_01.vmd' }
+  ]
+
+
+ ,motion_shuffle_pool_size: 9
+ ,motion_shuffle: [1,3,3+15, 0+15,1+15,2+15, 7+15,9,4]
+
+//,motion_shuffle_pool_size: 9 +5
+//,motion_shuffle: [0+15,1+15,2+15, 7+15,9,6, 3+15,4+15,6+15, 4,12+15,9+15,1,3]
+
+// ,motion_shuffle_pool_size: 9
+// ,motion_shuffle: [1,3,3+15, 0+15,1+15,4+15, 6,9,4]
+
+ ,motion_shuffle_list_default: [30]//[0]
+
+// ,motion_shuffle_list: [4,4,4,4,4,4,4,4]
+
+ ,motion_shuffle_by_song_name: {
+  }
+
+//,random_range_disabled:true
+
+
+ ,motion_para: {}
+
+
+ ,custom_action: [
+  "cover_undies"
+ ,"kissing"
+  ]
+
+ ,use_CircularSpectrum: true
+
+ ,look_at_screen: true
+ ,camera_face_locking: true
+
+// ,center_view: [0,0,20]//[0,5,0]
+// ,camera_position: [10,20,20]
+
+// ,light_position: [50,50,50]
+
+ ,edgeScale: 0.75
+
+ ,model_para: {
+    "Alicia_solid.pmx": {
+      "MME": {
+"self_overlay":{"enabled":true,"opacity":0.5,"color_adjust":[1.5,0.5,0.75],"brightness":0.8},
+"HDR":{"enabled":true,"opacity":0.2},
+//"serious_shader":{"enabled":true,"shadow_opacity":0.3},
+"SAO":{"disabled_by_material":[]}
+      },
+      "material_para": {
+"_default_": { "transparent":true }
+      },
+      "facemesh_morph" : {
+"mouth_narrow": { "name":"つ", "weight":0.5 }
+      },
+      "skin_default": {
+"両目": { "rot_scale":3 }
+      },
+      "icon_path": "icon_v01.jpg"
+    }
+  }
+
+/*
+ ,MME: {
+    self_overlay: {
+  enabled: true
+// ,opacity: 0.5
+// ,brightness: 1
+    }
+   ,HDR: {
+  enabled: true
+// ,opacity: 0.5
+    }
+   ,serious_shader: {
+  enabled: 1
+// ,shadow_opacity: 0.5
+ ,material: {
+    "顔": { shadow_opacity: 0.25 }
+  }
+ ,OverBright: 1.1
+    }
+
+// 123
+
+  }
+*/
+
+ ,use_speech_bubble: true
+ ,onstart: (()=>{
+    var initialized;
+    function cancel_intro() {
+if (initialized) return;
+initialized = true;
+
+if (MMD_SA_options.Dungeon.event_mode) return;
+
+var msg_group = MMD_SA.SpeechBubble.msg_group
+var group_name_current = msg_group.group_name_current
+if (group_name_current) {
+  delete msg_group.group_by_name[group_name_current]
+  msg_group.group_name_current = ""
+}
+
+MMD_SA.SpeechBubble.hide();
+    }
+
+    return ()=>{
+//MMD_SA.SpeechBubble.list.forEach(sb=>{sb.bubbles.forEach(b=>{  b.font = '"Segoe UI",Roboto,Ubuntu,"SF Pro"'; })});
+
+// intro speech bubbles removed
+    };
+  })()
+
+ ,WebXR: {
+    model_scale: (is_mobile) ? 0.9 : 1,
+    AR: {
+      dom_overlay: { root:"Lbody" }
+
+     ,onwallhit: function (e) {
+var model_mesh = THREE.MMD.getModels()[0].mesh
+if (!model_mesh.visible) {
+  DEBUG_show("(Place the model on the ground first.)", 3)
+  return true
+}
+
+this._groundhit = false
+this._wallhit = true
+this._skip_charging_count = 10
+
+var adult_mode = this._adult_mode
+e.detail.result.update_obj = function (model_mesh, first_call) {
+  var xr = MMD_SA.WebXR
+  var axis = xr.hitMatrix_anchor.decomposed[3]
+
+  model_mesh.quaternion.setFromEuler(MMD_SA.TEMP_v3.set(0,Math.atan2(axis.x,axis.z),0))
+  MMD_SA_options.mesh_obj_by_id["CircularSpectrumMESH"] && MMD_SA_options.mesh_obj_by_id["CircularSpectrumMESH"]._obj.rotation.setEulerFromQuaternion(model_mesh.quaternion)
+
+  if (adult_mode) {
+// needed for .process_bones()
+    xr.hitMatrix_anchor._hit_wall_y_ = xr.hitMatrix_anchor.decomposed[0].y;
+
+    if (first_call) {
+      MMD_SA_options.motion_shuffle_list_default = [MMD_SA_options.motion_index_by_name["壁穴_モデルモーション_loop"]]
+      MMD_SA._force_motion_shuffle = true
+    }
+  }
+  else {
+// anchor offset away from the wall (x,z)
+    xr.hitMatrix_anchor.decomposed[0].add(axis.clone().multiplyScalar(0.25).setY(0));
+  }
+
+// save some headache and always put the reference anchor on the ground
+  xr.hitMatrix_anchor.decomposed[0].y = xr.hit_ground_y;
+};
+      }
+
+     ,ongroundhit: function (e) {
+this._groundhit = true
+this._wallhit = false
+this._skip_charging_count = 10
+
+//DEBUG_show(9,0,1);return;
+var model_mesh = THREE.MMD.getModels()[0].mesh
+model_mesh.position.y = 0
+
+if (MMD_SA_options.motion_shuffle_list_default && (MMD_SA_options.motion_shuffle_list_default[0] != MMD_SA_options._motion_shuffle_list_default[0])) {
+  MMD_SA_options.motion_shuffle_list_default = MMD_SA_options._motion_shuffle_list_default.slice()
+  MMD_SA._force_motion_shuffle = true
+}
+      }
+    }
+  }
+
+ ,user_camera: {
+    enabled: true,
+//    mirror_3D: 0,
+    pixel_limit: {
+//      _default_: [1280,720],//[1920,1080],//
+      fixed: !is_mobile,
+//      facemesh : [640,360],
+      facemesh_bb_ratio: (is_mobile) ? 1 : 0.5,
+    },
+    display: (is_mobile) ? {} : {
+//floating: true,
+//floating_auto: false,
+//floating_scale: 1,
+video:{
+//  hidden:true,
+//  hidden_on_webcam: true,
+  scale:0.4, top:-0.5,
+//left:(-0.5*-1), top:-1,
+//scale:0.4*1,top:0,left:-3,
+//scale:0.4*2,top:0,left:-1,
+},
+wireframe:{
+//  hidden:true,
+//  align_with_video:true,
+  top:0.5,
+//left:(0.5*-1),top:-1,
+//left:1,
+//top:0.8,left:0.4,
+//top:0,left:3,
+//top:0.5,left:1,
+}
+    },
+    preference: {
+      label: /Iriun/,
+//      label: /OBS/,
+    },
+    ML_models: {
+      enabled: true,
+//      use_holistic: false,
+//      worker_disabled: true,
+//      debug_hidden: true,
+      facemesh: {
+//        use_mediapipe: true
+      },
+      pose: {
+//        estimate_z_depth: false,
+//        auto_grounding: true,
+//        use_armIK: true,
+//        use_legIK: true,
+//        position_offset: {x:-7.5,y:0,z:0},
+        events: {
+          enabled:  ()=>{ MMD_SA.WebXR.ground_plane.visible=System._browser.camera.poseNet.ground_plane_visible; },
+          disabled: ()=>{ MMD_SA.WebXR.ground_plane.visible=System._browser.camera.poseNet.ground_plane_visible; },
+        }
+      },
+      hands: {
+      }
+    }
+  }
+
+ ,light_position: [0,1,0]
+
+ ,use_shadowMap: true
+ ,shadow_darkness: 0.1
+ ,ground_shadow_only: true
+
+ ,make_armIK: {
+  }
+
+ ,SpeechBubble_branch: {
+//    confirm_keydown:true,
+    RE: /^([\dA-Z])\.\s/
+  }
+
+ ,SpeechBubble_pos_fixed: true
+
+ ,_SpeechBubble_scale_: 0
+ ,get SpeechBubble_scale() {
+    if (this._SpeechBubble_scale_) return this._SpeechBubble_scale_;
+
+    let scale = 1.5;
+    if (MMD_SA.THREEX.enabled) {
+      if (window.innerHeight * window.devicePixelRatio < 720)
+        scale = 2;
+      scale /= MMD_SA.SpeechBubble.get_fov_factor();
+    }
+
+    return scale;
+  }
+ ,set SpeechBubble_scale(v) { this._SpeechBubble_scale_ = v; }
+
+ ,use_THREEX: true
+ ,THREEX_options: {
+    enabled_by_default: true,
+
+//    use_MMD: true,
+    use_MMDAnimationHelper: true,
+
+//    use_VRM1: false,
+
+    use_OutlineEffect: true,
+
+//    model_path: 'C:\\Users\\user\\Downloads\\EL-Pr213-BosaHair\\EL-Pr213-BosaHair\\ボサ髪_v01.pmx'//'C:\\Users\\user\\Downloads\\iroha+kazama+v1.0\\iroha kazama v1.0\\model\\iroha kazama ver1.0.pmx'//System.Gadget.path + '/TEMP/DEMO/models/AvatarSample_A.vrm'
+
+    model_para: {
+"AliciaSolid.vrm" : {
+	"camera": {
+		"poseNet": {
+			"arm_horizontal_offset_percent": 50
+		}
+	}
+}
+    },
+
+    model_path_extra: []
+  }
+
+ ,audio_to_dance_disabled: true
+
+ ,camera_auto_adjust: true
+
+ ,is_XR_Animator: true
+
+// END
+};
+
+// --- motion_para modules (extracted from animate.js) ---
+SA.loader.loadScriptSync('images/XR Animator/modules/motion-para-part1.js');
+SA.loader.loadScriptSync('images/XR Animator/modules/motion-para-part2.js');
+SA.loader.loadScriptSync('images/XR Animator/modules/motion-para-part3.js');
+SA.loader.loadScriptSync('images/XR Animator/modules/motion-para-part4.js');
+SA.loader.loadScriptSync('images/XR Animator/modules/motion-para-part5.js');
+
+(function () {
+  if (browser_native_mode && !webkit_window) {
+    MMD_SA_options.width  = screen.width
+    MMD_SA_options.height = screen.height
+  }
+  else {
+    MMD_SA_options.width  = 960
+    MMD_SA_options.height = 540
+  }
+
+//  RAF_animation_frame_unlimited = true
+
+// always restart the electron app by complete relaunching instead of just reloading the page
+  System._restart_full = true;
+
+  Settings_default._custom_.EventToMonitor = "SOUND_ALL"
+  Settings_default._custom_.Use30FPS = "non_default"
+//  Settings_default._custom_.Use60FPS = "non_default"
+  if (use_SA_browser_mode && !is_SA_child_animation)
+    Settings_default._custom_.WallpaperAsBG = "non_default"
+  Settings_default._custom_.SA_BG_url = ""
+  Settings_default._custom_.Display = "-1"
+
+  if (is_SA_child_animation)
+    parent.DragDrop.relay_id = SA_child_animation_id
+
+  if (!webkit_electron_mode) {
+    self.SA_wallpaper_src = "";
+    if (document.body)
+      document.body.style.backgroundColor = "black";
+  }
+
+  MMD_SA_options.WebXR.AR._adult_mode = !!System._browser.url_search_params.adult_mode || webkit_electron_mode;
+
+  fetch(toFileProtocol(Settings.f_path + '/translation.json')).then(response=>{
+    response.json().then(json=>{
+      System._browser.translation.dictionary = json;
+console.log(json);
+    });
+  });
+
+
+// roomba
+  var _s_ = 1;
+
+  MMD_SA_options.motion_para["gura_sit_01"] = { onended: function () { MMD_SA._no_fading=true; }
+// ,model_index_list: [0,2,3,4]
+// ,model_name_RegExp: /Gura/
+ ,adjust_center_view_disabled:false
+ ,center_view:[0,-1.25,12.5]
+
+ ,motion_tracking_enabled: true
+ ,motion_tracking_upper_body_only: true
+ ,adjustment_per_model: {
+    _default_ : {
+  skin_default: {
+    "全ての親": { pos_add:{x:0, y:5.5*_s_, z:0} },
+    "Start_Tail": { keys:[{ pos:{x:0, y:0.75*_s_, z:0}, rot:{x:-80-10, y:0, z:0} }] },
+"センター": { pos_add:{x:0, y:-0.5*_s_, z:0.25*_s_} }
+  },
+    },
+    "gura_xmas.pmx" : {
+  skin_default: {
+    "全ての親": { pos_add:{x:0, y:(5.5-0.5+5)*_s_, z:(0.25+1)*_s_} },
+"左足ＩＫ":{ keys:[{ pos:{x:0, y:0, z:0} }] },
+"右足ＩＫ":{ keys:[{ pos:{x:0, y:0, z:0} }] },
+"Tail": { keys:[{ rot:{x:-30, y:0, z:0} }] },
+  },
+    }
+  }
+ ,skin_filter: { test: (name)=>(!/_tail/i.test(name)) }
+ ,reset_rigid_body_physics_step: 20
+ ,process_bones: function (model, skin) {
+    var mesh = model.mesh
+    if (!mesh._reset_rigid_body_physics_) return
+
+    var bone = mesh.bones_by_name
+    if (bone['スカート_0_0']) {
+      bone['スカート_0_0'].quaternion.setFromEuler(MMD_SA.TEMP_v3.set(-72,  0,  0).multiplyScalar(Math.PI/180), 'YXZ')
+      bone['スカート_0_7'].quaternion.setFromEuler(MMD_SA.TEMP_v3.set(-75, 45,-90).multiplyScalar(Math.PI/180), 'YXZ')
+      bone['スカート_0_6'].quaternion.setFromEuler(MMD_SA.TEMP_v3.set(  0,  0,-30).multiplyScalar(Math.PI/180), 'YXZ')
+      bone['スカート_0_1'].quaternion.setFromEuler(MMD_SA.TEMP_v3.set(-75,-45, 90).multiplyScalar(Math.PI/180), 'YXZ')
+      bone['スカート_0_2'].quaternion.setFromEuler(MMD_SA.TEMP_v3.set(  0,  0, 30).multiplyScalar(Math.PI/180), 'YXZ')
+//      bone['スカート_0_3'].quaternion.setFromEuler(MMD_SA.TEMP_v3.set( 50,  0,  0).multiplyScalar(Math.PI/180), 'YXZ')
+//      bone['スカート_0_4'].quaternion.setFromEuler(MMD_SA.TEMP_v3.set( 70,  0,  0).multiplyScalar(Math.PI/180), 'YXZ')
+//      bone['スカート_0_5'].quaternion.setFromEuler(MMD_SA.TEMP_v3.set( 50,  0,  0).multiplyScalar(Math.PI/180), 'YXZ')
+    }
+
+    var rot_hair = MMD_SA.TEMP_q.setFromEuler(MMD_SA.TEMP_v3.set(45,  0,  0).multiplyScalar(Math.PI/180))
+    bone['中髪後２'] && bone['中髪後２'].quaternion.copy(rot_hair);
+    bone['左髪後２'] && bone['左髪後２'].quaternion.copy(rot_hair);
+    bone['右髪後２'] && bone['右髪後２'].quaternion.copy(rot_hair);
+  }
+/*
+ ,onplaying: function (model_index) {
+var model = THREE.MMD.getModels()[model_index]
+
+var rot_y = Math.PI/4//(rot_y + Math.sign(pos_speed) * 60*Math.PI/180*RAF_timestamp_delta/1000) % (Math.PI*2)
+model.mesh.quaternion.copy(MMD_SA.TEMP_q.setFromEuler(MMD_SA.TEMP_v3.set(0, rot_y, 0)));
+  }
+*/
+  };
+
+  window.addEventListener('MMDStarted', ()=>{
+    if (!/_MissBigHK_\-ghost_buruma2/.test(MMD_SA_options.model_path)) return;
+
+    System._browser.on_animation_update.add((function () {
+      var canvas = document.createElement('canvas');
+      canvas.width  = 512;
+      canvas.height = 256;
+
+      var context = canvas.getContext('2d');
+      context.fillStyle = 'black';
+      context.font = 'bold 60px "Segoe Print"';
+      context.textBaseline = 'top';
+
+      var tex = THREE.MMD.getModels()[0].mesh.material.materials.find(m=>m.name=='sweater+').map;
+
+      var canvas_content = [];
+
+      return function () {
+var content = [];
+if (System._browser.motion_control.enabled_nut && System._browser.motion_control.ready) {
+  const Key = System._browser.motion_control.Key;
+  const key_pressed = System._browser.motion_control.key_pressed;
+
+  let txt = '';
+  if (key_pressed[Key.W]) {
+    if (key_pressed[Key.A])
+      txt += '⬉'
+    else if (key_pressed[Key.D])
+      txt += '⬈'
+    else
+      txt += '⬆'
+  }
+  else if (key_pressed[Key.S]) {
+    if (key_pressed[Key.A])
+      txt += '⬋'
+    else if (key_pressed[Key.D])
+      txt += '⬊'
+    else
+      txt += '⬇'
+  }
+  else {
+    if (key_pressed[Key.A])
+      txt += '⬅'
+    else if (key_pressed[Key.D])
+      txt += '⮕'
+  }
+
+  if (txt) txt = '🎮' + txt;
+  content.push(txt);
+}
+else {
+  content.push('#XRAnimator');//'⬆️🎯🏃Ⓐ⌨️🎮🎥');
+}
+
+var content_txt = content.join()
+if (canvas_content.join() == content_txt) return;
+canvas_content = content;
+
+context.clearRect(0,0,512,256);
+
+if (content_txt) {
+  let w_max = 0, h_max = 60;
+  for (let i = 0, i_length = content.length; i < i_length; i++) {
+    const m = context.measureText(content[i])
+    if (w_max < m.width)
+      w_max = m.width
+  }
+
+  let y = (256 - content.length*(h_max+10)) / 2;
+  for (let i = 0, i_length = content.length; i < i_length; i++) {
+    context.fillText(content[i], (512-w_max)/2, y + i*(h_max+10))
+  }
+}
+
+tex.image = canvas;
+tex.needsUpdate = true;
+      };
+    })(), 0,0,-1)
+  });
+
+  System._browser.video_capture.trigger_on_startup_motion = true;
+
+
+// dungeon options START
+MMD_SA_options.Dungeon_options = {
+
+  transparent_background: true
+
+ ,use_octree: true
+
+ ,use_PC_click_reaction_default: true
+
+ ,joystick_disabled: true
+
+ ,use_point_light: false
+
+ ,shadow_camera_width: 32
+
+ ,falling_height_threshold: 30
+
+ ,motion: {
+    "PC movement forward": {
+  path:System.Gadget.path + '/MMD.js/motion/motion_rpg_pack01.zip#/walk_n_run/run_H01_f0-24.vmd',
+  para_SA: {
+    adjust_center_view_disabled: false,
+
+    _speed: 2000/1800 *30,
+    SFX: [
+      { frame:4,  sound:{} },
+      { frame:16, sound:{} },
+    ],
+
+    motion_tracking_enabled: true,
+    motion_tracking_upper_body_only: true,
+    motion_tracking: {
+//      hand_camera_disabled: true,
+    },
+  }
+    },
+
+    "PC default": {
+  para_SA: {
+    look_at_screen_bone_list: [
+      { name:"首", weight_screen:0.5, weight_screen_y:0.5, weight_motion:1 },
+      { name:"頭", weight_screen:0.5, weight_screen_y:0.5, weight_motion:1 },
+      { name:"上半身",  weight_screen:0.5, weight_screen_x:0,weight_screen_y:0.5, weight_motion:1 },
+      { name:"上半身2", weight_screen:0.5, weight_screen_x:0,weight_screen_y:0.5, weight_motion:1 },
+    ],
+
+    adjust_center_view_disabled: false,
+
+    motion_tracking_enabled: true,
+    motion_tracking_upper_body_only: true,
+    motion_tracking: {
+      look_at_screen: true,
+      hip_adjustment: {
+        rotation_weight: 0.5,
+        displacement_weight: 1,
+      },
+    }
+  }
+    },
+
+  }
+
+ ,grid_material_list: [
+/*
+    {
+  map: System.Gadget.path + "/images/_dungeon/tex/3dtextures.me/Sand 002/Sand 002_COLOR_AO.jpg"
+ ,normalMap: System.Gadget.path + "/images/_dungeon/tex/3dtextures.me/Sand 002/Sand 002_NRM_c80.jpg"
+ ,specularMap: System.Gadget.path + "/images/_dungeon/tex/3dtextures.me/Sand 002/Sand 002_SPEC_c80.jpg"
+ ,geo_by_lvl: [[1,1]]//[[1,1],[16,16],[32,32],[128,128]]//
+ ,distance_by_lvl: []//[1,2,4]//
+ ,repeat_base: [64,64]
+ ,instanced_drawing_by_lvl: [99]
+    }
+*/
+  ]
+
+ ,object_base_list: [
+/*
+    {
+  construction: {
+    build: function () {
+var that = this;
+window.addEventListener("GOML_ready", function () {
+  let geometry = new THREE.RingGeometry(19.5, 20.5, 24, 1);
+  geometry.applyMatrix(new THREE.Matrix4().makeRotationX(THREE.Math.degToRad(-90)));
+  let material = new THREE.MeshBasicMaterial({ color:0xDC143C });
+  let circle_2m = new THREE.Mesh(geometry, material);
+
+  MMD_SA.scene.add(circle_2m);
+
+  circle_2m.visible = false;
+
+  that.mesh_obj = { id:"circle_2m", _obj:circle_2m }
+  MMD_SA_options.mesh_obj.push(that.mesh_obj)
+});
+    }
+  }
+ ,placement: {
+    position: {x:0, y:0.1, z:0}
+   ,hidden: true
+  }
+ ,no_collision: true
+    }
+*/
+// 0
+    {
+  path: Settings.f_path + '/assets/assets.zip#/model/baseball/baseball_v01.x'
+// ,is_dummy: true
+// ,construction:{castShadow:true}
+ ,placement: {
+    grid_id_filter: function () {
+function condition(x_object, model_index) {
+  var skin0 = (model_index == 0) && THREE.MMD.getModels()[0].skin
+  if (skin0 && /baseball_throw/.test(MMD_SA.motion[skin0._motion_index].filename)) {
+    Object.assign(this, (skin0.time < 140/30) ? this._baseball_throw : this._null);
+  }
+  else {
+    x_object._obj_proxy.visible = false
+    return false
+  }
+
+  return true
+}
+
+return [
+  {
+    para:{
+      parent_bone: {
+  model_index: 0
+ ,condition: condition
+ ,_null: { name:"" }
+ ,_baseball_throw: { name:"右手首", position:{x:-0.5,y:-1,z:0} }
+      }
+    }
+  }
+];
+    }
+   ,scale: 10
+  }
+ ,no_collision: true
+    },
+/*
+// roomba
+// 1
+    {
+  path: 'F:\\Programs Portable\\node-webkit\\_TEMP\\gura_x_roomba\\data\\roomba\\roomba_v01.x'
+// ,is_dummy: true
+// ,construction:{castShadow:true}
+ ,placement: {
+    grid_id_filter: function () {
+function condition(x_object, model_index) {
+  var skin0 = (model_index == 0) && THREE.MMD.getModels()[0].skin
+  if (skin0 && /gura_sit/.test(MMD_SA.motion[skin0._motion_index].filename)) {
+    Object.assign(this, this._roomba);
+  }
+  else {
+    x_object._obj_proxy.visible = false
+    return false
+  }
+
+  return true
+}
+
+return [
+  {
+    para:{
+      parent_bone: {
+  model_index: 0
+ ,condition: condition
+//{ name:'センター', position:(/gura_xmas/.test(MMD_SA_options.model_path))?{x:0, y:-6.7*_s_, z:1.95*_s_}:{x:0, y:-2.7*_s_, z:0.95*_s_}, rotation:{x:-10, y:0, z:0} }
+ ,_roomba: { name:'センター', position:(/gura_xmas/.test(MMD_SA_options.model_path))?{x:0, y:-6.7*_s_, z:1.95*_s_}:{x:0, y:-2.7*_s_, z:0.95*_s_}, rotation:{x:-10, y:0, z:0} }
+      }
+    }
+  }
+];
+    }
+   ,scale: 22*_s_ *(MMD_SA_options.WebXR.model_scale || 0.9)
+  }
+ ,no_collision: true
+    }
+*/
+  ]
+
+ ,item_base: {}
+
+
+ ,inventory: {
+    UI: {
+      info: {
+//        scale: 3
+      },
+//      muted: true,
+    }
+  }
+
+ ,events_default: {
+    "_FACEMESH_OPTIONS_": []
+
+  }
+
+ ,skydome: {
+    texture_path_list: [
+//  System.Gadget.path + "/images/_dungeon/tex/ryntaro_nukata/angel_staircase.jpg"
+//  System.Gadget.path + "/images/_dungeon/tex/ryntaro_nukata/blue_sky.jpg"
+//  System.Gadget.path + "/images/_dungeon/tex/ryntaro_nukata/unknown_planet_v00_c95.jpg"
+
+// ,'F:\\MMD\\stages\\Sky Dome\\スカイドームF2配布データVer1.3\\Skydome_F2_Ver1.3\\F201.jpg'
+    ]
+//   ,fog: {}
+  }
+
+ ,options_by_area_id: {
+    "start": {
+
+  RDG_options: {
+
+    width:  1
+   ,height: 1
+   ,grid_array: [[2]]
+
+/*
+    width:  50,
+    height: 50,
+    minRoomSize: 3,
+    maxRoomSize: 10
+,DG_room_count: 10
+*/
+  }
+
+ ,grid_size: 64 *10 *5
+
+ ,floor_material_index_default: -1
+ ,wall_material_index_default: -1
+ ,ceil_material_index_default: -1
+
+ ,ambient_light_color: "#FFF"
+ ,light_color: '#606060'
+
+ ,skydome: {
+    visible: false
+  }
+
+// ,no_camera_collision: true
+ ,camera_y_default_non_negative: false
+
+ ,object_list: [
+    {object_index:0},
+// roomba
+//    {object_index:1}
+  ]
+
+ ,events: {
+    "onstart": [
+      [
+        {
+          func: function () {
+MMD_SA_options.Dungeon_options.character_movement_disabled = true
+return true
+          }
+        }
+/*
+       ,{
+  objects: {
+    "object0_0": { hidden:false }
+  }
+ ,next_step: {}
+        }
+*/
+/*
+       ,{
+  follow_PC: {
+    "object0_0": {pos_base:{x:0,y:5,z:0}}
+  }
+ ,next_step: {}
+        }
+       ,{
+          func: function () {
+MMD_SA_options.Dungeon.character.pos_update()
+MMD_SA_options.Dungeon.object_base_list[0].object_list[0]._obj.updateMatrix()
+return true
+          }
+        }
+*/
+      ]
+    ]
+
+   ,"circle_2m_show": [
+      [
+/*
+        {
+  objects: {
+    "object0_0": {
+  placement: { hidden:false }
+ ,func: function (obj) {
+obj._zoom_scale_update_ = function () {
+  var circle_2m = obj._obj
+  var zoom_scale = MMD_SA.WebXR.zoom_scale
+  circle_2m.scale.set(zoom_scale,1,zoom_scale)
+  circle_2m.updateMatrix()
+};
+window.addEventListener("SA_AR_zoom_scale_update", obj._zoom_scale_update_);
+  }
+    }
+  }
+ ,next_step: {}
+        }
+*/
+
+        {
+          func: function () {
+var circle_2m = MMD_SA.WebXR._circle_2m
+circle_2m.position.copy(THREE.MMD.getModels()[0].mesh.position).y += 0.1
+circle_2m.visible = true
+
+circle_2m._zoom_scale_update_ = function () {
+  var zoom_scale = MMD_SA.WebXR.zoom_scale
+  circle_2m.scale.set(zoom_scale,1,zoom_scale)
+//  circle_2m.updateMatrix()
+};
+window.addEventListener("SA_AR_zoom_scale_update", circle_2m._zoom_scale_update_);
+return true;
+          }
+        }
+
+      ]
+    ]
+
+   ,"circle_2m_hide": [
+      [
+/*
+        {
+  objects: {
+    "object0_0": {
+  placement: { hidden:true }
+ ,func: function (obj) {
+window.removeEventListener("SA_AR_zoom_scale_update", obj._zoom_scale_update_);
+  }
+    }
+  }
+ ,next_step: {}
+        }
+*/
+
+        {
+          func: function () {
+var circle_2m = MMD_SA.WebXR._circle_2m
+circle_2m.visible = false
+
+window.removeEventListener("SA_AR_zoom_scale_update", MMD_SA.WebXR._circle_2m._zoom_scale_update_);
+window.addEventListener("SA_AR_zoom_scale_update", circle_2m._zoom_scale_update_);
+return true;
+          }
+        }
+
+      ]
+    ]
+
+  }
+
+    }
+  }
+
+};
+
+// Forward declarations for functions needed by facemesh-branches modules.
+// Bridge modules are preloaded below before branches load.
+window.XR_Animator_buildMiscOptionsMenuEvents = function(MMD_SA_options) {
+  if (window.XR_Animator_MiscOptionsMenu && typeof window.XR_Animator_MiscOptionsMenu.buildEvents === 'function')
+    return window.XR_Animator_MiscOptionsMenu.buildEvents(MMD_SA_options);
+  return [];
+};
+window.XR_Animator_buildUIEvents20to24 = function(MMD_SA_options, context) {
+  if (window.XR_Animator_UIEvents20to24Bridge && typeof window.XR_Animator_UIEvents20to24Bridge.buildEvents === 'function')
+    return window.XR_Animator_UIEvents20to24Bridge.buildEvents(MMD_SA_options, context);
+  return [[], [], [], [], []];
+};
+
+// Dungeon stub: prevents null-access crashes in handlers that reference Dungeon
+if (!MMD_SA_options.Dungeon) {
+  MMD_SA_options.Dungeon = {
+    started: false, event_mode: false,
+    run_event: function() {}, update_camera_position_base: function() {},
+    inventory: { list: [], find: function() { return null; }, UI: { _muted: false, muted: false } },
+    _states: { event_mode_locked: false, action_allowed_in_event_mode: false, object_click_disabled: false },
+    character: { pos_update: function() {}, rot: { x:0, y:0, z:0 }, icon: null, states: {}, boundingBox: null },
+    object_base_list: [{ object_list: [{ _obj: { updateMatrix: function() {} } }] }],
+    item_base: { hand_camera: { action: { func: function() {} } } },
+    sound: { audio_object_by_name: new Proxy({}, { get: function() { return { play: function() {} }; } }) },
+    motion: {}, motion_filename_by_id: {}, motion_id_by_filename: {},
+    para_by_grid_id: {}, object_click_disabled: false,
+    _3D_scene_builder_mode_: false, no_camera_collision: false,
+    dialogue_branch_mode: [], utils: { adjust_boundingBox: function() {} },
+    area_id: null, check_mouse_on_object: function() { return []; },
+    SFX_check: function() {},
+    update_status_bar: function() {},
+    check_ray_intersection: function() { return false; },
+    check_grid_blocking: function() { return false; },
+    key_map: new Proxy({}, { get: function() { return { down: 0 }; } }),
+  };
+}
+
+// --- item_base modules (extracted from animate.js) ---
+SA.loader.loadScriptSync('images/XR Animator/modules/item-base-part1.js');
+SA.loader.loadScriptSync('images/XR Animator/modules/item-base-part2.js');
+SA.loader.loadScriptSync('images/XR Animator/modules/item-base-part3.js');
+// --- events_default modules ---
+SA.loader.loadScriptSync('images/XR Animator/modules/events-default-base.js');
+// --- FACEMESH_OPTIONS modules ---
+// Preload bridge modules so window globals are available when branches execute
+SA.loader.loadScriptSync('images/XR Animator/modules/misc-options-menu.js');
+SA.loader.loadScriptSync('images/XR Animator/modules/ui-events-20-24-bridge.js');
+SA.loader.loadScriptSync('images/XR Animator/modules/facemesh-options-core.js');
+SA.loader.loadScriptSync('images/XR Animator/modules/facemesh-branches-1.js');
+SA.loader.loadScriptSync('images/XR Animator/modules/facemesh-branches-2.js');
+SA.loader.loadScriptSync('images/XR Animator/modules/facemesh-branches-3.js');
+SA.loader.loadScriptSync('images/XR Animator/modules/facemesh-branches-4.js');
+SA.loader.loadScriptSync('images/XR Animator/modules/facemesh-options-assemble.js');
+// --- XR_Ropes module ---
+SA.loader.loadScriptSync('images/XR Animator/modules/xr-ropes.js');
+
+if (MMD_SA_options.Dungeon_options?.options_by_area_id?.start) {
+  MMD_SA_options.Dungeon_options.options_by_area_id.start.floor_material_index_default = MMD_SA_options.Dungeon_options.grid_material_list.length-1;
+  MMD_SA_options.Dungeon_options.options_by_area_id.start.wall_material_index_default = MMD_SA_options.Dungeon_options.grid_material_list.length-1;
+  MMD_SA_options.Dungeon_options.options_by_area_id.start.ceil_material_index_default = MMD_SA_options.Dungeon_options.grid_material_list.length-1;
+  MMD_SA_options.Dungeon_options.options_by_area_id.start.para_by_grid_id = { '2':{ ground_y:0, ground_y_visible:0 } };
+}
+
+//MMD_SA_options.Dungeon_options = null;
+// END
+
+
+  window.addEventListener("MMDStarted", function () {
+MMD_SA.custom_action_default["cover_undies"].action._condition = function (is_bone_action, objs, _default) {
+  if (/i\-shaped_balance/.test(MMD_SA.MMD.motionManager.filename) && (MMD_SA._ry > 1)) return true;
+
+  return _default;
+};
+
+const use_THREEX = MMD_SA.THREEX.enabled;
+const THREE = MMD_SA.THREEX.THREE;
+
+let geometry = new THREE.PlaneGeometry(MMD_SA_options.Dungeon_options.options_by_area_id.start.grid_size*2, MMD_SA_options.Dungeon_options.options_by_area_id.start.grid_size*2);
+/*
+let tex = document.createElement("canvas")
+tex.width = tex.height = 1
+//let tex_context = tex.getContext("2d")
+//tex_context.fillStyle = "rgba(0,0,0,0)"
+//tex_context.fillRect(0,0,1,1)
+tex = new THREE.Texture(tex)
+tex.needsUpdate = true
+*/
+let material = (use_THREEX) ? new THREE.ShadowMaterial() : new THREE.MeshBasicMaterial({ color: 0x000000, transparent:true });//false });//
+geometry.applyMatrix(new THREE.Matrix4().makeRotationX(THREE.Math.degToRad(-90)));
+let ground = MMD_SA.WebXR.ground_plane = new THREE.Mesh(geometry, material);
+ground.receiveShadow = true;
+if (!use_THREEX) ground.receiveShadowAlpha = true;
+MMD_SA.THREEX.scene.add(ground)
+
+let wall_geo = new THREE.BoxGeometry(30,30,30);
+wall_geo.applyMatrix(new THREE.Matrix4().makeTranslation(0,10,-15));
+let wall = MMD_SA.WebXR._wall = new THREE.Mesh(wall_geo, material);
+wall.receiveShadow = true;
+if (!use_THREEX) {
+  wall.useQuaternion = true;
+  wall.receiveShadowAlpha = true;
+}
+MMD_SA.THREEX.scene.add(wall)
+
+window.addEventListener("SA_MMD_toggle_shadowMap", function () {
+  ground.receiveShadow = wall.receiveShadow = MMD_SA_options.use_shadowMap;
+  if (!use_THREEX) ground.receiveShadowAlpha = wall.receiveShadowAlpha = MMD_SA_options.use_shadowMap;
+  material.opacity = (MMD_SA_options.use_shadowMap) ? 0.5 : 0
+  material.needsUpdate = true
+});
+
+// can be updated only AFTER scene.add
+wall.visible = false
+material.opacity = 0.5
+
+let circle_2m_geometry = new THREE.RingGeometry(19.5, 20.5, 24, 1);
+circle_2m_geometry.applyMatrix(new THREE.Matrix4().makeRotationX(THREE.Math.degToRad(-90)));
+let circle_2m_material = new THREE.MeshBasicMaterial({ color:0xDC143C });
+let circle_2m = MMD_SA.WebXR._circle_2m = new THREE.Mesh(circle_2m_geometry, circle_2m_material);
+MMD_SA.THREEX.scene.add(circle_2m);
+circle_2m_material.opacity = 0.5;
+circle_2m.visible = false;
+
+
+MMD_SA_options.WebXR.AR.item_reticle_id = "reticle"
+Object.defineProperty(MMD_SA.WebXR, "_item_reticle", {
+  get: function () {
+    let item_reticle_id = MMD_SA_options.WebXR.AR.item_reticle_id
+    return MMD_SA_options.Dungeon.inventory.list.find((item)=>item.item_id==item_reticle_id);
+  }
+});
+
+window.addEventListener("SA_Dungeon_onstart", function () {
+
+const THREE = self.THREE;
+
+let v3a = new THREE.Vector3()
+let v3b = new THREE.Vector3()
+let v3c = new THREE.Vector3()
+
+let _camera_position = new THREE.Vector3()
+let _timestamp
+
+window.addEventListener("SA_MMD_model0_onmotionplaying", function (e) {
+  var model_mesh = THREE.MMD.getModels()[0].mesh
+  if (!model_mesh.visible)
+    return
+
+  var mm = MMD_SA.MMD.motionManager
+  if (!/standmix2_modified/.test(mm.filename))
+    return
+
+  if (MMD_SA.WebXR.user_camera.visible)
+    return
+
+  if (!MMD_SA.WebXR.session)
+    return;
+
+  var AR_options = MMD_SA_options.WebXR.AR
+  var d = MMD_SA_options.Dungeon;
+  var dis = v3a.copy(MMD_SA.camera_position).setY(0).distanceTo(v3b.copy(model_mesh.position).setY(0))/10 / MMD_SA.WebXR.zoom_scale;
+  var speed = 0, cam_mov;
+  if (_camera_position) {
+    speed = (_camera_position.distanceTo(v3a)/10 / MMD_SA.WebXR.zoom_scale) / ((RAF_timestamp - _timestamp)/1000);
+//DEBUG_show(speed)
+    cam_mov = v3c.copy(_camera_position).sub(v3a);
+  }
+
+  _camera_position.copy(v3a)
+  _timestamp = RAF_timestamp
+
+  if (AR_options._skip_charging_count && --AR_options._skip_charging_count) return;
+  if ((dis > 0.75) || (speed < 1)) return;
+
+  var cam_dir = v3a.sub(v3b)
+//  speed && cam_mov && DEBUG_show(cam_mov.angleTo(cam_dir));return;
+  if (Math.abs(cam_mov.angleTo(cam_dir)) > Math.PI/4) return;
+
+  if (AR_options._wallhit) {
+    MMD_SA_options._motion_shuffle_list = [MMD_SA_options.motion_index_by_name["emote-mod_おどろく1"]]
+    MMD_SA_options.motion_shuffle_list_default = null
+    MMD_SA._force_motion_shuffle = true
+    d.sound.audio_object_by_name["anime_wow"].play(model_mesh)
+    return
+  }
+
+  var angle_y = Math.atan2(cam_dir.x,cam_dir.z) - v3b.setEulerFromQuaternion(model_mesh.quaternion).y
+
+  if (Math.abs(angle_y) < Math.PI/2) {
+    // use ._motion_shuffle_list instead, because we have multiple motions running in order, but .motion_shuffle_list_default can be shuffled.
+    MMD_SA_options._motion_shuffle_list = [MMD_SA_options.motion_index_by_name["w01_すべって尻もち"], MMD_SA_options.motion_index_by_name["女の子座り→立ち上がる_gumi_v01"]]
+    MMD_SA_options.motion_shuffle_list_default = null
+    MMD_SA._force_motion_shuffle = true
+  }
+  else {
+    // use ._motion_shuffle_list instead, because we have multiple motions running in order, but .motion_shuffle_list_default can be shuffled.
+    MMD_SA_options._motion_shuffle_list = [MMD_SA_options.motion_index_by_name["r01_普通に転ぶ"], MMD_SA_options.motion_index_by_name["OTL→立ち上がり"]]
+    MMD_SA_options.motion_shuffle_list_default = null
+    MMD_SA._force_motion_shuffle = true
+  }
+
+  d.sound.audio_object_by_name["hit-3"].play(model_mesh)
+});
+
+if (MMD_SA.WebXR._item_reticle)
+  document.getElementById("Ldungeon_inventory_item" + MMD_SA.WebXR._item_reticle.index + "_icon").style.opacity = 1;
+
+window.addEventListener("SA_AR_onSessionStarted", function (e) {
+  let item_reticle = MMD_SA.WebXR._item_reticle
+  item_reticle._opacity_mod_ = -0.025
+  document.getElementById("Ldungeon_inventory_item" + item_reticle.index + "_icon").style.opacity = 1
+});
+
+window.addEventListener("SA_AR_onSessionEnd", function (e) {
+  document.getElementById("Ldungeon_inventory_item" + MMD_SA.WebXR._item_reticle.index + "_icon").style.opacity = 1
+});
+
+window.addEventListener("SA_AR_onARFrame", (function () {
+  var timerID
+
+  function item_reticle_flash() {
+    timerID = null
+    if (!MMD_SA.WebXR.session)
+      return
+
+    let item_reticle = MMD_SA.WebXR._item_reticle
+    let icon = document.getElementById("Ldungeon_inventory_item" + MMD_SA.WebXR._item_reticle.index + "_icon").style
+    let opacity = parseFloat(icon.opacity) + item_reticle._opacity_mod_
+    icon.opacity = opacity
+    if (opacity >= 1)
+      item_reticle._opacity_mod_ = -Math.abs(item_reticle._opacity_mod_)
+    else if (opacity <= 0.25)
+      item_reticle._opacity_mod_ =  Math.abs(item_reticle._opacity_mod_)
+//DEBUG_show(opacity+'/'+item_reticle._opacity_mod_)
+  }
+
+  return function (e) {
+//    if (!MMD_SA.WebXR.session.domOverlayState) return
+    if (!timerID)
+      timerID = requestAnimationFrame(item_reticle_flash)
+  };
+})());
+
+
+(()=>{
+  const v1 = new THREE.Vector3();
+  const v2 = new THREE.Vector3();
+
+  window.addEventListener('SA_MMD_Wallpaper3D_on_update_transform', ()=>{
+const mod = MMD_SA.Camera_MOD.get_mod('camera_lock');
+MMD_SA.Wallpaper3D.mesh.position.add(mod.pos_last);
+  });
+
+  let camera_locked;
+  function camera_lock() {
+    const obj = MMD_SA._trackball_camera;
+
+    camera_locked = !camera_locked;
+    if (camera_locked) {
+      const camera_raw = MMD_SA.Camera_MOD.get_camera_raw();
+      MMD_SA.Camera_MOD.adjust_camera('camera_lock', camera_raw.pos, camera_raw.target, camera_raw.up_z);
+
+      MMD_SA.reset_camera();
+// needed for "auto_zoom" camera mod
+      System._browser.on_animation_update.add(()=>{ MMD_SA.reset_camera(); }, 3,0);
+
+      MMD_SA.THREEX.camera.control.enabled = false;
+    }
+    else {
+      MMD_SA.Camera_MOD.adjust_camera('camera_lock', v1.set(0,0,0), v2.set(0,0,0), 0);
+      MMD_SA.THREEX.camera.control.enabled = true;
+      MMD_SA.reset_camera();
+    }
+
+    MMD_SA.Wallpaper3D.update_transform();
+
+    DEBUG_show('Camera lock:'+((camera_locked)?'ON':'OFF'), 3);
+  }
+
+  const hotkey_config = [
+    {
+      id: 'switch_motion',
+      accelerator: (()=>{
+const acc = [];
+for (let i = 0; i < 10; i++)
+  acc.push('Alt+num'+i, 'Ctrl+num'+i);
+return acc;
+      })(),
+      process: (e)=>{
+const ev = e.detail.e;
+if (/Numpad(\d)/.test(ev.code) && (ev.altKey||ev.ctrlKey)) {
+  const num = parseInt(RegExp.$1);
+// e.detail.alt_location
+  const motion_index = (num == 0) ? -1 : (num-1) + ((ev.altKey) ? 0 : 9);
+//DEBUG_show(motion_index+'/'+Date.now(),0,1)
+  MMD_SA_options.Dungeon_options.item_base.pose._change_motion_(motion_index, true);
+}
+      }
+    },
+
+    {
+
+      id: 'switch_avatar_model',
+      accelerator: (()=>{
+const acc = [];
+for (let i = 1; i <= 4; i++)
+  acc.push('Alt+'+i);
+return acc;
+      })(),
+      global_disabled: true,
+      process: (e)=>{
+const ev = e.detail.e;
+const index = parseInt(ev.code.replace(/\D+/g, ''))-1;
+const model_index = MMD_SA.THREEX.models.findIndex(m=>m.index_default==index);
+if (model_index != -1) {
+  MMD_SA.THREEX.VRM.swap_model(model_index);
+}
+else {
+  const path = MMD_SA_options.THREEX_options.model_path_extra?.[index-1];
+  if (path) {
+    SA_DragDropEMU(path);
+  }
+  else {
+    DEBUG_show('(No extra model available)', 3);
+  }
+}
+      }
+    },
+
+    {
+      id: 'mocap_auto_grounding',
+      accelerator: ['Ctrl+G'],
+      process: (e)=>{
+System._browser.camera.poseNet.auto_grounding = !System._browser.camera.poseNet.auto_grounding;
+DEBUG_show('Mocap auto-grounding:' + ((System._browser.camera.poseNet.auto_grounding) ? 'ON' : 'OFF'), 3);
+      }
+    },
+
+    {
+      id: 'camera_3D_lock',
+      accelerator: ['Ctrl+L'],
+      global_disabled: true,
+      process: (e)=>{
+camera_lock();
+      }
+    },
+
+    {
+      id: 'mirror_pose',
+      accelerator: ['Ctrl+M'],
+      global_disabled: true,
+      process: (e)=>{
+MMD_SA_options._XRA_mirror_pose();
+      }
+    },
+
+    {
+      id: 'hand_camera',
+      accelerator: ['Ctrl+H'],
+      process: (e)=>{
+MMD_SA_options.Dungeon.item_base.hand_camera.action.func();
+      }
+    },
+
+    {
+      id: 'selfie_mode',
+      accelerator: ['Alt+S'],
+      process: (e)=>{
+const m = !MMD_SA_options.Dungeon_options.item_base.hand_camera.selfie_mode;
+MMD_SA_options.Dungeon_options.item_base.hand_camera.selfie_mode = m;
+System._browser.camera.DEBUG_show('Selfie mode: ' + ((m)?'ON':'OFF'), 5);
+      }
+    },
+
+    {
+      id: 'auto_look_at_camera',
+      accelerator: ['Ctrl+E'],
+      process: (e)=>{
+System._browser.camera.facemesh.auto_look_at_camera = !System._browser.camera.facemesh.auto_look_at_camera;
+DEBUG_show('Auto "look at camera":' + ((System._browser.camera.facemesh.auto_look_at_camera) ? 'ON' : 'OFF'), 3);
+      }
+    },
+
+    {
+      id: 'hip_camera',
+      accelerator: ['Alt+H'],
+      process: (e)=>{
+System._browser.camera.poseNet.hip_camera = !System._browser.camera.poseNet.hip_camera;
+      }
+    },
+  ];
+
+  const hotkey_reserved = [];
+  hotkey_config.forEach(k=>k.accelerator.forEach(a=>{ hotkey_reserved.push(a) }));
+
+  System._browser.hotkeys._hotkey_config = System._browser.hotkeys._hotkey_config.concat(hotkey_config);
+  System._browser.hotkeys._hotkey_reserved = hotkey_reserved;
+//console.log(System._browser.hotkeys._hotkey_config, hotkey_reserved)
+
+  System._browser.hotkeys._hotkey_config.forEach(config=>{
+    const _config = MMD_SA_options._XRA_settings_imported?.hotkeys?.configs?.find(c=>c.id==config.id);
+    System._browser.hotkeys.add(Object.assign({}, config, _config||{}));
+  });
+
+//  if (webkit_electron_mode && (System._browser.hotkeys.is_global !== false)) System._browser.hotkeys.register_global(true);
+})();
+
+
+});
+
+//console.log(ground,material)
+  });
+
+  System._browser.hotkeys._hotkey_config = [];
+
+  window.XR_Animator_buildMiscOptionsMenuEvents = function XR_Animator_buildMiscOptionsMenuEvents(MMD_SA_options) {
+    XR_Animator_loadScriptsSync([
+      'images/XR Animator/modules/misc-options-menu.js',
+    ]);
+
+    if (window.XR_Animator_MiscOptionsMenu && (typeof window.XR_Animator_MiscOptionsMenu.buildEvents === 'function')) {
+      return window.XR_Animator_MiscOptionsMenu.buildEvents(MMD_SA_options);
+    }
+
+    if (window.console && console.warn) {
+      console.warn('[XR Animator] Misc options menu module unavailable');
+    }
+
+    return [];
+  }
+
+  window.XR_Animator_buildUIEvents20to24 = function XR_Animator_buildUIEvents20to24(MMD_SA_options, context) {
+    XR_Animator_loadScriptsSync([
+      'images/XR Animator/modules/ui-events-20-24-bridge.js',
+    ]);
+
+    if (window.XR_Animator_UIEvents20to24Bridge && (typeof window.XR_Animator_UIEvents20to24Bridge.buildEvents === 'function')) {
+      return window.XR_Animator_UIEvents20to24Bridge.buildEvents(MMD_SA_options, context);
+    }
+
+    if (window.console && console.warn) {
+      console.warn('[XR Animator] UI events 20-24 bridge module unavailable');
+    }
+
+    return [[], [], [], [], []];
+  }
+
+  function XR_Animator_loadScriptsSync(scriptPaths) {
+    if (!(window.SA && SA.loader && (typeof SA.loader.loadScriptSync === 'function'))) {
+      return;
+    }
+
+    scriptPaths.forEach((path)=>{
+      SA.loader.loadScriptSync(path);
+    });
+  }
+
+  XR_Animator_loadScriptsSync([
+    'images/XR Animator/modules/settings-export.js',
+    'images/XR Animator/modules/settings-import.js',
+    'images/XR Animator/modules/settings-save.js',
+    'images/XR Animator/modules/settings-reset.js',
+    'images/XR Animator/modules/ui-options-settings-actions.js',
+    'images/XR Animator/modules/ui-events-20-24-bridge.js',
+    'images/XR Animator/modules/misc-options-menu.js',
+    'images/XR Animator/modules/gamepad-control-menu.js',
+    'images/XR Animator/modules/bootstrap-scripts.js',
+  ]);
+
+  MMD_SA_options._XRA_settings_export = ()=>{
+if (window.XR_Animator_SettingsExport && (typeof window.XR_Animator_SettingsExport.build === 'function'))
+  return window.XR_Animator_SettingsExport.build(MMD_SA_options)
+
+return {}
+  };
+
+  MMD_SA_options._XRA_settings_import = async (config=MMD_SA_options._XRA_settings_imported)=>{
+if (window.XR_Animator_SettingsImport && (typeof window.XR_Animator_SettingsImport.importConfig === 'function'))
+  return window.XR_Animator_SettingsImport.importConfig(MMD_SA_options, config)
+
+return
+  }
+
+  XR_Animator_loadScriptsSync([
+    'images/XR Animator/modules/settings-lifecycle.js',
+    'images/XR Animator/modules/settings-runtime-bridge.js',
+  ]);
+
+  const XR_Animator_settingsRuntimeBridge =
+    (window.XR_Animator_SettingsRuntimeBridge && (typeof window.XR_Animator_SettingsRuntimeBridge.create === 'function'))
+      ? window.XR_Animator_SettingsRuntimeBridge.create(MMD_SA_options)
+      : null;
+
+  if (XR_Animator_settingsRuntimeBridge && (typeof XR_Animator_settingsRuntimeBridge.installSettingsLifecycleHandlers === 'function')) {
+    XR_Animator_settingsRuntimeBridge.installSettingsLifecycleHandlers();
+  }
+  else if (window.console && console.warn) {
+    console.warn('[XR Animator] Settings runtime bridge module unavailable');
+  }
+
+
+// headless_mode START
+  Object.defineProperty(System._browser, 'skipping_rendering', {
+    get: function () {
+if (this.skip_rendering && !this.hidden) return true;
+
+if (!returnBoolean('DisableBackgroundThrottling')) return false;
+
+return this.skip_background_rendering && this.hidden;
+    }
+  });
+
+  window.addEventListener('load', ()=>{
+    if (typeof MMD_SA !== 'object' || !MMD_SA)
+      return
+
+    Object.defineProperty(MMD_SA, 'hide_3D_avatar', (()=>{
+      let hide_3D_avatar = false;
+      return {
+        get: function () { return hide_3D_avatar || System._browser.skipping_rendering || MMD_SA.THREEX._XR_Animator_scene_?.settings?.avatar_replacement_mode; },
+        set: function (v) { hide_3D_avatar = v; }
+      };
+    })());
+
+//System._browser.WebSocket.init_server(13939).then(()=>{ System._browser.WebSocket.send_message('ws://localhost:19190', '{"app":"XRAnimator", "action":"is_ready"}'); });
+  });
+
+  if (window.SA && SA.loader && (typeof SA.loader.loadScriptSync === 'function')) {
+    SA.loader.loadScriptSync('images/XR Animator/modules/headless-websocket-bridge.js');
+  }
+
+  if (window.XR_Animator_HeadlessWsBridge && (typeof window.XR_Animator_HeadlessWsBridge.install === 'function')) {
+    window.XR_Animator_HeadlessWsBridge.install();
+  }
+  else if (window.console && console.warn) {
+    console.warn('[XR Animator] Headless WebSocket bridge module unavailable');
+  }
+// headless_mode END
+
+
+  Object.defineProperty(MMD_SA_options, '_camera_auto_zoom_percent', (()=>{
+    let camera_auto_zoom_percent;
+    return {
+      get: function () { return camera_auto_zoom_percent || 0; },
+      set: function (v) { camera_auto_zoom_percent = v; }
+    };
+  })());
+
+  Object.defineProperty(MMD_SA_options, 'camera_auto_zoom_percent', (()=>{
+    let camera_auto_zoom_percent;
+    return {
+      get: function () { return ((MMD_SA.MMD.motionManager.filename == 'stand_simple') || MMD_SA_options._XRA_explorer_mode) ? 0 : this._camera_auto_zoom_percent; },
+      set: function (v) { this._camera_auto_zoom_percent = v; }
+    };
+  })());
+
+  window.addEventListener('SA_Dungeon_onstart', ()=>{
+    function reset_auto_zoom() {
+if (MMD_SA.Camera_MOD._obj.mod_list['auto_zoom'])
+  MMD_SA.Camera_MOD.adjust_camera('auto_zoom', MMD_SA.TEMP_v3.set(0,0,0,));
+    }
+
+    const f = new System._browser.data_filter([{ type:'one_euro', id:'auto_zoom', transition_time:0.5, para:[30, 1,0.1/5,1, 1] }]);
+
+    window.addEventListener('MMDCameraReset', ()=>{
+if (!MMD_SA_options.camera_auto_zoom_percent) {
+  reset_auto_zoom();
+}
+    });
+
+    window.addEventListener('SA_MMD_before_render', ()=>{//'SA_MMD_model0_process_bones_after_IK', ()=>{//
+if (!MMD_SA_options.camera_auto_zoom_percent) {
+  reset_auto_zoom();
+  return;
+}
+
+const model = THREE.MMD.getModels()[0];
+const mesh = model.mesh;
+const modelX = MMD_SA.THREEX.get_model(0);
+let scale = (modelX.para.hip_center.y + modelX.para.spine_length/2) / (11.364640235900879 + 4.97462/2);
+
+const bone_pos_list = []
+for (const name of ['頭', '左ひじ','右ひじ', '左中指１','右中指１', '左ひざ','右ひざ', '左足首','右足首']) {
+  const b_pos = modelX.get_bone_position_by_MMD_name(name, true);
+  if (name == '頭') {
+//    const neck_height = modelX.get_bone_origin_by_MMD_name('頭')[1]-modelX.get_bone_origin_by_MMD_name('首')[1];
+//    let head_height = neck_height*3;
+    let spine_length = modelX.para.spine_length;
+    let head_height;
+    if (modelX.para.head_height_absolute < spine_length/2) {
+      head_height = modelX.para.head_height_absolute;
+    }
+    else {
+      head_height = spine_length/2 + (modelX.para.head_height_absolute - spine_length/2) * 0.5;
+    }
+
+    b_pos.add(MMD_SA.TEMP_v3.set(0, head_height, 0).applyQuaternion(modelX.get_bone_rotation_by_MMD_name(name, true)));
+  }
+  else if (name.indexOf('足首') != -1) {
+    b_pos.add(MMD_SA.TEMP_v3.set(0, -modelX.para.left_heel_height, modelX.para.left_heel_height*1.5).applyQuaternion(modelX.get_bone_rotation_by_MMD_name(name, true)));
+//if (name=='左足首') System._browser.camera.DEBUG_show(modelX.get_bone_position_by_MMD_name(name, true).toArray().join('\n'))
+  }
+  bone_pos_list.push(b_pos);
+}
+//System._browser.camera.DEBUG_show(bone_pos_list.map(b=>b.toArray().join('\n')).join('\n\n'))
+
+const c_rot = MMD_SA._q1.copy(mesh.quaternion);
+// NOTE: if SA_MMD_before_render is used, VRM0/1 rotation adjustment will need to be considered
+if ((modelX.type == 'VRM') && !modelX.is_VRM1) c_rot.premultiply(MMD_SA.TEMP_q.set(0,1,0,0));
+
+MMD_SA.TEMP_q.copy(MMD_SA._trackball_camera.object.quaternion);
+
+//MMD_SA.TEMP_q.y *= -1; MMD_SA.TEMP_q.z *= -1;
+MMD_SA.TEMP_q.conjugate();
+//MMD_SA.TEMP_q.premultiply(MMD_SA._q2.set(0,1,0,0));
+
+c_rot.multiply(MMD_SA.TEMP_q);
+
+const center = MMD_SA._v3a.fromArray(MMD_SA_options.camera_lookAt).add(MMD_SA._v3b.fromArray(MMD_SA.center_view_lookAt)).setZ(0);
+bone_pos_list.forEach(p=>{
+  p.sub(center).applyQuaternion(c_rot);
+});
+
+const pos_min = MMD_SA._v3a.set(
+  Math.min(...bone_pos_list.map(v3=>v3.x)),
+  Math.min(...bone_pos_list.map(v3=>v3.y)),
+  Math.min(...bone_pos_list.map(v3=>v3.z)),
+);
+
+const pos_max = MMD_SA._v3b.set(
+  Math.max(...bone_pos_list.map(v3=>v3.x)),
+  Math.max(...bone_pos_list.map(v3=>v3.y)),
+  Math.max(...bone_pos_list.map(v3=>v3.z)),
+);
+
+// https://hofk.de/main/discourse.threejs/2022/CalculateCameraDistance/CalculateCameraDistance.html
+// fov 50: 0.93261531630999718566001238959912
+let f_fov = 2 * Math.tan(Math.PI/180 * MMD_SA.THREEX.camera.obj.fov / 2);//0.93261531630999718566001238959912;//
+let d = Math.max((pos_max.y - pos_min.y) / f_fov, (pos_max.x - pos_min.x) / (MMD_SA.THREEX.SL.width/MMD_SA.THREEX.SL.height * f_fov));
+d /= MMD_SA_options.camera_auto_zoom_percent/100;
+
+const c_base = MMD_SA.Camera_MOD.get_camera_base(['camera_lock', 'face']);
+const pos = MMD_SA.THREEX.v1.copy(c_base.pos).sub(c_base.target);
+
+const zoom = pos.length();
+let z_offset = Math.min(Math.max(d + pos_max.z*2/3, pos_max.z+3*scale) - zoom, 0);
+z_offset = f.filter(z_offset);
+//System._browser.camera.DEBUG_show(pos_min.toArray().join('\n')+'\n\n'+pos_max.toArray().join('\n')+'\n\n'+d+'\n'+pos_max.z+'\n'+z_offset+'\n'+zoom)
+
+pos.normalize().multiplyScalar(zoom + z_offset).add(c_base.target);
+pos.sub(c_base.pos);
+
+//MMD_SA._trackball_camera.noZoom = true;
+MMD_SA.Camera_MOD.adjust_camera('auto_zoom', pos);
+    });
+  });
+
+
+  window.addEventListener('load', ()=>{
+    self.XR_Ropes.ensure_ui();
+  });
+
+  window.addEventListener('jThree_ready', ()=>{
+    self.XR_Ropes.ensure_ui();
+    self.XR_Ropes.rebuild();
+  });
+
+  window.addEventListener('MMDStarted', ()=>{
+    self.XR_Ropes.rebuild();
+  });
+
+  window.addEventListener('SA_MMD_before_render', ()=>{
+    self.XR_Ropes.update();
+  });
+
+
+  EV_sync_update.fps_control = (function () {
+    var update_frame = false
+    var cooling_count = 0
+    return function () {
+      var camera = System._browser.camera;
+
+// the purpose is to save some GPU power by skipping frames when the mocap frame rate is low (camera.ML_fps < 15)
+// when backgroundThrottling is disabled and the app is hidden (i.e. System._browser.hidden), there is no need to skip frame as nothing will be rendered
+      if (System._browser.hidden || (RAF_timestamp_delta > 25) || MMD_SA_options.user_camera.ML_models.worker_disabled || !camera.initialized || camera._needs_RAF || !camera.ML_busy || (!is_mobile && ((camera.ML_fps > 15) || (cooling_count=10)) && (!camera.video.paused && (--cooling_count < 0))) || (!(camera.facemesh.enabled && camera.facemesh.use_mediapipe) && !camera.poseNet.enabled)) {
+        camera._needs_RAF = false
+        update_frame = true
+      }
+      else {
+        update_frame = !update_frame
+      }
+
+      RAF_timestamp_delta_accumulated = (update_frame) ? 0 : RAF_timestamp_delta_accumulated + RAF_timestamp_delta;
+
+      System._browser.motion_control.setMousePosition();
+
+      return update_frame
+    };
+  })();
+
+
+//MMD_SA_options.motion_para['motion_ukulele'] = Object.assign({}, MMD_SA_options.motion_para['sitting_sexy09']);
+
+
+})();
+
+function XR_Animator_load_bootstrap_scripts() {
+  if (window.XR_Animator_BootstrapScripts && (typeof window.XR_Animator_BootstrapScripts.load === 'function')) {
+    window.XR_Animator_BootstrapScripts.load({
+      MMD_SA_options: MMD_SA_options,
+      toFileProtocol: toFileProtocol,
+      Settings: Settings,
+      documentRef: document,
+    })
+    return
+  }
+
+  if (window.__XR_ANIMATOR_BOOTSTRAP_SCRIPTS_LOADED__)
+    return
+  window.__XR_ANIMATOR_BOOTSTRAP_SCRIPTS_LOADED__ = true
+
+  document.write('<script language="JavaScript" src="' + toFileProtocol(Settings.f_path + '/animate_customized.js') + '"></scr'+'ipt>')
+
+  if (MMD_SA_options.Dungeon_options) {
+    // document.write('<script language="JavaScript" src="js/dungeon.js"></scr'+'ipt>')
+  }
+  document.write('<script language="JavaScript" src="js/mmd/speech-bubble.js"></scr'+'ipt>')
+  document.write('<script language="JavaScript" src="js/mmd/vfx.js"></scr'+'ipt>')
+  document.write('<script language="JavaScript" src="js/mmd/webxr.js"></scr'+'ipt>')
+  document.write('<script language="JavaScript" src="js/mmd/osc.js"></scr'+'ipt>')
+  document.write('<script language="JavaScript" src="js/mmd/gamepad.js"></scr'+'ipt>')
+  document.write('<script language="JavaScript" src="js/mmd/wallpaper3d.js"></scr'+'ipt>')
+  document.write('<script language="JavaScript" src="js/mmd/sprite.js"></scr'+'ipt>')
+  document.write('<script language="JavaScript" src="js/mmd/camera-shake.js"></scr'+'ipt>')
+  document.write('<script language="JavaScript" src="js/mmd/defaults.js"></scr'+'ipt>')
+  document.write('<script language="JavaScript" src="MMD.js/MMD_SA.js"></scr'+'ipt>')
+}
+
+XR_Animator_load_bootstrap_scripts()

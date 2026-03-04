@@ -243,7 +243,14 @@ if (!target_current.enabled && ((target_current.enabled === false) || (target_cu
 }
 
 // filter to prevent camera distortion when avatar is extremely close
-const c_rot = TX.q1.fromArray(c_rot_data.filter(MMD_SA._trackball_camera.object.quaternion.toArray()));
+if (!MMD_SA._trackball_camera?.object) return;
+// Guard against NaN quaternion (can happen when camera pos == target during init)
+const _camQ = MMD_SA._trackball_camera.object.quaternion;
+if (isNaN(_camQ.w) || isNaN(_camQ.x)) {
+  MMD_SA._trackball_camera.object.quaternion.set(0, 0, 0, 1);
+  return;
+}
+const c_rot = TX.q1.fromArray(c_rot_data.filter(_camQ.toArray()));
 
 const target_pos = TX.v4.copy(target_current.get_target_position());
 const target_pos_z0 = target_pos.z;
@@ -367,8 +374,7 @@ pos.sub(c_base.target);
 head_pos.add(pos).multiplyScalar(MMD_SA_options.camera_face_locking_percent/100);
 //DEBUG_show(head_pos.toArray().join('\n'))
 
-if (MMD_SA_options.Dungeon.started) {
-  const camera_raw = MMD_SA.Camera_MOD.get_camera_raw(false, true);
+if (MMD_SA_options.Dungeon?.started) {
   head_pos.add(MMD_SA.TEMP_v3.copy(camera_raw.pos).setZ(0));
 }
 

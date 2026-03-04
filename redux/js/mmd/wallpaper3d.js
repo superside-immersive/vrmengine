@@ -1454,6 +1454,9 @@ else {
     },
 
     export_mesh: async function () {
+System._browser.DEBUG_show('Mesh export has been removed from this build.');
+return;
+
 if (!MMD_SA.THREEX.enabled) {
   return;
 }

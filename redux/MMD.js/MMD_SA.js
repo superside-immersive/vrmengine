@@ -3,9 +3,18 @@
 
 var use_full_spectrum = true
 
-var MMD_SA_options
+var _runtime_global = (typeof self !== 'undefined') ? self : ((typeof window !== 'undefined') ? window : this)
+if (_runtime_global.AvatarRuntimeOptions && !_runtime_global.MMD_SA_options)
+  _runtime_global.MMD_SA_options = _runtime_global.AvatarRuntimeOptions
+if (_runtime_global.MMD_SA_options && !_runtime_global.AvatarRuntimeOptions)
+  _runtime_global.AvatarRuntimeOptions = _runtime_global.MMD_SA_options
 
-var MMD_SA = {
+var AvatarRuntimeOptions = _runtime_global.AvatarRuntimeOptions || _runtime_global.MMD_SA_options || {}
+_runtime_global.AvatarRuntimeOptions = _runtime_global.MMD_SA_options = AvatarRuntimeOptions
+
+var MMD_SA_options = AvatarRuntimeOptions
+
+var AvatarRuntime = {
   initialized: false
  ,init: function () {
 if (this.initialized)
@@ -335,7 +344,7 @@ const sb_func = async function () {
     sb.addEventListener("click", async function () {
       if (MMD_SA_options.Dungeon_options && MMD_SA_options.Dungeon_options.multiplayer) {
         const mp = MMD_SA_options.Dungeon.multiplayer
-        if (!mp.is_host && !mp.is_client) {
+        if (mp && !mp.is_host && !mp.is_client) {
           if (!confirm("You are about to start without joining a game from other players, which means you will start in \"host\" mode. In this mode, you won't be able to join other players' games, but on the other hand, other players can join yours."))
             return
           ChatboxAT.SendData_ChatSend([System._browser.P2P_network.process_message('/host')])
@@ -398,8 +407,10 @@ const sb_func = async function () {
 
 if (!MMD_SA_options.Dungeon)
   sb_func()
-else
+else if (MMD_SA_options.Dungeon.multiplayer && MMD_SA_options.Dungeon.multiplayer.init)
   MMD_SA_options.Dungeon.multiplayer.init(sb_func)
+else
+  sb_func()
   }
 }
 else {
@@ -533,10 +544,8 @@ return System._browser.load_script(toFileProtocol(System.Gadget.path + ((localho
   }
 
  ,VMD_FileWriter: function () {
-return Promise.all([
-  System._browser.load_script(toFileProtocol(System.Gadget.path + '/js/VMD_filewriter.js')),
-  System._browser.load_script(toFileProtocol(System.Gadget.path + '/js/encoding.min.js'))
-]);
+System._browser.DEBUG_show('Motion export has been removed from this build.');
+return Promise.resolve();
   }
 
 // Camera_MOD — loaded from js/mmd/camera-mod.js
@@ -587,7 +596,7 @@ return _pos;
 };
 
 
-MMD_SA.init_my_model = function (zip_path, path_local) {
+AvatarRuntime.init_my_model = function (zip_path, path_local) {
   var model_filename = path_local.replace(/^.+[\/\\]/, "")
 
   var _MME_v = {};
@@ -639,9 +648,75 @@ MMD_SA.init_my_model = function (zip_path, path_local) {
   }
 };
 
+var MMD_SA = AvatarRuntime;
+if (typeof self !== 'undefined') {
+  self.AvatarRuntime = AvatarRuntime;
+  self.MMD_SA = AvatarRuntime;
+  self.AvatarRuntimeOptions = AvatarRuntimeOptions;
+  self.MMD_SA_options = AvatarRuntimeOptions;
+}
+if (typeof window !== 'undefined') {
+  window.AvatarRuntime = AvatarRuntime;
+  window.MMD_SA = AvatarRuntime;
+  window.AvatarRuntimeOptions = AvatarRuntimeOptions;
+  window.MMD_SA_options = AvatarRuntimeOptions;
+}
 
-// [AUDIO REMOVED] — Audio3D stub
-MMD_SA.Audio3D = { audio_object_by_name: {} };
+
+// [AUDIO REMOVED] — Audio3D no-op compatibility layer
+MMD_SA.Audio3D = (function () {
+  var _no_audio_player_obj = {
+    timestamp: 0,
+    player: {
+      volume: 0,
+      pause: function () {}
+    }
+  };
+
+  var _no_audio_object = {
+    play: function () { return null; },
+    get_player_obj: function () { return null; }
+  };
+
+  var audio_object_by_name = (typeof Proxy === "function")
+    ? new Proxy({}, {
+      get: function (target, prop) {
+        if ((prop in target) && target[prop])
+          return target[prop];
+        return _no_audio_object;
+      },
+      set: function (target, prop, value) {
+        target[prop] = value || _no_audio_object;
+        return true;
+      }
+    })
+    : {};
+
+  function ensure_audio_object(name) {
+    if (!name)
+      return _no_audio_object;
+    if (!audio_object_by_name[name])
+      audio_object_by_name[name] = _no_audio_object;
+    return audio_object_by_name[name] || _no_audio_object;
+  }
+
+  return {
+    audio_object_by_name: audio_object_by_name,
+
+    load: function (sound) {
+      ensure_audio_object(sound && sound.name);
+      return _no_audio_object;
+    },
+
+    detach_positional_audio: function () {
+      return _no_audio_player_obj;
+    },
+
+    attach_positional_audio: function () {
+      return _no_audio_player_obj;
+    }
+  };
+})();
 
 
 
@@ -1142,11 +1217,11 @@ MMD_SA_initDefaults();
 // Matrix rain
 if (returnBoolean("UseMatrixRain") || use_MatrixRain) {
   use_MatrixRain = true
-  document.write('<script language="JavaScript" src="js/canvas_matrix_rain.js"></scr'+'ipt>');
+  //document.write('<script language="JavaScript" src="js/canvas_matrix_rain.js"></scr'+'ipt>');
 }
 
 // WebGL 2D
 var use_WebGL_2D// = false
 if (use_WebGL_2D) {
-  document.write('<script language="JavaScript" src="js/html5_webgl2d.js"></scr'+'ipt>');
+  //document.write('<script language="JavaScript" src="js/html5_webgl2d.js"></scr'+'ipt>');
 }

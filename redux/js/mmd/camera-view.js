@@ -48,7 +48,7 @@ if (MMD_SA_options.MMD_disabled)
 var para_SA = this.MMD.motionManager.para_SA;
 var cv = (para_SA.center_view || MMD_SA_options.center_view || [0,0,0]).slice();
 
-if (MMD_SA_options.Dungeon && !MMD_SA.music_mode) {
+if (MMD_SA_options.Dungeon?.started && !MMD_SA.music_mode) {
   if (!para_SA.center_view_enforced)
     cv[2] = -cv[2];
 }
@@ -89,8 +89,8 @@ Object.defineProperty(MMD_SA, "center_view",
   get: function () {
 let cv = this.center_view_raw;
 
-if (MMD_SA_options.Dungeon && !MMD_SA.music_mode) {
-  let c = MMD_SA_options.Dungeon.character
+if (MMD_SA_options.Dungeon?.started && !MMD_SA.music_mode) {
+  let c = MMD_SA_options.Dungeon?.character
   let rot = c.rot//.clone()
 //  if (c.mount_para && c.mount_para.mount_rotation) rot.add(MMD_SA.TEMP_v3.copy(c.mount_para.mount_rotation).multiplyScalar(Math.PI/180))
   cv = MMD_SA._v3a_.fromArray(cv).applyEuler(rot).toArray()
@@ -126,8 +126,8 @@ if (MMD_SA.center_view_lookAt_offset) {
 }
 
 
-if (MMD_SA_options.Dungeon && !MMD_SA.music_mode) {
-  center_view_lookAt = MMD_SA._v3a_.fromArray(center_view_lookAt).applyEuler(MMD_SA_options.Dungeon.character.rot).toArray();
+if (MMD_SA_options.Dungeon?.started && !MMD_SA.music_mode) {
+  center_view_lookAt = MMD_SA._v3a_.fromArray(center_view_lookAt).applyEuler(MMD_SA_options.Dungeon?.character.rot).toArray();
 }
 
 return center_view_lookAt

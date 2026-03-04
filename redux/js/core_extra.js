@@ -13,10 +13,6 @@ var use_SA_browser_mode
 
 var PC_count_absolute = 0
 
-// [LEGACY REMOVED 1C] xul_mode/webkit_mode re-declarations removed (already in core.js)
-
-// [LEGACY REMOVED 1C] HTA_use_GPU_acceleration removed (HTA is dead)
-
 // Re-declared from core.js (bare var there, no-op here)
 var oShell
 var Shell_OBJ, FSO_OBJ
@@ -24,7 +20,6 @@ var Shell_OBJ, FSO_OBJ
 // Re-declared from core.js — these provide the real initialization values
 var is_SA_child_animation = parent && (parent != self) && !parent.is_chrome_window && parent.SA_child_animation_max;
 var SA_topmost_window = (is_SA_child_animation) ? parent : self;
-// [LEGACY REMOVED 1C] SA_top_window xul_mode branch removed — always self
 var SA_top_window = self;
 
 var absolute_screen_mode
@@ -33,13 +28,13 @@ var absolute_screen_mode
 var SA_child_animation_id = 99
 var ie9_native = /Trident.[5-9]/i.test(navigator.userAgent) // [9D] false in all modern browsers (Chrome/Electron)
 
-document.write('<script type="text/javascript" language="javascript" src="js/SA_system_emulation_ext.js"></scr'+'ipt>\n')
+SA.loader.loadScriptSync('js/SA_system_emulation_ext.js')
 if (!self.System) {
   use_SA_system_emulation = true
-  document.write('<script type="text/javascript" language="javascript" src="js/SA_system_emulation.min.js"></scr'+'ipt>\n')
+  SA.loader.loadScriptSync('js/SA_system_emulation.min.js')
 }
 if (WallpaperEngine_CEF_mode && !browser_native_mode) {
-  document.write('<script src="js/settings_WE.js"></scr'+'ipt>\n')
+  SA.loader.loadScriptSync('js/settings_WE.js')
 }
 
 var path_demo, path_demo_by_url
@@ -198,7 +193,6 @@ function SA_load_scripts() {
       for (var i = 0; i < p.length; i++)
         p[i] = decodeURIComponent(p[i])
     }
-    // [LEGACY REMOVED 1C] xul_mode branch removed
     else if (webkit_mode && !is_SA_child_animation) {
 //alert(webkit_electron_remote.process.argv.slice(0).join("\n\n"))
 // TEST mode for Electron
@@ -206,8 +200,6 @@ function SA_load_scripts() {
         p = (!WallpaperEngine_CEF_mode && webkit_nwjs_mode) ? require('nw.gui').App.argv : webkit_electron_remote.process.argv.slice(1)
 //console.log(p)
     }
-    // [LEGACY REMOVED 1C] oHTA.commandLine HTA branch removed
-
     if (is_SA_child_animation)
       WallpaperEngine_mode = parent.WallpaperEngine_mode
 
@@ -464,7 +456,6 @@ catch (err) {}
 
     webkit_mode && WebKit_object._init2()
 
-    // [LEGACY REMOVED 1C] ie9_native/getHTAUseGPUAcceleration call removed
   }
   else {
     var f_config
@@ -485,32 +476,27 @@ catch (err) {}
     catch (err) { f_config=null; }
 
     if (f_config) {
-      html += '<script type="text/javascript" language="javascript" src="' + toFileProtocol(f_config) + '"></scr'+'ipt>\n'
+      SA.loader.loadScriptSync(toFileProtocol(f_config))
     }
   }
 
+  // Write non-script html (CSS links, inline config) accumulated above
+  if (html) document.write(html)
+
   if (localhost_mode || (webkit_electron_mode && /AT_SystemAnimator_v0001\.gadget/.test(toLocalPath(self.location.href).replace(/[\/\\][^\/\\]+$/, "")))) {
-    html +=
-  '<script type="text/javascript" language="javascript" src="js/dragdrop.js"></scr'+'ipt>\n'
-+ '<script type="text/javascript" language="javascript" src="js/img_cache.js"></scr'+'ipt>\n'
-+ '<script type="text/javascript" language="javascript" src="js/seq.js"></scr'+'ipt>\n'
-+ '<script type="text/javascript" language="javascript" src="js/shell_folder.js"></scr'+'ipt>\n'
-+ '<script type="text/javascript" language="javascript" src="_private/js/wmi.js"></scr'+'ipt>\n'
+    SA.loader.loadScriptSync('js/dragdrop.js')
+    SA.loader.loadScriptSync('js/img_cache.js')
+    SA.loader.loadScriptSync('js/seq.js')
+    SA.loader.loadScriptSync('js/shell_folder.js')
+    SA.loader.loadScriptSync('_private/js/wmi.js')
   }
   else {
-// NOTE: exclude wmi.js
-console.log("_core.00.min.js")
-    html +=
-  '<script type="text/javascript" language="javascript" src="js/_core.00.min.js"></scr'+'ipt>\n'
+    console.log("_core.00.min.js")
+    SA.loader.loadScriptSync('js/_core.00.min.js')
   }
 
-  html +=
-  '<script type="text/javascript" language="javascript" src="js/_SA.js"></scr'+'ipt>\n'
-+ '<script type="text/javascript" language="javascript" src="js/_SA2.js"></scr'+'ipt>\n'
-
-// [LEGACY REMOVED 9C] WMP_player event handler script tags removed
-
-  document.write(html)
+  SA.loader.loadScriptSync('js/_SA.js')
+  SA.loader.loadScriptSync('js/_SA2.js')
 }
 
 function SA_load_body() {
@@ -667,6 +653,11 @@ function SA_load_body() {
 + '</scr'+'ipt>\n'
 
 window.addEventListener('DOMContentLoaded', function () {
+  if (window.is_ipad) {
+    var arBtn = document.getElementById('Lquick_menu_ar_button')
+    if (arBtn) arBtn.style.display = 'none'
+  }
+
   function cancel_event(e) {
     e.stopPropagation();
     e.stopImmediatePropagation();
@@ -822,7 +813,6 @@ else {
   }
 
   try {
-    // [9D] ie9_native is false in modern browsers — this HTA block is dead code
     if (ie9_native && !is_SA_child_animation && System.Gadget.Settings.readString("HTALoadSpectrumAnalyser")) {
       var hta
 
@@ -909,8 +899,6 @@ Lchild_animation_parent.style.visibility = "inherit"
   if (w3c_mode)
     d.style.transition = "opacity 0.5s"
   d.src = url
-
-  // [LEGACY REMOVED 1C] xul_mode event handler block removed
 
   p.appendChild(d)
   return d

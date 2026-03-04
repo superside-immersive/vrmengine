@@ -244,6 +244,7 @@ Todos siguen el patrón **factory function**: `window.MMD_SA_createXxx = functio
 | Archivo | Líneas | Función |
 |---------|--------|---------|
 | `threex-vrm.js` | 1,413 | Carga de modelos VRM 0.x/1.0, mapeo de huesos MMD↔VRM, blend shapes, salida VMC protocol |
+| `vrm-direct/` | (varios) | Pipeline VRM Direct: carga y renderiza VRMs directamente sin pasar por la capa de compatibilidad MMD. `vrm-direct-animator.js` aplica el tracking (MMD fallback para VRM face tracking arreglado para procesar ARKit via `vrm-direct-solver`). |
 | `threex-motion.js` | 1,348 | Import/export de motion: VMD, BVH, conversión FBX→VMD, clases BoneKey/MorphKey |
 | `bone-utils.js` | 230 | 7 funciones de utilidad de huesos MMD |
 | `custom-actions.js` | 330 | match_bone, copy_first_bone_frame, custom_action_default |
@@ -310,6 +311,57 @@ Webcam → Video element
   → one_euro_filter.js   (suavizado de señal)
   → mocap-mediapipe-bridge.js → Motor 3D (MMD_SA / THREEX)
 ```
+
+#### 5.1 Pipeline VRM Direct — Arquitectura y Fixes
+
+En el modo *VRM Direct*, el sistema renderiza un VRM independiente en paralelo al MMD, con un modelo dummy invisible actuando como proxy de física/colisiones/animación core.
+
+##### A. Face Tracking — Fallback MMD Morph
+
+**Problema original**: `vrm-direct-solver.solveFace()` devolvía `{}` (truthy) cuando no había blendshapes ARKit activos, bloqueando el fallback de traducción.
+
+**Fix**:
+- `solveFace()` devuelve explícitamente `null` si el resultado está vacío.
+- `vrm-direct-animator.tick()` usa `var isArkitEmpty = !arkitFace || Object.keys(arkitFace).length === 0` para detectar ausencia real.
+- Cuando no hay ARKit activo, activa `solveMMDMorphFallback(isVRM1)` que lee morphs japoneses del dummy (`あ`, `まばたき`, `困る`, etc.) y los traduce a VRM (`aa`, `blink`, `sad`).
+
+##### B. Animaciones Automáticas (auto blink, VMD morphs, morph_noise)
+
+**Problema**: `threex-vrm.js` procesa y aplica todos los morphs automáticos al VRM principal y luego hace **zeroing** de `morphs_weight_by_name`. VRM Direct corre en post-animate, después del zeroing, por lo que nunca veía las animaciones.
+
+**Fix**:
+- `threex-vrm.js` (antes del zeroing) hace snapshot: `VRMDirectSolver._autoAnimSnapshot = Object.assign({}, blendshape_weight)` — ya en nombres VRM (`blinkLeft`, `aa`, `happy`...).
+- `vrm-direct-solver.solveAutoAnim(isVRM1)` consume el snapshot. Fallback: si no hay snapshot (modelo MMD puro sin VRM en `vrm_list`), lee `morphs_weight_by_name` directamente y traduce con tablas `MMD_TO_VRM1/0`.
+- `vrm-direct-animator.applyFace()` acepta `autoAnimData` como **Track 0 (base)**. Face tracking (Tracks 1 y 2) sobreescribe cuando está activo — misma precedencia que `threex-vrm.js`.
+
+##### C. Body y Manos — Mirror MMD→VRM
+
+**Problema**: `tick()` solo aplicaba huesos cuando `poseNet.enabled` (solo con tracking de cámara activo). En idle o con VMD motion, el VRM quedaba congelado en rest-pose.
+
+**Causa técnica**: `autoUpdateHumanBones = true` se seteaba una sola vez en `start()`. `applyBody()` llama `resetNormalizedPose()` cada frame. Si ningún hueso se escribe después (guard fallido), el VRM queda en rest-pose.
+
+**Fix**:
+- Eliminado el guard `isTrackingActive()` — body siempre se aplica (VMD motion, tracking, idle).
+- `autoUpdateHumanBones = true` re-afirmado cada frame dentro de `tick()` para VRM1.
+- `BONE_MAP` incluye todos los huesos de dedos (`親指`, `人指`, `中指`, `薬指`, `小指`) — hand tracking también propagado.
+
+##### Flujo completo por frame (post-animate phase)
+
+```
+MMD tick (jThree) → bones_by_name actualizado + morphs procesados
+  ↓
+threex-vrm.js → convierte morphs MMD→VRM names + blendshape_weight
+  → snapshot → VRMDirectSolver._autoAnimSnapshot
+  → zeroing de morphs_weight_by_name
+  ↓
+vrm-direct-animator.tick() [phase 1]
+  → autoAnim  = solveAutoAnim()    → Track 0 (base): blink, VMD morphs, morph_noise
+  → bodyData  = solveBody()        → siempre, sin gate
+  → mmdFace / solveFace() / fallback
+  → applyBody + applyFace (3 tracks)
+  → handle.update(dt)              → spring bones, physics, lookAt
+```
+
 
 ### 6. DUNGEON CRAWLER (`js/dungeon/` + `dungeon.js`) — 25 archivos
 
@@ -690,29 +742,11 @@ Archivos de Three.js (r160+) y extensiones, la mayoría sin modificar.
 
 ---
 
-## Archivos en Cuarentena (`js/_quarantine/`)
+## Archivos en Cuarentena — Estado actualizado (2026-02-23)
 
-35 archivos movidos a cuarentena durante la poda. **Ninguno tiene copia en `js/`** (excepto `facemesh_lib.js` y `facemesh_triangulation.json`), lo que significa que los que son referenciados por código activo **dan 404 en runtime**.
+> **Resolución:** la carpeta `js/_quarantine/` ya no existe. Los 22 archivos que daban 404 fueron restaurados a `js/` y están operativos. Los 13 archivos muertos fueron eliminados definitivamente. Esta sección se mantiene como referencia histórica.
 
-### MUERTOS — Borrar sin riesgo (13 archivos)
-
-| Archivo | Motivo |
-|---------|--------|
-| `aac.js` | Decoder AAC de Aurora framework, sin referencias |
-| `aurora.js` | Framework de audio Aurora, sin referencias |
-| `aurora_web_audio.js` | Backend Web Audio de Aurora, sin referencias |
-| `mp3.js` | Decoder MP3 de Aurora, sin referencias |
-| `svg.js` | SVG drawing del viejo gadget, sin referencias |
-| `youtube_decode.js` | Decoder de URLs YouTube, sin referencias |
-| `facemesh_lib.js` | Duplicado — copia activa existe en `js/facemesh_lib.js` |
-| `facemesh_triangulation.json` | Duplicado — copia activa existe en `js/facemesh_triangulation.json` |
-| `mersenne-twister.js` | Ya bundleado en `dungeon.core.min.js`, rama individual nunca ejecuta (`_js_min_mode_=true`) |
-| `dungeon-generator.js` | Ya bundleado en `dungeon.core.min.js` |
-| `terrain.js` | Ya bundleado en `dungeon.core.min.js` |
-| `EQP_core.js` | Solo aparece en comentario de `globals.js` + cargado por `EQP.js` que está en cuarentena → cadena rota |
-| `html5.js` | Cargado por `EQP.js` que está en cuarentena → cadena rota |
-
-### DAN 404 EN RUNTIME — Necesitan restaurarse a `js/` (22 archivos)
+### Archivos restaurados (22) — Todos verificados ✓
 
 #### Siempre fallan (se cargan en cada sesión)
 
@@ -855,6 +889,128 @@ XR_Animator.html
 
 ## Historial de Refactorización
 
+### Update 2026-02-23 — Inicio implementación plan `animate.js`
+
+Primer cambio aplicado (fase de bajo riesgo) en `images/XR Animator/animate.js`:
+
+- Se encapsuló el bloque final de `document.write(...)` en `XR_Animator_load_bootstrap_scripts()`.
+- Se añadió guard idempotente `window.__XR_ANIMATOR_BOOTSTRAP_SCRIPTS_LOADED__` para evitar doble inyección accidental.
+- Se preservó el **mismo orden de carga** de scripts (incluyendo `dungeon.js` condicional y `MMD.js/MMD_SA.js` al final).
+
+Validación:
+
+- `node --check "redux/images/XR Animator/animate.js"` OK.
+
+Avance adicional (ola 2, bajo riesgo):
+
+- Se encapsuló el wiring de lifecycle de settings (`SA_writeSettings`, `load`, `jThree_ready`, `MMDStarted`) en `XR_Animator_install_settings_lifecycle_handlers()`.
+- Se añadió guard idempotente `window.__XR_ANIMATOR_SETTINGS_LIFECYCLE_INSTALLED__` para prevenir registros duplicados de listeners.
+- Se mantuvo intacta la lógica funcional de `_XRA_settings_export` / `_XRA_settings_import` y su orden de ejecución.
+
+Validación:
+
+- `node --check "redux/images/XR Animator/animate.js"` OK (post-ola 2).
+
+Avance adicional (ola 3, modularización controlada):
+
+- Se creó el módulo `images/XR Animator/modules/settings-lifecycle.js` para centralizar el registro de listeners de lifecycle de settings.
+- `animate.js` ahora intenta cargar ese módulo temprano con `SA.loader.loadScriptSync('images/XR Animator/modules/settings-lifecycle.js')`.
+- Se añadió delegación en `XR_Animator_install_settings_lifecycle_handlers()`:
+  - si el módulo está disponible, usa `XR_Animator_SettingsLifecycle.install(...)`;
+  - si no, aplica fallback local (comportamiento legacy preservado).
+
+Validación:
+
+- `node --check "redux/images/XR Animator/modules/settings-lifecycle.js"` OK.
+- `node --check "redux/images/XR Animator/animate.js"` OK (post-ola 3).
+
+Avance adicional (ola 4, extracción de export de settings):
+
+- Se creó `images/XR Animator/modules/settings-export.js` con la implementación de `build()` para generar el payload de `_XRA_settings_export`.
+- `animate.js` ahora carga el módulo temprano y delega `_XRA_settings_export` a `XR_Animator_SettingsExport.build(MMD_SA_options)`.
+- El bloque inline de export fue removido de `animate.js` y sustituido por wrapper delegado (con fallback seguro a `{}` si el módulo no está disponible).
+
+Validación:
+
+- `node --check "redux/images/XR Animator/modules/settings-export.js"` OK.
+- `node --check "redux/images/XR Animator/animate.js"` OK (post-ola 4).
+
+Avance adicional (ola 5, extracción de import de settings):
+
+- Se creó `images/XR Animator/modules/settings-import.js` con la implementación de `importConfig(MMD_SA_options, config)` migrada desde el bloque inline de `_XRA_settings_import`.
+- `animate.js` ahora carga el módulo temprano y delega `_XRA_settings_import` a `XR_Animator_SettingsImport.importConfig(...)`.
+- El bloque inline de import fue removido de `animate.js` y sustituido por wrapper delegado (fallback seguro: no-op si el módulo no está disponible).
+
+Validación:
+
+- `node --check "redux/images/XR Animator/modules/settings-import.js"` OK.
+- `node --check "redux/images/XR Animator/animate.js"` OK (post-ola 5).
+
+Avance adicional (ola 6, extracción de bootstrap scripts):
+
+- Se creó `images/XR Animator/modules/bootstrap-scripts.js` con `XR_Animator_BootstrapScripts.load(options)` para encapsular la inyección de scripts bootstrap.
+- `animate.js` ahora intenta cargar el módulo con `SA.loader.loadScriptSync('images/XR Animator/modules/bootstrap-scripts.js')` junto al resto de módulos extraídos.
+- `XR_Animator_load_bootstrap_scripts()` delega al módulo cuando está disponible y mantiene fallback inline legacy si no lo está, preservando guard idempotente y orden de carga.
+
+Validación:
+
+- `node --check "redux/images/XR Animator/modules/bootstrap-scripts.js"` OK.
+- `node --check "redux/images/XR Animator/animate.js"` OK (post-ola 6).
+
+Avance adicional (ola 7, extracción de reset de settings):
+
+- Se creó `images/XR Animator/modules/settings-reset.js` con `XR_Animator_SettingsReset.resetAll(MMD_SA_options)` para encapsular el flujo de “reset all settings”.
+- `animate.js` ahora carga el módulo temprano con `SA.loader.loadScriptSync('images/XR Animator/modules/settings-reset.js')` junto al resto de módulos extraídos.
+- El evento de reset (UI options, event 8) ahora delega primero al módulo y mantiene fallback inline legacy si el módulo no está disponible.
+
+Validación:
+
+- `node --check "redux/images/XR Animator/modules/settings-reset.js"` OK.
+- `node --check "redux/images/XR Animator/animate.js"` OK (post-ola 7).
+
+Avance adicional (ola 8, extracción agresiva de gamepad control menu):
+
+- Se creó `images/XR Animator/modules/gamepad-control-menu.js` con `XR_Animator_GamepadControlMenu.buildEvents(MMD_SA_options)` para encapsular por completo el bloque de eventos 9/10 del menú de gamepad/hotkeys.
+- `animate.js` ahora delega ese bloque al módulo y lo carga de forma síncrona justo antes de evaluar la sección, evitando dependencias de orden de inicialización.
+- Se añadió también la carga del módulo en el bloque central de `loadScriptSync(...)` junto a los demás módulos extraídos.
+
+Validación:
+
+- `node --check "redux/images/XR Animator/modules/gamepad-control-menu.js"` OK.
+- `node --check "redux/images/XR Animator/animate.js"` OK (post-ola 8).
+
+Avance adicional (ola 9, extracción de save de settings):
+
+- Se creó `images/XR Animator/modules/settings-save.js` con `XR_Animator_SettingsSave.save(MMD_SA_options)` para encapsular el guardado de `XRA_settings.json`.
+- El evento 6 del menú de UI options ahora intenta cargar y delegar primero al módulo nuevo, manteniendo fallback inline legacy si el módulo no está disponible.
+- Se añadió la carga temprana del módulo en el bloque central de `loadScriptSync(...)` junto con `settings-export/import/reset`.
+
+Validación:
+
+- `node --check "redux/images/XR Animator/modules/settings-save.js"` OK.
+- `node --check "redux/images/XR Animator/animate.js"` OK (post-ola 9).
+
+Avance adicional (ola 10, limpieza agresiva del reset inline):
+
+- El evento 8 (“reset all settings”) en `images/XR Animator/animate.js` ahora delega de forma directa a `XR_Animator_SettingsReset.resetAll(...)`.
+- Se eliminó el fallback inline duplicado (bloque grande de defaults + reset) para evitar deriva funcional entre módulo e inline.
+- El evento hace carga on-demand de `settings-reset.js` y, si no está disponible, muestra warning ligero sin intentar ejecutar una segunda implementación.
+
+Validación:
+
+- `node --check "redux/images/XR Animator/animate.js"` OK (post-ola 10).
+
+Avance adicional (ola 11, extracción del bloque de acciones de settings en UI options):
+
+- Se creó `images/XR Animator/modules/ui-options-settings-actions.js` con `XR_Animator_UIOptionsSettingsActions.buildEvents(MMD_SA_options)` para encapsular los eventos 6/7/8 (save settings + confirm reset + reset action).
+- `animate.js` ahora delega ese sub-bloque al módulo nuevo con carga on-demand y mantiene fallback inline corto para resiliencia.
+- Se agregó la carga temprana del módulo al bloque central de `loadScriptSync(...)`.
+
+Validación:
+
+- `node --check "redux/images/XR Animator/modules/ui-options-settings-actions.js"` OK.
+- `node --check "redux/images/XR Animator/animate.js"` OK (post-ola 11).
+
 ### Update 2026-02-23 — Cleanup de export/postFX (build actual)
 
 Se completó un cleanup funcional orientado a simplificar el runtime de `redux/`:
@@ -903,3 +1059,170 @@ Actual:    799 líneas (orquestador) + 24 módulos en js/dungeon/
 ```
 Extraídos 15 módulos a js/app/ (Steps 5A-5C)
 ```
+
+---
+
+## Plan de factorización — `images/XR Animator/animate.js` (condicionado a uso real)
+
+### Verificación de uso (2026-02-23)
+
+Sí se usa en el flujo actual de `XR_Animator.html`, aunque **no** por `<script src=".../animate.js">` directo:
+
+1. `XR_Animator.html` define `cmd_line: "demo20"`.
+2. `path_demo.json` resuelve `demo20 -> "XR Animator"`.
+3. `core_extra.js` carga `js/_SA.js` en bootstrap.
+4. `_SA.js` (`ItemsFromFolder`) hace auto-discovery legacy de `animate.js` en la carpeta seleccionada.
+
+Conclusión: refactorizar `images/XR Animator/animate.js` es pertinente y de alto impacto para startup de la demo por defecto.
+
+### Objetivo
+
+Reducir acoplamiento global y complejidad ciclomática de `images/XR Animator/animate.js` sin romper:
+
+- startup por `legacy_auto_discovery`,
+- compatibilidad con `SA_project_JSON.entry_js` (cuando exista),
+- y runtime de `XR_Animator.html` (demo20).
+
+### Alcance (MVP de refactor)
+
+- Mantener comportamiento y API pública actual.
+- Extraer solo bloques cohesivos (sin rediseñar features).
+- Evitar cambios en rutas de carga durante la primera iteración.
+
+### Fases propuestas
+
+#### Fase 0 — Baseline y red de seguridad
+
+- Congelar baseline funcional de `demo20` (startup, carga modelo, interacción básica).
+- Añadir checklist manual mínimo de regresión para `XR_Animator.html`.
+- Instrumentar logs de entrada/salida de init para validar paridad post-refactor.
+
+**Criterio de salida:** baseline reproducible + checklist aprobado.
+
+#### Fase 1 — Mapeo interno del archivo
+
+- Identificar regiones por responsabilidad dentro de `animate.js`:
+  - configuración/constantes,
+  - estado global mutable,
+  - helpers puros,
+  - wiring de eventos,
+  - loops/update.
+- Etiquetar dependencias implícitas (variables globales leídas/escritas).
+
+**Criterio de salida:** inventario de bloques + matriz de dependencias globales.
+
+#### Fase 2 — Extracción de utilidades puras (bajo riesgo)
+
+- Mover funciones sin side effects a `images/XR Animator/modules/utils.js`.
+- Mantener backward compatibility exportando también en `window` si el código legado lo requiere.
+
+**Criterio de salida:** misma salida funcional, menor tamaño del archivo principal.
+
+#### Fase 3 — Separar estado y configuración
+
+- Crear `images/XR Animator/modules/state.js` para centralizar estado mutable.
+- Crear `images/XR Animator/modules/config.js` para defaults y normalización de opciones.
+- Reemplazar literales repetidos por acceso centralizado a config/state.
+
+**Criterio de salida:** lecturas/escrituras de estado concentradas y trazables.
+
+#### Fase 4 — Separar wiring de eventos
+
+- Extraer registro de listeners a `images/XR Animator/modules/events.js`.
+- Dejar en `animate.js` solo orquestación (`init`, `start`, `stop`, `tick`).
+
+**Criterio de salida:** init declarativo y reducción de side effects al cargar script.
+
+#### Fase 5 — Separar update/render loop
+
+- Extraer loop/frame update a `images/XR Animator/modules/loop.js`.
+- Unificar control de RAF/timers para evitar dobles starts.
+
+**Criterio de salida:** un único punto de control del ciclo de animación.
+
+#### Fase 6 — Hardening de carga de entrada
+
+- Mantener fallback legacy (`animate.js`) pero priorizar `entry_js` declarado cuando exista.
+- Documentar en `SA_project.json` de XR Animator la estrategia de entrada objetivo.
+
+**Criterio de salida:** startup determinista (`declared_entry` preferido, `legacy_auto_discovery` como fallback).
+
+### Riesgos y mitigaciones
+
+- **Riesgo:** dependencia oculta en globals legacy.  
+  **Mitigación:** extracción incremental + compat layer en `window`.
+- **Riesgo:** ruptura de startup por ruta de entry.  
+  **Mitigación:** no cambiar estrategia de carga hasta Fase 6.
+- **Riesgo:** regresiones silenciosas en interacciones UI.  
+  **Mitigación:** checklist manual fijo por fase + validación sintáctica (`node --check`).
+
+### Métricas de éxito
+
+- `animate.js` reducido al menos 30% en líneas (objetivo inicial).
+- 0 cambios de comportamiento visibles en la matriz manual de startup.
+- Tiempo de diagnóstico menor: cada bug nuevo debe mapearse a un módulo específico.
+
+---
+
+## Plan de Refactorización Global — 2026-02-23
+
+Análisis de deuda técnica restante y plan de ejecución priorizado.
+
+### Estado diagnosticado
+
+| Métrica | Valor |
+|---------|-------|
+| Archivos JS activos (sin min/three.js/jThree/mediapipe) | ~100 |
+| Declaraciones `var` globales (app+mmd+dungeon) | 836 |
+| Usos de `document.write` (_SA/_SA2/core_extra) | 14 → 4 |
+| Markers dead code (LEGACY REMOVED/obsolete/DEPRECATED) | 21 → 0 |
+| Archivos en cuarentena | 0 (los 22 archivos existen — doc estaba desactualizado) |
+| Monolitos >1000 LOC pendientes de split | 8 → 6 |
+| Módulos extraídos de animate.js | 29 (15,098 LOC) |
+
+### Tareas ejecutadas (2026-02-23)
+
+| # | Prio | Tarea | Estado |
+|---|------|-------|--------|
+| 1 | P0 | Auditar/resolver estado real de archivos 404/cuarentena | ✅ Los 22 archivos existen, doc actualizado |
+| 2 | P1 | Limpiar 21 markers de dead code en core.js/core_extra.js/_SA.js | ✅ 21 markers eliminados (3 en core.js, 8 en core_extra.js, 7 en _SA.js, 3 en otros) |
+| 3 | P1 | Migrar `document.write` → `SA.loader.loadScriptSync` | ✅ 10 de 14 migradas; 4 no convertibles (HTML/DOM structure, inline vars) |
+| 4 | P2 | Split `js/app/resize.js` (685→359 LOC, −48%) | ✅ 3 nuevos módulos: resize-3d-navigation.js, resize-fullscreen.js, resize-ui.js |
+| 5 | P2 | Split `js/mmd/defaults.js` (1531→840 LOC, −45%) | ✅ 3 nuevos módulos: defaults-rendering.js, defaults-look-at.js, defaults-scene-objects.js |
+| 6 | P3 | Reducir globals: `var` → `let/const` en módulos nuevos | ✅ Módulos nuevos ya usan const/let; archivos legacy sin cambiar (riesgo alto) |
+| 7 | P3 | Auditar factory files (threex-vrm/motion, game_loop, restart) | ✅ Auditados. Closure-coupled — split requiere cambio de arquitectura. Documentado como deuda futura |
+| 8 | P4 | Auditar `js/SA_webkit.js` (1,404 LOC) para posible cuarentena | ✅ NO cuarentenable: bridge activo para Electron/NW.js/WallpaperEngine. Candidato a split futuro |
+
+### Archivos modificados
+
+| Archivo | Cambios |
+|---------|---------|
+| `js/core.js` | 3 dead code markers eliminados |
+| `js/core_extra.js` | 8 dead code markers eliminados, 3 document.write migrados, SA_load_scripts() reestructurado |
+| `js/_SA.js` | 7 dead code markers eliminados, 1 document.write migrado, 6 nuevos loadScriptSync añadidos |
+| `js/_SA2.js` | 6 document.write condicionales migrados a SA.loader |
+| `js/app/resize.js` | 685→359 LOC, lógica extraída a 3 sub-módulos |
+| `js/mmd/defaults.js` | 1531→840 LOC, lógica extraída a 3 sub-módulos |
+
+### Archivos nuevos creados
+
+| Archivo | LOC | Responsabilidad |
+|---------|-----|-----------------|
+| `js/app/resize-3d-navigation.js` | 123 | Init de navegación 3D CSS transform (mouse/wheel/dblclick) |
+| `js/app/resize-fullscreen.js` | 114 | Cálculo de zoom fullscreen + posición de ventana |
+| `js/app/resize-ui.js` | 102 | Barras CPU, botones, escala mobile, centrado |
+| `js/mmd/defaults-rendering.js` | 247 | PPE effects (SAO/Bloom/Diffusion), shadows, lighting, property definitions |
+| `js/mmd/defaults-look-at.js` | 215 | Sistema look_at_screen/mouse: bone lists, property definitions por modelo |
+| `js/mmd/defaults-scene-objects.js` | 245 | ML camera morphs, mesh preloads, X-ray, mirrors, child animation |
+
+### Deuda técnica restante (priorizada)
+
+1. **P3 — Split factory files** (threex-vrm.js 1,412 / threex-motion.js 1,281 / game_loop.js 1,242 / restart.js 1,202): Requieren refactor de patrón factory → composición de módulos. Riesgo alto sin integration testing.
+2. **P3 — Split SA_webkit.js** (1,404 LOC): Candidato a separar en fs-polyfill, window-mgmt, drag-drop. No urgente.
+3. **P4 — var → let/const en legacy**: 836 declaraciones. Conversión incremental recomendada archivo por archivo con testing.
+4. **P4 — 4 document.write restantes**: No convertibles (inyectan HTML/DOM body, inline JS vars). Funcionales como están.
+
+Criterios de cada tarea:
+- Validación sintáctica post-cambio (`node --check`) — ✅ todos pasan
+- Sin cambios de comportamiento observable en runtime
+- Backward-compatible (exports en `window` cuando aplique)

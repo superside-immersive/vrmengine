@@ -955,11 +955,12 @@ if (onended)
    ,init: function () {
 if (SA_topmost_window.WebKit_object.use_electron_as_wallpaper) return;
 
-if ((self.MMD_SA && MMD_SA.MMD_started) || (!self.MMD_SA && loaded)) {
+var runtime = self.AvatarRuntime || self.MMD_SA
+if ((runtime && runtime.MMD_started) || (!runtime && loaded)) {
   this.run()
 }
 else {
-  window.addEventListener(((self.MMD_SA)?"MMDStarted":"load"), function () { WebKit_object.monitor_winstate.run() })
+  window.addEventListener(((runtime)?"MMDStarted":"load"), function () { WebKit_object.monitor_winstate.run() })
 }
     }
    ,run: function () {
@@ -1016,11 +1017,12 @@ Seq.item("MonitorWinstateSTDIN").Play()
    ,process: null
    ,_json: {}
    ,init: function () {
-if ((self.MMD_SA && MMD_SA.MMD_started) || (!self.MMD_SA && loaded)) {
+var runtime = self.AvatarRuntime || self.MMD_SA
+if ((runtime && runtime.MMD_started) || (!runtime && loaded)) {
   this.run()
 }
 else {
-  window.addEventListener(((self.MMD_SA)?"MMDStarted":"load"), function () { WebKit_object.monitor_winamp.run() })
+  window.addEventListener(((runtime)?"MMDStarted":"load"), function () { WebKit_object.monitor_winamp.run() })
 }
     }
    ,run: function () {

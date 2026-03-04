@@ -2,6 +2,59 @@
 // Part of Etapa 10B refactoring
 
 window.MMD_SA_createTHREEX_PPE = function(TX) {
+      let PPE_stub_notice_shown;
+      const create_resettable = function (obj) {
+return Object.assign({
+  reset: function () {}
+}, obj || {});
+      };
+
+      let PPE_stub_enabled = false;
+      const PPE_stub = {
+  get enabled() { return PPE_stub_enabled; },
+  set enabled(v) { PPE_stub_enabled = !!v; },
+
+  initialized: false,
+  gui: {
+folders: [],
+controllers: []
+  },
+
+  init: async function () {
+if (PPE_stub_notice_shown) return this;
+
+PPE_stub_notice_shown = true;
+this.initialized = true;
+DEBUG_show('(Post-processing effects are removed from this build.)', 4);
+return this;
+  },
+
+  setup: function () {},
+  render: function () { return false; },
+
+  DOF: {
+enabled: false,
+effectController: create_resettable()
+  },
+
+  N8AO: {
+enabled: false,
+AO_MASK: 2,
+NO_AO: 3,
+effectController: create_resettable(),
+effectController_vrm: create_resettable()
+  },
+
+  UnrealBloom: {
+enabled: false,
+NO_BLOOM: 1,
+params: create_resettable(),
+params_vrm: create_resettable()
+  }
+      };
+
+      return PPE_stub;
+
       let PPE_initialized, PPE_initializing;
 
       let renderScene;

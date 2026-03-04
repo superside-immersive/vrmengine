@@ -15332,7 +15332,7 @@ MMD_SA.Camera_MOD.adjust_camera('auto_zoom', pos);
     }
 
     const state = {
-      enabled: false,
+      enabled: !!self.XRA_ROPES_ENABLED_DEFAULT,
       count: 6350,
       resolution: 8,
       max_count: 20000,
@@ -15363,6 +15363,9 @@ MMD_SA.Camera_MOD.adjust_camera('auto_zoom', pos);
       turbulence: 0.0,
       taper: 0.85,
     };
+    if (self.XRA_ROPES_PRESET && typeof self.XRA_ROPES_PRESET === 'object') {
+      Object.assign(state, self.XRA_ROPES_PRESET);
+    }
 
     const data = {
       anchors: [],
@@ -15947,30 +15950,19 @@ MMD_SA.Camera_MOD.adjust_camera('auto_zoom', pos);
       const tri_verts_per_seg = 6;
       const total_tris_verts = count * resolution * tri_verts_per_seg;
       data.line_positions = new Float32Array(total_tris_verts * 3);
-      data.line_colors = new Float32Array(total_tris_verts * 3);
+      data.line_colors = null;
 
       data.geometry = new T.BufferGeometry();
       const attr = new T.BufferAttribute(data.line_positions, 3);
       attr.setUsage(T.DynamicDrawUsage);
       data.geometry.setAttribute('position', attr);
-      const colorAttr = new T.BufferAttribute(data.line_colors, 3);
-      colorAttr.setUsage(T.DynamicDrawUsage);
-      data.geometry.setAttribute('color', colorAttr);
-
-      /* ── PBR material with per-vertex AO via vertex colours ── */
-      const _baseClr = new T.Color(state.color);
-      data.material = new T.MeshStandardMaterial({
-        color: 0xffffff,
-        vertexColors: true,
+      data.material = new T.MeshBasicMaterial({
+        color: state.color,
+        vertexColors: false,
         transparent: true,
         opacity: state.opacity,
         side: T.DoubleSide,
         depthWrite: false,
-        flatShading: true,
-        roughness: 0.32,
-        metalness: 0.08,
-        emissive: _baseClr,
-        emissiveIntensity: 0.15,
       });
 
       data.mesh = new T.Mesh(data.geometry, data.material);
@@ -15979,7 +15971,7 @@ MMD_SA.Camera_MOD.adjust_camera('auto_zoom', pos);
       data.mesh.renderOrder = 999;
       scene.add(data.mesh);
 
-      /* ── Hemisphere light for ambient / GI-like illumination ── */
+      /* keep optional light allocation untouched for compatibility */
       if (!data.hemi_light) {
         data.hemi_light = new T.HemisphereLight(0xeeeeff, 0x333344, 1.0);
         scene.add(data.hemi_light);

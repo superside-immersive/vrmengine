@@ -63,7 +63,10 @@ static update_camera_base() {
 static rotate_up_z(up_target, up, z) {
   const obj = MMD_SA._trackball_camera;
 
-  const axis = Camera_mod.#v1.copy(obj.object.position).sub(obj.target).normalize();
+  const axis = Camera_mod.#v1.copy(obj.object.position).sub(obj.target);
+  // Guard: if position == target, axis is zero-length → normalize() returns NaN
+  if (axis.lengthSq() < 1e-10) return up_target.copy(up);
+  axis.normalize();
   const up_rot = Camera_mod.#q1.setFromAxisAngle(axis, z);
   return up_target.copy(up).applyQuaternion(up_rot);
 }

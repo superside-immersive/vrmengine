@@ -369,7 +369,22 @@
     _toolbar.className = 'xra-toolbar-unified';
     _toolbar.id = 'Lxra_toolbar';
 
-    var buttons = [
+    var compactTrackingToolbar = !!window.XRA_TRACKING_COMPACT_TOOLBAR;
+    var buttons = compactTrackingToolbar ? [
+      { icon: '🎥', title: 'Streamer Mode', id: 'btn_streamer_mode', cls: 'xra-toolbar-btn--accent',
+        action: function () { XRA._startStreamerMode(); } },
+      'sep',
+      { icon: '📊', title: 'Performance HUD', id: 'btn_perf_toggle', cls: '',
+        action: function () { XRA._toggleDebugPanel(); } },
+      'sep',
+      { icon: '🪢', title: 'Ropes UI', id: 'btn_ropes_toggle', cls: 'xra-toolbar-btn--vrm-direct',
+        action: function () { XRA._toggleRopesPanel(); } },
+      'sep',
+      { icon: '💥', title: 'Collision ON/OFF', id: 'btn_collision_toggle', cls: 'xra-toolbar-btn--vrm-direct xra-toolbar-btn--active',
+        action: function () { XRA._toggleCollisionEnabled(); } },
+      { icon: '🧪', title: 'Collision Debug', id: 'btn_collision_debug', cls: 'xra-toolbar-btn--vrm-direct',
+        action: function () { XRA._toggleCollisionDebug(); } },
+    ] : [
       // ── Start/Stop Tracking (sends 'C' key to SA system) ──
       { icon: '📷', title: 'Tracking Menu', id: 'btn_tracking', cls: 'xra-toolbar-btn--accent',
         action: function () { XRA._openTrackingMenu(); } },
@@ -381,10 +396,16 @@
       // ── Ropes toggle ──
       { icon: '🪢', title: 'Ropes UI', id: 'btn_ropes_toggle', cls: 'xra-toolbar-btn--vrm-direct',
         action: function () { XRA._toggleRopesPanel(); } },
+      'sep',
+      // ── Collision toggles ──
+      { icon: '💥', title: 'Collision ON/OFF', id: 'btn_collision_toggle', cls: 'xra-toolbar-btn--vrm-direct xra-toolbar-btn--active',
+        action: function () { XRA._toggleCollisionEnabled(); } },
+      { icon: '🧪', title: 'Collision Debug', id: 'btn_collision_debug', cls: 'xra-toolbar-btn--vrm-direct',
+        action: function () { XRA._toggleCollisionDebug(); } },
     ];
 
-    // AR button only when WebXR API is available
-    if (navigator.xr) {
+    // AR button only when WebXR API is available (exclude iPad: forced desktop UX)
+    if (navigator.xr && !window.is_ipad) {
       buttons.push('sep');
       buttons.push({
         icon: '📱', title: 'AR Mode', cls: 'xra-toolbar-btn--accent',
@@ -568,6 +589,16 @@
     }
   };
 
+  XRA._startStreamerMode = function () {
+    try {
+      if (window.System && System._browser && System._browser.camera && System._browser.camera.streamer_mode && typeof System._browser.camera.streamer_mode.start === 'function') {
+        System._browser.camera.streamer_mode.start();
+        return;
+      }
+    } catch (e) {}
+    XRA._openTrackingMenu();
+  };
+
   // ── Ropes panel toggle ──
   XRA._ropesVisible = false;  // panel starts hidden; toggle button opens it
   XRA._toggleRopesPanel = function () {
@@ -583,15 +614,102 @@
     if (btn) btn.classList.toggle('xra-toolbar-btn--active', XRA._ropesVisible);
   };
 
+  // ── Collision toggles ──
+  XRA._collisionEnabled = true;
+  XRA._collisionDebugOn = false;
+
+  XRA._toggleCollisionEnabled = function () {
+    if (!window.VRMCollision) return;
+    XRA._collisionEnabled = !VRMCollision.isEnabled();
+    VRMCollision.setEnabled(XRA._collisionEnabled);
+    if (!XRA._collisionEnabled) {
+      XRA._collisionDebugOn = false;
+      VRMCollision.setDebugVisualization(false);
+    }
+
+    var btn = document.getElementById('btn_collision_toggle');
+    if (btn) btn.classList.toggle('xra-toolbar-btn--active', XRA._collisionEnabled);
+
+    var dbgBtn = document.getElementById('btn_collision_debug');
+    if (dbgBtn) dbgBtn.classList.toggle('xra-toolbar-btn--active', XRA._collisionDebugOn);
+
+    console.log('[VRMCollision] Collision toggled:', XRA._collisionEnabled ? 'ON' : 'OFF',
+      VRMCollision.getStats());
+  };
+
+  XRA._toggleCollisionDebug = function () {
+    if (!window.VRMCollision) return;
+    if (!VRMCollision.isEnabled()) return;
+
+    XRA._collisionDebugOn = !XRA._collisionDebugOn;
+    VRMCollision.setDebugVisualization(XRA._collisionDebugOn);
+
+    var dbgBtn = document.getElementById('btn_collision_debug');
+    if (dbgBtn) dbgBtn.classList.toggle('xra-toolbar-btn--active', XRA._collisionDebugOn);
+
+    console.log('[VRMCollision] Debug visualization:', XRA._collisionDebugOn,
+      VRMCollision.getStats());
+  };
+
   // ── Media Bar Glass-morphism ──
+  XRA._filterMediaBarButtons = function (mc) {
+    if (!mc || !window.XRA_TRACKING_BOTTOM_STREAMER_ONLY) return;
+
+    var nodes = Array.prototype.slice.call(mc.children || []);
+    if (!nodes.length) return;
+
+    var keep = [];
+    nodes.forEach(function (el) {
+      var text = [
+        el.id || '',
+        el.className || '',
+        el.title || '',
+        el.getAttribute && (el.getAttribute('aria-label') || ''),
+        el.textContent || '',
+        el.innerHTML || ''
+      ].join(' ').toLowerCase();
+
+      var src = '';
+      var img = el.querySelector && el.querySelector('img');
+      if (img && img.src) src = img.src.toLowerCase();
+
+      if (/streamer/.test(text) || /streamer/.test(src)) {
+        keep.push(el);
+      }
+    });
+
+    if (!keep.length) {
+      keep = [nodes[0]];
+    }
+
+    nodes.forEach(function (el) {
+      var visible = keep.indexOf(el) !== -1;
+      el.style.setProperty('display', visible ? '' : 'none', 'important');
+      el.style.setProperty('visibility', visible ? '' : 'hidden', 'important');
+      el.style.setProperty('pointer-events', visible ? '' : 'none', 'important');
+    });
+  };
+
   XRA._styleMediaBar = function () {
     var mc = document.getElementById('C_media_control');
     if (!mc) return;
+
+    if (window.XRA_SHOW_TRACKING_ON_BUTTON) {
+      XRA._ensureTrackingStreamerBottomButton({ hideLegacy: false });
+    }
+
+    if (window.XRA_TRACKING_BOTTOM_STREAMER_ONLY) {
+      XRA._hideTrackingBottomBarLegacy();
+      XRA._ensureTrackingStreamerBottomButton({ hideLegacy: true });
+      return;
+    }
 
     // Add glass-morphism class immediately
     if (!mc.classList.contains('xra-media-bar')) {
       mc.classList.add('xra-media-bar');
     }
+
+    XRA._filterMediaBarButtons(mc);
 
     // Watch for child content being added — when the SA system populates
     // C_media_control, force display:block so it becomes visible.
@@ -603,13 +721,96 @@
       if (mc.children.length > 0 && mc.style.display === 'none') {
         mc.style.display = 'block';
       }
+
+      XRA._filterMediaBarButtons(mc);
     });
     obs.observe(mc, { attributes: true, attributeFilter: ['style', 'class'], childList: true });
   };
 
+  XRA._ensureTrackingStreamerBottomButton = function (opts) {
+    if (document.getElementById('xra_tracking_streamer_btn')) return;
+
+    opts = opts || {};
+    var hideLegacy = !!opts.hideLegacy;
+
+    var btn = document.createElement('button');
+    btn.id = 'xra_tracking_streamer_btn';
+    btn.textContent = 'TRACKING ON';
+    btn.style.cssText = [
+      'position:fixed',
+      'left:50%',
+      'bottom:18px',
+      'transform:translateX(-50%)',
+      'z-index:9999',
+      'padding:10px 16px',
+      'border-radius:999px',
+      'border:1px solid rgba(255,255,255,0.35)',
+      'background:linear-gradient(135deg,#ff6a00,#ff4500)',
+      'color:#fff',
+      'font-weight:700',
+      'font-size:13px',
+      'letter-spacing:.2px',
+      'cursor:pointer',
+      'box-shadow:0 8px 24px rgba(255,69,0,0.45)'
+    ].join(';');
+    btn.addEventListener('click', function (e) {
+      e.preventDefault();
+      e.stopPropagation();
+      XRA._startStreamerMode();
+    });
+    document.body.appendChild(btn);
+
+    if (hideLegacy) {
+      XRA._hideTrackingBottomBarLegacy();
+    }
+  };
+
+  XRA._hideTrackingBottomBarLegacy = function () {
+    if (!window.XRA_TRACKING_BOTTOM_STREAMER_ONLY) return;
+
+    function hideNow() {
+      [
+        'C_media_control',
+        'Ldungeon_UI',
+        'Ldungeon_inventory',
+        'Ldungeon_inventory_backpack',
+        'Ljoystick'
+      ].forEach(function (id) {
+        var el = document.getElementById(id);
+        if (!el || !el.style) return;
+        el.style.setProperty('display', 'none', 'important');
+        el.style.setProperty('visibility', 'hidden', 'important');
+        el.style.setProperty('opacity', '0', 'important');
+        el.style.setProperty('pointer-events', 'none', 'important');
+      });
+    }
+
+    hideNow();
+
+    if (!XRA._trackingBottomBarObserver && window.MutationObserver && document.body) {
+      XRA._trackingBottomBarObserver = new MutationObserver(function () {
+        hideNow();
+      });
+      XRA._trackingBottomBarObserver.observe(document.body, { childList: true, subtree: true, attributes: true });
+    }
+
+    if (!XRA._trackingBottomBarInterval) {
+      XRA._trackingBottomBarInterval = setInterval(hideNow, 500);
+    }
+  };
+
   XRA._hideLegacyHUD = function () {
     function hideLegacy() {
-      ['Lquick_menu', 'LbuttonTL', 'LbuttonLR', 'Cdungeon_status_bar'].forEach(function (id) {
+      [
+        'Lquick_menu',
+        'LbuttonTL',
+        'LbuttonLR',
+        'Cdungeon_status_bar',
+        'Ldungeon_UI',
+        'Ldungeon_inventory',
+        'Ldungeon_inventory_backpack',
+        'Ljoystick'
+      ].forEach(function (id) {
         var el = document.getElementById(id);
         if (!el || !el.style) return;
         el.style.setProperty('display', 'none', 'important');

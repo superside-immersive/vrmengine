@@ -12,6 +12,9 @@ System Animator
 SA.loader.loadScriptSync('js/app/utils.js')
 SA.loader.loadScriptSync('js/app/events.js')
 SA.loader.loadScriptSync('js/app/init-ui.js')
+SA.loader.loadScriptSync('js/app/resize-3d-navigation.js')
+SA.loader.loadScriptSync('js/app/resize-fullscreen.js')
+SA.loader.loadScriptSync('js/app/resize-ui.js')
 SA.loader.loadScriptSync('js/app/resize.js')
 // Load app modules (Step 5B extraction)
 SA.loader.loadScriptSync('js/app/ev-init.js')
@@ -31,10 +34,7 @@ SA.loader.loadScriptSync('js/app/gallery-utils.js')
 
 
 var loaded
-// [LEGACY REMOVED 1B] Silverlight vars removed
 var use_Silverlight = true // semantic flag: use SVG/HTML5/Canvas rendering path
-// [LEGACY REMOVED 9B] use_Silverlight_only removed (always false, dead)
-// [LEGACY REMOVED 1B] xul_mode/xul_path/xul_transparent_mode branches removed
 var is_SA_BG_transparent = webkit_transparent_mode
 
 var absolute_screen_mode = (webkit_electron_mode && !returnBoolean("MoveWithinPrimaryScreen") && !is_SA_child_animation)
@@ -43,8 +43,8 @@ var spectrum_analyser, use_full_fps, use_full_fps_registered
 
 var use_SVG_Clock = returnBoolean("UseSVGClock") // [9D] ie9_mode always true
 
-var use_EQP_ripple = returnBoolean("UseCanvasRipple") // [9D] ie9_mode always true
-var use_EQP_fireworks = returnBoolean("UseCanvasFireworks") // [9D] ie9_mode always true
+var use_EQP_ripple = false // returnBoolean("UseCanvasRipple") // [9D] ie9_mode always true
+var use_EQP_fireworks = false // returnBoolean("UseCanvasFireworks") // [9D] ie9_mode always true
 
 var use_WebGL = (w3c_mode)
 var use_WebGL_2D// = (use_WebGL && webkit_transparent_mode && returnBoolean("UseWebGLForCanvas2D"))
@@ -59,7 +59,7 @@ if (use_EQP_ripple || use_EQP_fireworks) {
 
 var use_HTML5 = use_SA_browser_mode
 var use_SVG
-// [LEGACY REMOVED 1B] use_Silverlight/use_Silverlight_only compatibility assignments removed
+
 
 
 var Settings = {}
@@ -233,8 +233,6 @@ self.EV_height = self.EQP_ref_height = h
 self.EQP_parts_path = "/"
 self.EQP_ps = [{src:path.replace(/^.+[\/\\]/, ""), xy:w+'x'+h, o_min:-1}]
 
-// [LEGACY REMOVED 9C] use_WMP/WMP_hidden assignment removed (WMP support deleted in Phase 1)
-
 self.EQP_init_extra = function () {
   if (use_EQP_ripple) {
     if (/\.png$/i.test(path) && !EQP_Ripple.options_length) {
@@ -249,7 +247,7 @@ self.EQP_init_extra = function () {
   }
 }
 
-SA.loader.loadScriptSync('js/EQP.js')
+// SA.loader.loadScriptSync('js/EQP.js')
         }
         else {
           use_native_img = true
@@ -315,7 +313,6 @@ self.EV_b_height = h_max_org * image_ratio
           }
         }
         else if (/\.(webm|mp4|mkv)$/i.test(path)) {
-// [LEGACY REMOVED 1B] else { use_Silverlight = true } branch removed (ie9_mode always true)
   EQP_use_HTML5_video = true
   if (!gallery_js) {
     self.EQP_video_options = { play_sound:false, loop_forever:true } // [AUDIO REMOVED]
@@ -425,7 +422,6 @@ self.EV_b_height = h_max_org * image_ratio
 
         if (/\.(wmv|webm|mp4|mkv)$/i.test(path)) {
           var alt_format = null
-          // [LEGACY REMOVED 1B] xul_mode format preference branch removed
           if (/\.(webm)$/i.test(path))
             alt_format = ["wmv", "mp4", "mkv"]
 
@@ -442,7 +438,6 @@ self.EV_b_height = h_max_org * image_ratio
           }
 
 EQP_use_HTML5_video = /\.(webm|mp4|mkv)$/i.test(path)
-// [LEGACY REMOVED 1B] use_Silverlight fallback removed
         }
 
         EQP_gallery.push(path)
@@ -671,8 +666,7 @@ function loadFolder_CORE() {
   else
     System.Gadget.Settings.writeString("LABEL_Folder", Settings.f_path)
 
-// obsolete
-//  Settings.to_include_subfolders = returnBoolean("IncludeSubfolders")
+
 
 // main
   gallery = []
@@ -680,10 +674,8 @@ function loadFolder_CORE() {
 
   ItemsFromFolder(Settings.f_path, true)
   if (MacFace_mode) {
-    document.write(
-  '<script language="JavaScript" src="js/PlistXMLParser.js"></scr'+'ipt>\n'
-+ '<script language="JavaScript" src="js/vistaFace.js"></scr'+'ipt>'
-    )
+    SA.loader.loadScriptSync('js/PlistXMLParser.js')
+    SA.loader.loadScriptSync('js/vistaFace.js')
     return
   }
 
@@ -704,8 +696,20 @@ function loadFolder_CORE() {
     SA.loader.loadScriptSync('js/mmd/wallpaper3d.js')
     SA.loader.loadScriptSync('js/mmd/sprite.js')
     SA.loader.loadScriptSync('js/mmd/camera-shake.js')
+    SA.loader.loadScriptSync('js/mmd/defaults-rendering.js')
+    SA.loader.loadScriptSync('js/mmd/defaults-look-at.js')
+    SA.loader.loadScriptSync('js/mmd/defaults-scene-objects.js')
     SA.loader.loadScriptSync('js/mmd/defaults.js')
     SA.loader.loadScriptSync('js/mmd/threex-vrm.js')
+
+    // VRM Direct-Tracking module (second VRM driven by MediaPipe data)
+    SA.loader.loadScriptSync('js/vrm-direct/vrm-direct-solver.js')
+    SA.loader.loadScriptSync('js/vrm-direct/vrm-direct-pose-solver.js')  // Fase 2: raw BlazePose IK (off by default)
+    SA.loader.loadScriptSync('js/vrm-direct/vrm-direct-loader.js')
+    SA.loader.loadScriptSync('js/vrm-direct/vrm-collision.js')
+    SA.loader.loadScriptSync('js/vrm-direct/vrm-direct-animator.js')
+    SA.loader.loadScriptSync('js/vrm-direct/vrm-direct-main.js')
+
     SA.loader.loadScriptSync('js/mmd/threex-ppe.js')
     SA.loader.loadScriptSync('js/mmd/threex-motion.js')
     SA.loader.loadScriptSync('js/mmd/threex-utils.js')

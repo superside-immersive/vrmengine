@@ -598,6 +598,12 @@ const mouth_open = Math.max(
   blendshape_weight[name] = w + (1-w) * obj.w * (mouth_open*0.8 + (1-mouth_open)*0.2);
 });
 
+// Expose final blendshape_weight snapshot for VRM Direct before we zero out morphs.
+// Uses the public setter so _autoAnimSnapshot stays private to the vrm-direct module.
+if (window.VRMDirectSolver && VRMDirectSolver.setAnimSnapshot) {
+  VRMDirectSolver.setAnimSnapshot(Object.assign({}, blendshape_weight));
+}
+
 // should be safe to reset geometry.morphs_weight_by_name after blendshape update, when MMD is not used
 for (const name in MMD_morph_weight) {
   MMD_morph_weight[name] = 0
@@ -1186,8 +1192,16 @@ mesh_obj.traverse( ( obj ) => {
 } );
 
 // headless_mode
-if (!MMD_SA.MMD_started && !MMD_SA_options._XRA_headless_mode)
-  TX.data.scene.add(mesh_obj);
+if (!MMD_SA.MMD_started && !MMD_SA_options._XRA_headless_mode) {
+  // Cross-THREE-build safe add (bypasses instanceof check)
+  if (mesh_obj.parent) {
+    var _ri = mesh_obj.parent.children.indexOf(mesh_obj);
+    if (_ri !== -1) mesh_obj.parent.children.splice(_ri, 1);
+  }
+  mesh_obj.parent = TX.data.scene;
+  TX.data.scene.children.push(mesh_obj);
+  if (mesh_obj.dispatchEvent) mesh_obj.dispatchEvent({ type: 'added' });
+}
 
 var vrm_obj = new VRM_object(para.vrm_index, vrm, { url:url_raw });
 
@@ -1386,9 +1400,22 @@ System._browser.on_animation_update.add(()=>{
   TX.threeX.models.sort((a,b)=>a.index-b.index);
   TX.obj_list.sort((a,b)=>a.data.index-b.data.index);
 
-  TX.threeX.scene.remove(model_now.model.scene);
+  // Cross-THREE-build safe remove
+  var _rmChild = model_now.model.scene;
+  var _rmIdx = TX.threeX.scene.children.indexOf(_rmChild);
+  if (_rmIdx !== -1) TX.threeX.scene.children.splice(_rmIdx, 1);
+  _rmChild.parent = null;
+  if (_rmChild.dispatchEvent) _rmChild.dispatchEvent({ type: 'removed' });
 
-  TX.threeX.scene.add(model_new.model.scene);
+  // Cross-THREE-build safe add
+  var _addChild = model_new.model.scene;
+  if (_addChild.parent) {
+    var _ri2 = _addChild.parent.children.indexOf(_addChild);
+    if (_ri2 !== -1) _addChild.parent.children.splice(_ri2, 1);
+  }
+  _addChild.parent = TX.threeX.scene;
+  TX.threeX.scene.children.push(_addChild);
+  if (_addChild.dispatchEvent) _addChild.dispatchEvent({ type: 'added' });
 
   const icon = (model_new.is_VRM1) ? model_new.model.meta.thumbnailImage : model_new.model.meta.texture?.source.data;
   if (icon) {

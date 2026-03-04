@@ -119,10 +119,11 @@ if (!System._browser.rendering_check()) return true;
 let obj_hidden_list = [];
 if (MMD_SA.hide_3D_avatar) {
   const obj_check_list = [TX.models[0].mesh];
-  if (MMD_SA_options.Dungeon) {
-    obj_check_list.push(MMD_SA_options.mesh_obj_by_id["DomeMESH"]._obj);
+  if (MMD_SA_options.Dungeon?.started) {
+    const domeMesh = MMD_SA_options.mesh_obj_by_id?.["DomeMESH"]?._obj;
+    if (domeMesh) obj_check_list.push(domeMesh);
     if (MMD_SA.THREEX._object3d_list_ && !MMD_SA.THREEX._XR_Animator_scene_?.settings?.avatar_replacement_mode)
-      obj_check_list.push(...MMD_SA.THREEX._object3d_list_.map(obj=>obj._obj));
+      obj_check_list.push(...MMD_SA.THREEX._object3d_list_.map(obj=>obj._obj).filter(Boolean));
   }
   obj_check_list.forEach(obj=>{
     if (obj.visible) {

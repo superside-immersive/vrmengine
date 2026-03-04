@@ -146,8 +146,6 @@ var Settings_default = {
   ,MMDRandomCamera: true
   ,MMDOverrideDefaultForExternalModel: true
   ,MMDEdgeScale: "1.5"
-
-// obsolete
   ,SwapRegistryCheck: false
   ,XULSilverlightAuto: true
   ,UseSilverlight: true
@@ -333,7 +331,6 @@ Object.append = (function () {
   };
 })();
 
-// [LEGACY REMOVED 1C] HTA_use_GPU_acceleration and getHTAUseGPUAcceleration() removed — HTA is dead
 var HTA_use_GPU_acceleration = false
 
 function electronRegisterCheck() {
@@ -503,7 +500,8 @@ var linux_mode   = /Linux/i.test(navigator.userAgent)
 var non_windows_native_mode
 
 //https://coderwall.com/p/i817wa/one-line-function-to-detect-mobile-devices-with-javascript
-var is_mobile = (typeof window.orientation !== "undefined") || (navigator.userAgent.indexOf('IEMobile') !== -1);
+var is_ipad = /iPad/i.test(navigator.userAgent) || (/Macintosh/i.test(navigator.userAgent) && navigator.maxTouchPoints > 1)
+var is_mobile = !is_ipad && ((typeof window.orientation !== "undefined") || (navigator.userAgent.indexOf('IEMobile') !== -1));
 
 var WallpaperEngine_mode
 var WallpaperEngine_CEF_mode// = true
@@ -577,7 +575,6 @@ Settings_default._custom_.Display = "-1"
   if (xul_mode) {
     xul_version = parseInt(RegExp.$1)
     ie9 = ie9_mode = ie8_mode = true
-    // [LEGACY REMOVED] SA_xul.js and file_io.js no longer loaded
     console.warn('[SA] XUL mode detected but legacy XUL support has been removed')
     return
   }
