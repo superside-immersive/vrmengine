@@ -653,11 +653,6 @@ function SA_load_body() {
 + '</scr'+'ipt>\n'
 
 window.addEventListener('DOMContentLoaded', function () {
-  if (window.is_ipad) {
-    var arBtn = document.getElementById('Lquick_menu_ar_button')
-    if (arBtn) arBtn.style.display = 'none'
-  }
-
   function cancel_event(e) {
     e.stopPropagation();
     e.stopImmediatePropagation();

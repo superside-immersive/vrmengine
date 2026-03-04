@@ -501,7 +501,8 @@ var non_windows_native_mode
 
 //https://coderwall.com/p/i817wa/one-line-function-to-detect-mobile-devices-with-javascript
 var is_ipad = /iPad/i.test(navigator.userAgent) || (/Macintosh/i.test(navigator.userAgent) && navigator.maxTouchPoints > 1)
-var is_mobile = !is_ipad && ((typeof window.orientation !== "undefined") || (navigator.userAgent.indexOf('IEMobile') !== -1));
+var is_mobile_device = (typeof window.orientation !== "undefined") || (navigator.userAgent.indexOf('IEMobile') !== -1) || is_ipad
+var is_mobile = false;
 
 var WallpaperEngine_mode
 var WallpaperEngine_CEF_mode// = true

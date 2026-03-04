@@ -404,8 +404,8 @@
         action: function () { XRA._toggleCollisionDebug(); } },
     ];
 
-    // AR button only when WebXR API is available (exclude iPad: forced desktop UX)
-    if (navigator.xr && !window.is_ipad) {
+    // AR button only when WebXR API is available
+    if (navigator.xr) {
       buttons.push('sep');
       buttons.push({
         icon: '📱', title: 'AR Mode', cls: 'xra-toolbar-btn--accent',
