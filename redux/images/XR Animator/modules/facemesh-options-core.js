@@ -118,7 +118,7 @@ function onDrop_JSON_change_facemesh_calibration(e) {
     speech_bubble2('✅Facemesh calibration', 3, { no_word_break:true });
     System._browser.camera.facemesh.import_calibration(json);
   }
-  MMD_SA_options.Dungeon.run_event(null,done_branch,0);
+  MMD_SA_options.Dungeon?.run_event?.(null,done_branch,0);
 }
 
 var object3d_list = [];
@@ -379,8 +379,7 @@ switch (keyCode) {
       pos.y += pos_inc * sign_center;
     }
     else if (ev.altKey) {
-      if (explorer_mode)
-        MMD_SA_options.Dungeon.para_by_grid_id[2].ground_y += pos_inc;
+      if (MMD_SA_options.Dungeon.para_by_grid_id)         MMD_SA_options.Dungeon.para_by_grid_id[2].ground_y += pos_inc;
     }
     else {
       pos.z -= pos_inc * sign_center;
@@ -407,8 +406,7 @@ switch (keyCode) {
       pos.y -= pos_inc * sign_center;
     }
     else if (ev.altKey) {
-      if (explorer_mode)
-        MMD_SA_options.Dungeon.para_by_grid_id[2].ground_y -= pos_inc;
+      if (MMD_SA_options.Dungeon.para_by_grid_id)         MMD_SA_options.Dungeon.para_by_grid_id[2].ground_y -= pos_inc;
     }
     else {
       pos.z += pos_inc * sign_center;
@@ -446,14 +444,14 @@ switch (keyCode) {
       const parent_bone_name = parent_bone_list[parent_bone_index+1];
       obj.parent_bone = { model_index:0, name:parent_bone_name, position:{x:0,y:0,z:-1}, rotation:{x:0,y:0,z:0} };
       if (parent_bone_index == -1) {
-        MMD_SA_options.Dungeon.accessory_list.push(obj);
+        MMD_SA_options.Dungeon?.accessory_list.push(obj);
       }
       p = obj.parent_bone;
     }
     else {
       delete obj.parent_bone;
       use_avatar_as_center = explorer_mode;
-      MMD_SA_options.Dungeon.accessory_list = MMD_SA_options.Dungeon.accessory_list.filter(a => a !== obj);
+      if (MMD_SA_options.Dungeon.accessory_list) MMD_SA_options.Dungeon.accessory_list = MMD_SA_options.Dungeon.accessory_list.filter(a => a !== obj);
       p = mesh;
       mesh.position.copy(c_pos);
 // re-enable .matrixAutoUpdate as accessory disabled it
@@ -490,7 +488,7 @@ switch (keyCode) {
 // R
   case 82:
     if (!e.detail.reset_confirmed) {
-      MMD_SA_options.Dungeon.run_event({
+      MMD_SA_options.Dungeon?.run_event?.({
 message: {
   index: 1,
   get content() { return System._browser.translation.get('XR_Animator.UI.UI_options.scene.3D_scene_builder.reset'); },
@@ -507,7 +505,7 @@ message: {
       if (ds.parent_bone_name) {
         if (!obj.parent_bone) {
           obj.parent_bone = { model_index:0, name:ds.parent_bone_name, position:{x:0,y:0,z:-1}, rotation:{x:0,y:0,z:0} };
-          MMD_SA_options.Dungeon.accessory_list.push(obj);
+          MMD_SA_options.Dungeon?.accessory_list.push(obj);
         }
         p = obj.parent_bone;
         p_rot = p.rotation;
@@ -515,7 +513,7 @@ message: {
       else {
         if (obj.parent_bone) {
           delete obj.parent_bone;
-          MMD_SA_options.Dungeon.accessory_list = MMD_SA_options.Dungeon.accessory_list.filter(a => a !== obj);
+          if (MMD_SA_options.Dungeon.accessory_list) MMD_SA_options.Dungeon.accessory_list = MMD_SA_options.Dungeon.accessory_list.filter(a => a !== obj);
         }
         p = mesh;
         p_rot = obj.user_data._rotation_;
@@ -537,7 +535,7 @@ message: {
 // X
   case 88:
     if (!e.detail.remove_confirmed) {
-      MMD_SA_options.Dungeon.run_event({
+      MMD_SA_options.Dungeon?.run_event?.({
 message: {
   index: 1,
   get content() { return System._browser.translation.get('XR_Animator.UI.UI_options.scene.3D_scene_builder.remove'); },
@@ -571,7 +569,7 @@ message: {
     return;
 }
 
-explorer_ground_y = MMD_SA_options.Dungeon.para_by_grid_id[2].ground_y;
+explorer_ground_y = MMD_SA_options.Dungeon?.para_by_grid_id[2].ground_y;
 
 if (use_avatar_as_center && !obj.parent_bone) {
   pos.add(v3b.copy(p.position).sub(c_pos).multiplyScalar(scale)).applyEuler(rot).add(c_pos);
@@ -603,7 +601,7 @@ System._browser.DEBUG_show([
   'Rotation(±' + (2) + '°): ' + ((obj.parent_bone) ? e1.copy(p.rotation).toArray().slice(0,3) : e1.copy(obj.user_data._rotation_).toArray().slice(0,3).map(v=>Math.round(v*180/Math.PI))),
   'Scale: ' + Math.round(mesh.scale.x*10)/10,
   '',
-  'Ground Y(±' + (Math.round(pos_inc*1000)/1000) + '): ' + Math.round(MMD_SA_options.Dungeon.para_by_grid_id[2].ground_y*10)/10,
+  'Ground Y(±' + (Math.round(pos_inc*1000)/1000) + '): ' + Math.round(MMD_SA_options.Dungeon?.para_by_grid_id[2].ground_y*10)/10,
   '',
   ((obj.parent_bone) ? 'Attach to: ' + (MMD_SA.THREEX.VRM.bone_map_MMD_to_VRM[obj.parent_bone.name] || obj.parent_bone.name) : 'Center: ' + ((use_avatar_as_center) ? 'Avatar' : 'Object')),
 ].join('\n'));
@@ -698,7 +696,7 @@ function remove_object3D(index) {
     MMD_SA.THREEX.scene.remove(object3d._obj);
 
     if (object3d.parent_bone)
-      MMD_SA_options.Dungeon.accessory_list = MMD_SA_options.Dungeon.accessory_list.filter(a => a !== object3d);
+      if (MMD_SA_options.Dungeon.accessory_list) MMD_SA_options.Dungeon.accessory_list = MMD_SA_options.Dungeon.accessory_list.filter(a => a !== object3d);
 
     const d = object3d.user_data;
     if (d.animation_mixer) {
@@ -822,9 +820,9 @@ function update_panorama_depth(image, mesh, para={}) {
   ctx.filter = 'none';
 
   const canvas_disp = canvas_dummy2 = canvas_dummy2 || document.createElement('canvas');
-  const sd = MMD_SA_options.Dungeon_options.skydome;
-  let dw = canvas_disp.width  = para.width_segments  || sd.width_segments;
-  let dh = canvas_disp.height = para.height_segments || sd.height_segments;
+  const sd = MMD_SA_options.Dungeon_options?.skydome;
+  let dw = canvas_disp.width  = para.width_segments  || sd?.width_segments || 64;
+  let dh = canvas_disp.height = para.height_segments || sd?.height_segments || 64;
   const ctx_disp = canvas_disp.getContext('2d');
   ctx_disp.globalCompositeOperation = 'source-over';
   ctx_disp.globalAlpha = 1;
@@ -897,8 +895,8 @@ function update_panorama_depth(image, mesh, para={}) {
 async function change_panorama(index, src, para={}) {
   function show() {
     panorama_loading = false;
-    sd.texture_index = index;
-    sd.texture_setup();
+    if (sd) sd.texture_index = index;
+    sd?.texture_setup?.();
     System._browser.camera.display_floating = (MMD_SA_options.user_camera.display.floating_auto !== false);
 
     if (MMD_SA.THREEX.enabled) {
@@ -913,12 +911,12 @@ async function change_panorama(index, src, para={}) {
     panorama_src = para.full_path || src;
   }
 
-  var sd = MMD_SA_options.Dungeon_options.skydome
+  var sd = MMD_SA_options.Dungeon_options?.skydome
   if (panorama_loading) {
     DEBUG_show('(panorama still loading)', 2)
     return
   }
-  if (index && sd.texture_cache_list[index] && sd.texture_cache_list[index].complete) {
+  if (index && sd?.texture_cache_list[index] && sd?.texture_cache_list[index].complete) {
     show()
     return
   }
@@ -928,7 +926,8 @@ async function change_panorama(index, src, para={}) {
   panorama_loading = true;
 
   await new Promise((resolve)=>{
-    const image = sd.texture_cache_list[index] = sd.texture_cache_list[index] || new Image();
+    const image = sd?.texture_cache_list?.[index] || new Image();
+      if (sd && sd.texture_cache_list) sd.texture_cache_list[index] = image;
     image.onload = ()=>{
       resolve();
     };
@@ -942,7 +941,8 @@ async function change_panorama(index, src, para={}) {
   if (panorama_loading && para.depth) {
     panorama_loading = true;
     await new Promise((resolve)=>{
-      const image = sd.texture_cache_list[-1] = sd.texture_cache_list[-1] || new Image();
+      const image = sd?.texture_cache_list?.[-1] || new Image();
+        if (sd && sd.texture_cache_list) sd.texture_cache_list[-1] = image;
       image.onload = ()=>{
         update_panorama_depth(image, MMD_SA_options.mesh_obj_by_id["DomeMESH"]._obj, para.json);
         resolve();
@@ -1140,7 +1140,7 @@ p_bone.is_T_pose = is_T_pose;
         if (motion_index != -1) {
           p = Promise.resolve(true);//new Promise((resolve)=>{ System._browser.on_animation_update.add(resolve, 1,0); });
           if (motion.play_on_ready) {
-            p.then(()=>{ MMD_SA_options.Dungeon_options.item_base.pose._change_motion_(motion_index, true); });
+            p.then(()=>{ MMD_SA_options.Dungeon_options?.item_base?.pose?._change_motion_(motion_index, true); });
           }
           else {
             const index = MMD_SA_options.motion_index_by_name[filename];
@@ -1430,8 +1430,7 @@ MMD_SA._force_motion_shuffle = true;
     if (settings) {
       if (settings.explorer_mode?.ground_y != null) {
         explorer_ground_y = settings.explorer_mode.ground_y;
-        if (explorer_mode)
-          MMD_SA_options.Dungeon.para_by_grid_id[2].ground_y = explorer_ground_y;
+        if (MMD_SA_options.Dungeon.para_by_grid_id)           MMD_SA_options.Dungeon.para_by_grid_id[2].ground_y = explorer_ground_y;
       }
 
       if (settings.camera) {
@@ -1516,7 +1515,7 @@ window.dispatchEvent(new CustomEvent("SA_XR_Animator_scene_onload"));
 
   return async function (e) {
     function reset_UI() {
-      if (MMD_SA_options.Dungeon.event_mode)
+      if (MMD_SA_options.Dungeon?.event_mode)
         document.dispatchEvent(new KeyboardEvent('keydown', { code:'Escape' }));
 //      reset_scene_UI();
     }
@@ -1717,7 +1716,7 @@ window.addEventListener('jThree_ready', ()=>{
 // use .condition instead of .enabled to save some headaches when .camera_face_locking can change at any time
 //    enabled: MMD_SA_options.camera_face_locking,
     condition: ()=>{
-return MMD_SA_options.camera_face_locking || ((MMD_SA_options.camera_face_locking !== false) && !explorer_mode && !MMD_SA_options.Dungeon_options.item_base.hand_camera._hand_camera_active && MMD_SA_options.Dungeon.started && (MMD_SA.Wallpaper3D?.visible || MMD_SA_options.mesh_obj_by_id["DomeMESH"]?._obj?.visible || (MMD_SA.THREEX.enabled && MMD_SA.THREEX.scene.background) || object3d_list.some(obj=>!obj.parent_bone)) && !MMD_SA.THREEX._THREE.MMD.getCameraMotion().length);
+return MMD_SA_options.camera_face_locking || ((MMD_SA_options.camera_face_locking !== false) && !explorer_mode && !MMD_SA_options.Dungeon_options?.item_base?.hand_camera?._hand_camera_active && MMD_SA_options.Dungeon?.started && (MMD_SA.Wallpaper3D?.visible || MMD_SA_options.mesh_obj_by_id["DomeMESH"]?._obj?.visible || (MMD_SA.THREEX.enabled && MMD_SA.THREEX.scene.background) || object3d_list.some(obj=>!obj.parent_bone)) && !MMD_SA.THREEX._THREE.MMD.getCameraMotion().length);
     },
   });
 
@@ -1764,22 +1763,22 @@ function reset_scene_explorer(enforced) {
   explorer_mode = false;
   MMD_SA_options.user_camera.ML_models.look_at_screen = null;
 
-  MMD_SA_options.Dungeon._states.action_allowed_in_event_mode = false;
-  MMD_SA_options.Dungeon_options.character_movement_disabled = true;
+  if (MMD_SA_options.Dungeon._states)   MMD_SA_options.Dungeon._states.action_allowed_in_event_mode = false;
+  if (MMD_SA_options.Dungeon_options)   MMD_SA_options.Dungeon_options.character_movement_disabled = true;
 
-  if (MMD_SA_options.Dungeon_options.camera_position_z_sign != 1) {
-    MMD_SA_options.Dungeon_options.camera_position_z_sign = 1;
-    MMD_SA_options.Dungeon.update_camera_position_base();
+  if (MMD_SA_options.Dungeon_options?.camera_position_z_sign != 1) {
+    if (MMD_SA_options.Dungeon_options)     MMD_SA_options.Dungeon_options.camera_position_z_sign = 1;
+    MMD_SA_options.Dungeon?.update_camera_position_base();
 
-    const c = MMD_SA_options.Dungeon.character;
-    if (c.about_turn) {
+    const c = MMD_SA_options.Dungeon?.character;
+    if (c && c.about_turn) {
       c.about_turn = false;
       c.rot.y += Math.PI;
     }
-    c.pos_update();
+    if (c) c.pos_update();
   }
 
-  MMD_SA_options.Dungeon.para_by_grid_id[2].ground_y = THREE.MMD.getModels()[0].mesh.position.y;//.ground_y_visible
+  if (MMD_SA_options.Dungeon.para_by_grid_id)   MMD_SA_options.Dungeon.para_by_grid_id[2].ground_y = THREE.MMD.getModels()[0].mesh.position.y;//.ground_y_visible
 
   object3d_list.forEach(object3d=>{
     object3d.no_collision = true;

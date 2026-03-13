@@ -6,6 +6,8 @@
    ,"standmix" : { onended: function () { MMD_SA._no_fading=true; } }
    ,"standmix2_modified" : { onended: function () { MMD_SA._no_fading=true; }
 
+,loopback_fading: true // [QUARANTINE-RONDA3] loop standing idle continuously — dungeon used to force specific motions, without it shuffle kicks in
+
 ,allows_kissing: true
 ,look_at_screen_bone_list: [
   { name:"首", weight_screen:0.5, weight_screen_y:0.25, weight_motion:1 }
