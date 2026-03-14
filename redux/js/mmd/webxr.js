@@ -4,6 +4,7 @@
 window.MMD_SA_createWebXR = function () {
     var xr = {
         can_AR: false,
+        session: null,
         input_event: { inputSources: [], touches: [] },
         zoom_scale: 1,
         hits: [],
@@ -12,7 +13,7 @@ window.MMD_SA_createWebXR = function () {
         anchors: new Set(),
         xrViewerSpaceHitTestSource: null,
         xrTransientInputHitTestSource: null,
-        user_camera: null,
+        user_camera: System._browser.camera,
         enter_AR: async function () {},
         onSessionStart: async function () {},
         restore_scene: function () {},
