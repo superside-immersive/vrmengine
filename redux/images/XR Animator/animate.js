@@ -78,6 +78,8 @@ var MMD_SA_options = {
    ,{ must_load:true, no_shuffle:true, path:Settings.f_path + '/assets/assets.zip#/motion/walk_n_run/walk_A34_f0-42.vmd' }
    ,{ must_load:true, no_shuffle:true, path:Settings.f_path + '/assets/assets.zip#/motion/tsuna/モブ歩き男80f.vmd' }
 
+   ,{ must_load:true, no_shuffle:true, path:Settings.f_path + '/assets/assets.zip#/baseball_throw/baseball_throw.vmd' }
+
 // roomba
 //   ,{ must_load:true, no_shuffle:true, path:'F:\\Programs Portable\\node-webkit\\_TEMP\\gura_x_roomba\\data\\gura_sit_01.vmd' }
   ]
@@ -1071,13 +1073,38 @@ if (model.skin.time > 1) {
     }
 
    ,"baseball_throw": {
-  onstart: function () {}
-
- ,onended: function () {
-MMD_SA._no_fading=true; MMD_SA._ignore_physics_reset=true;
+  onstart: function () {
+MMD_SA_options.Dungeon_options.item_base.baseball.action._ball_para = null
+MMD_SA.SpeechBubble.message(0, "Catch this~!", 1*1000)
   }
 
- ,onplaying: function () {}
+ ,onended: function (loop_end) {
+MMD_SA._no_fading=true; MMD_SA._ignore_physics_reset=true;
+if (!loop_end) return;
+
+var score = MMD_SA_options.Dungeon_options.item_base.baseball.action._ball_para.hit_score
+if (score > 75) {
+  MMD_SA_options._motion_shuffle_list_default = [MMD_SA_options.motion_index_by_name["emote-mod_お辞儀1"], MMD_SA_options.motion_index_by_name["emote-mod_お辞儀2"], MMD_SA_options.motion_index_by_name["emote-mod_肯定する1"], MMD_SA_options.motion_index_by_name["emote-mod_肯定する2"]]
+}
+else if (score > 40) {
+  MMD_SA_options._motion_shuffle_list_default = [MMD_SA_options.motion_index_by_name["emote-mod_がっかり1"], MMD_SA_options.motion_index_by_name["emote-mod_がっかり2"], MMD_SA_options.motion_index_by_name["emote-mod_肩をすくめる1"], MMD_SA_options.motion_index_by_name["emote-mod_肩をすくめる2"]]
+}
+else {
+  MMD_SA_options._motion_shuffle_list_default = [MMD_SA_options.motion_index_by_name["emote-mod_すねる1"], MMD_SA_options.motion_index_by_name["emote-mod_すねる2"], MMD_SA_options.motion_index_by_name["emote-mod_よろめく1"], MMD_SA_options.motion_index_by_name["emote-mod_よろめく2"]]
+}
+
+MMD_SA_options.motion_shuffle_list_default = MMD_SA_options._motion_shuffle_list_default.slice()
+MMD_SA._force_motion_shuffle = true
+  }
+
+// ,freeze_onended: true
+ ,onplaying: function (model_index) {
+var mm = MMD_SA.MMD.motionManager
+var model = THREE.MMD.getModels()[model_index]
+if (model.skin.time >= 140/30) {
+  MMD_SA_options.Dungeon_options.item_base.baseball.action._ball_fly()
+}
+  }
 
  ,auto_blink: true
  ,adjust_center_view_disabled: true
@@ -3628,7 +3655,43 @@ window.addEventListener("GOML_ready", function () {
  ,no_collision: true
     }
 */
-// baseball object removed (browser-only mode)
+// 0
+    {
+  path: Settings.f_path + '/assets/assets.zip#/model/baseball/baseball_v01.x'
+// ,is_dummy: true
+// ,construction:{castShadow:true}
+ ,placement: {
+    grid_id_filter: function () {
+function condition(x_object, model_index) {
+  var skin0 = (model_index == 0) && THREE.MMD.getModels()[0].skin
+  if (skin0 && /baseball_throw/.test(MMD_SA.motion[skin0._motion_index].filename)) {
+    Object.assign(this, (skin0.time < 140/30) ? this._baseball_throw : this._null);
+  }
+  else {
+    x_object._obj_proxy.visible = false
+    return false
+  }
+
+  return true
+}
+
+return [
+  {
+    para:{
+      parent_bone: {
+  model_index: 0
+ ,condition: condition
+ ,_null: { name:"" }
+ ,_baseball_throw: { name:"右手首", position:{x:-0.5,y:-1,z:0} }
+      }
+    }
+  }
+];
+    }
+   ,scale: 10
+  }
+ ,no_collision: true
+    },
 /*
 // roomba
 // 1
