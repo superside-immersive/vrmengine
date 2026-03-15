@@ -3736,18 +3736,29 @@ return [
 
  ,item_base: {
     "reticle" : {
-    icon_path: Settings.f_path + '/assets/assets.zip#/icon/yellow-target_64x64.png'
-   ,info_short: "AR reticle (disabled)"
-   ,is_base_inventory: false
-   ,index_default: undefined
-   ,stock_default: 0
-   ,stock_max: 0
-   ,action: {
-      func: function () {
-  return true;
-      }
-     ,anytime: true
+  icon_path: Settings.f_path + '/assets/assets.zip#/icon/yellow-target_64x64.png'
+ ,info_short: "AR reticle"
+
+ ,is_base_inventory: is_mobile
+// NOTE: use undefined for index_default ((null >= 0) is true...)
+ ,index_default: undefined
+// ,get index_default() { return (is_mobile) ? undefined : MMD_SA_options.Dungeon.inventory.max_base+1; }
+
+ ,stock_default: (is_mobile) ? 1 : 0
+ ,stock_max: 1
+ ,action: {
+    func: function (item) {
+if (!MMD_SA.WebXR.session) {
+//  DEBUG_show("(AR mode only)", 3); return true;
+  MMD_SA_options.Dungeon.run_event("_ENTER_AR_",0)
+}
+else {
+//SA_AR_dblclick
+  const result = { return_value:null };
+  window.dispatchEvent(new CustomEvent("SA_AR_dblclick", { detail:{ e:{}, is_item:true, result:result } }));
+}
     }
+  }
     }
 
    ,"streamer_mode": (()=>{
@@ -4815,23 +4826,208 @@ SB.message(0, 'You can track your face, ' + ((System._browser.camera.poseNet.use
       };
     })()
 
-   ,"baseball" : {
+   ,"baseball" : (function () {
+      var baseball_started;
+
+      var v3a, v3b;
+      window.addEventListener("jThree_ready", function () {
+v3a = new THREE.Vector3()
+v3b = new THREE.Vector3()
+      });
+
+      var baseball = {
   icon_path: Settings.f_path + '/assets/assets.zip#/icon/baseball_64x64.png'
- ,info_short: "Baseball catcher (disabled)"
- ,index_default: undefined
- ,stock_max: 0
- ,stock_default: 0
+ ,info_short: "Baseball catcher"
+// ,is_base_inventory: true
+
+ ,get index_default() { return (is_mobile) ? 5 : (MMD_SA_options.Dungeon.inventory.max_base+MMD_SA_options.Dungeon.inventory.max_base*(MMD_SA_options.Dungeon.inventory.max_row-1))+1; }
+// ,get index_default() { return (is_mobile) ? undefined : MMD_SA_options.Dungeon.inventory.max_base+1; }
+
+ ,stock_max: 1
+ ,stock_default: 1
+
  ,action: {
-    _ball_para: null
-   ,func: function () { return true; }
-   ,anytime: true
-   ,_distance: function () { return 0; }
-   ,_distance_check: function () { return false; }
-   ,_ball_fly: function () {}
-  }
- ,reset: function () {}
- ,get _started() { return false; }
+    func: function (item) {
+var model_mesh = THREE.MMD.getModels()[0].mesh
+if (!model_mesh.visible)
+  return true
+
+var d = MMD_SA_options.Dungeon
+if (d.event_mode && !baseball_started)
+  return true
+
+if (baseball_started) {
+  item.reset()
+  DEBUG_show("Baseball catcher:OFF", 2)
+
+  return false
+}
+//DEBUG_show(MMD_SA.MMD.motionManager.filename)
+
+if (!MMD_SA_options._XRA_pose_list[0].some(p=>p.name == MMD_SA.MMD.motionManager.filename))
+  return true
+if (MMD_SA_options.Dungeon_options.item_base.social_distancing._started)
+  return
+
+baseball_started = true
+
+d._states.event_mode_locked = true
+
+DEBUG_show("Baseball catcher:ON", 2)
+
+this._ball_para = null
+this._distance_check()
     }
+   ,anytime: true
+
+   ,_distance: function () {
+return v3a.copy(MMD_SA.camera_position).distanceTo(v3b.copy(THREE.MMD.getModels()[0].mesh.position))/10// / MMD_SA.WebXR.zoom_scale;
+    }
+
+   ,_distance_check: function () {
+this._ball_para = null
+
+var dis = this._distance()
+
+if (dis < 5) {
+  if (MMD_SA_options._motion_shuffle_list_default[0] == MMD_SA_options.motion_index_by_name["emote-mod_がっかり1"])
+    return true
+  MMD_SA_options._motion_shuffle_list_default = [MMD_SA_options.motion_index_by_name["emote-mod_がっかり1"], MMD_SA_options.motion_index_by_name["emote-mod_がっかり2"], MMD_SA_options.motion_index_by_name["emote-mod_肩をすくめる1"], MMD_SA_options.motion_index_by_name["emote-mod_肩をすくめる2"]]
+}
+else {
+  let r = MMD_SA.face_camera(MMD_SA._head_pos, THREE.MMD.getModels()[0].mesh.quaternion.clone().conjugate(), true)
+//DEBUG_show(r.x+'\n'+r.y)
+  if ((Math.abs(r.x) > Math.PI/3) || (Math.abs(r.y) > Math.PI/3)) {
+    if (MMD_SA_options._motion_shuffle_list_default[0] == MMD_SA_options.motion_index_by_name["emote-mod_すねる1"])
+      return true
+    MMD_SA_options._motion_shuffle_list_default = [MMD_SA_options.motion_index_by_name["emote-mod_すねる1"], MMD_SA_options.motion_index_by_name["emote-mod_すねる2"], MMD_SA_options.motion_index_by_name["emote-mod_よろめく1"], MMD_SA_options.motion_index_by_name["emote-mod_よろめく2"]]
+  }
+  else {
+    MMD_SA_options._motion_shuffle_list_default = [MMD_SA_options.motion_index_by_name["baseball_throw"]]
+  }
+}
+
+MMD_SA_options.motion_shuffle_list_default = MMD_SA_options._motion_shuffle_list_default.slice()
+MMD_SA._force_motion_shuffle = true
+    }
+
+   ,_ball_fly: function () {
+var mesh = THREE.MMD.getModels()[0].mesh
+var obj = MMD_SA_options.Dungeon.object_base_list[0].object_list[0]._obj
+
+if (!this._ball_para) {
+  let pos_ini = obj.position.clone()
+  let pos_end = MMD_SA._trackball_camera.object.position.clone()
+
+  let dis = pos_ini.distanceTo(pos_end)
+  let f = Math.max(dis/100,1)
+  let velocity = pos_end.clone().sub(pos_ini).multiplyScalar(1/f)
+
+  let rot_ini = MMD_SA._v3a.set((Math.random()-0.5)*Math.PI/20/f, (Math.random()-0.5)*Math.PI/20/f, 0)
+  let rot_end = MMD_SA._v3b.set((Math.random()-0.5)*Math.PI/10/f, (Math.random()-0.5)*Math.PI/10/f, 0)
+//rot_ini.set(0,0,0);rot_end.set(0,0,0);
+
+  this._ball_para = {
+    pos_ini:pos_ini,
+    pos_end:pos_end,
+    velocity:velocity,
+    rot_self: rot_end.clone(),
+    rot_ini:new THREE.Quaternion().setFromEuler(rot_ini),
+    rot_end:new THREE.Quaternion().setFromEuler(rot_end.add(rot_ini)),
+
+    timestamp_ini:RAF_timestamp,
+    timestamp:RAF_timestamp,
+  };
+}
+
+var time_diff = (RAF_timestamp - this._ball_para.timestamp) / 1000
+this._ball_para.timestamp = RAF_timestamp
+
+var time = (RAF_timestamp - this._ball_para.timestamp_ini) / 1000
+
+var v = MMD_SA._v3b.copy(this._ball_para.velocity).multiplyScalar(time_diff).applyQuaternion(MMD_SA.TEMP_q.copy(this._ball_para.rot_ini).slerp(this._ball_para.rot_end, Math.pow(Math.min(time, 1), 2)))
+obj.position.add(v)
+obj.quaternion.copy(MMD_SA.TEMP_q.setFromEuler(MMD_SA.TEMP_v3.copy(this._ball_para.rot_self).multiplyScalar(time*50)))
+
+obj.matrixAutoUpdate = false
+obj.updateMatrix()
+
+var c_pos = this._ball_para.pos_ini
+var c_to_camera = c_pos.distanceTo(MMD_SA._trackball_camera.object.position)
+var c_to_ball = c_pos.distanceTo(obj.position)
+
+//DEBUG_show(c_to_ball+'\n'+c_to_camera)
+if (c_to_ball > c_to_camera) {
+  if (this._ball_para.hit_score == null) {
+    let v_path = MMD_SA._v3a_.copy(this._ball_para.ball_pos_last).sub(c_pos)
+    let v_path_length = v_path.length()
+    if (v_path_length < c_to_camera) {
+      let v_scale = (c_to_camera-v_path_length)/v.length()
+      v_path.copy(this._ball_para.ball_pos_last).add(v.multiplyScalar(v_scale)).sub(c_pos)
+//DEBUG_show([c_to_camera,c_to_ball,v_path.length(),v_scale,Date.now()].join('\n'))
+    }
+
+    let v_axis = MMD_SA._v3a.copy(v_path).normalize()
+    let z_axis = MMD_SA._v3b.set(0,0,1)
+//    let q = MMD_SA.TEMP_q.setFromAxisAngle(MMD_SA.TEMP_v3.crossVectors(v_axis,z_axis).normalize(), v_axis.angleTo(z_axis))
+    let q = MMD_SA.TEMP_q.setFromUnitVectors(v_axis,z_axis)
+//DEBUG_show(v_path.clone().applyQuaternion(q).toArray().join('\n'))
+    let v_path_camera = MMD_SA._v3a.copy(MMD_SA._trackball_camera.object.position).sub(c_pos)
+    let v_score = MMD_SA._v3b.copy(v_path_camera).applyQuaternion(q)
+    let score = Math.round(100 - Math.min(Math.max(Math.sqrt(v_score.x*v_score.x + v_score.y*v_score.y)-1, 0), 5) * 20)
+//DEBUG_show(score)
+//score = 100
+    this._ball_para.hit_score = score
+
+    let sprite_pos = v_path.normalize().lerp(v_path_camera.normalize(), 0.8).multiplyScalar(c_to_camera-2).add(c_pos)
+
+    let para = { scale:1, speed:1 }
+    para.pos = sprite_pos.clone()
+    para.name = "hit_yellow_01"
+/*
+    if (score < 33) {
+      para.scale *= 0.5
+      para.speed *= 2
+    }
+    else if (score < 66) {
+      para.scale *= 0.75
+      para.speed *= 1.5
+    }
+    else {
+      para.scale *= 1.5
+      para.speed *= 1
+    }
+*/
+    para.scale *= 0.1;
+    para.scale *= 1.5;
+    MMD_SA_options.Dungeon.sprite.animate(para.name, para)
+    MMD_SA_options.Dungeon.sound.audio_object_by_name["hit-1"].play()
+  }
+}
+
+this._ball_para.ball_pos_last = this._ball_para.ball_pos_last && this._ball_para.ball_pos_last.copy(obj.position) || obj.position.clone();
+    }
+
+  }
+ ,reset: function () {
+if (!baseball_started)
+  return
+baseball_started = false
+
+MMD_SA_options.Dungeon._states.event_mode_locked = false
+
+this.action._ball_para = null
+
+MMD_SA_options._motion_shuffle_list_default = [MMD_SA_options.motion_index_by_name["standmix2_modified"]]
+MMD_SA_options.motion_shuffle_list_default = MMD_SA_options._motion_shuffle_list_default.slice()
+MMD_SA._force_motion_shuffle = true
+  }
+
+ ,get _started() { return baseball_started; }
+      };
+
+      return baseball;
+    })()
 
    ,"hand_camera": (()=>{
       let camera_near_last;
@@ -5360,35 +5556,205 @@ MMD_SA_options.Dungeon.run_event("_VMC_PROTOCOL_",0);
  ,get info() { return System._browser.translation.get('XR_Animator.UI.VMC_protocol.info'); }
     }
 
-   ,"air_blower": {
+   ,"air_blower": (function () {
+      function air_blower_frame() {
+if (MMD_SA.ammo_proxy && MMD_SA.ammo_proxy._timeStep) return// {DEBUG_show(Date.now()); return; }
+
+const t = Date.now();
+let windPower = ( Math.sin( t * Math.PI / 3 ) + 1 ) / 2;
+windPower = 0.5 + windPower*0.5;
+
+let _air_vector = air_vector;
+if (!_air_vector) {
+  _air_vector = get_direction();
+}
+
+let gravity = MMD_SA.TEMP_v3.fromArray(_air_vector).multiplyScalar(windPower);
+//DEBUG_show(gravity.toArray(),0,1)
+
+THREE.MMD.setGravity( gravity.x*9.8*10, gravity.y*9.8*10, gravity.z*9.8*10 )
+      }
+
+      function get_direction() {
+const camera = MMD_SA._trackball_camera.object;
+const phase = Math.floor((state-1)/2);
+return MMD_SA.TEMP_v3.copy(camera.position).sub(camera._lookAt).normalize().multiplyScalar(2 * ((phase == 1) ? 1 : -1)).toArray();
+      }
+
+      let state = 0;
+      let air_vector;
+      let msg = '';
+      var air_blower = {
   icon_path: Settings.f_path + '/assets/assets.zip#/icon/hair-dryer_64x64.png'
  ,get info_short() { return System._browser.translation.get('XR_Animator.UI.air_blower.info_short'); }
+// ,is_base_inventory: true
+
  ,index_default: undefined
- ,stock_max: 0
- ,stock_default: 0
+// ,get index_default() { return (is_mobile) ? undefined : MMD_SA_options.Dungeon.inventory.max_base+2; }
+
+ ,stock_max: 1
+ ,stock_default: 1
  ,action: {
-    func: function () { return true; }
+    func: function () {
+var phase = 1
+if (++state <= 4) {
+
+  if (state % 2) {
+    air_vector = null;
+    if (state == 1) {
+      System._browser.on_animation_update.add(air_blower_frame, 0,phase,-1)
+      msg = '🌬️Air blowing';
+    }
+    else {
+      msg = '🌬️Air sucking';
+    }
+  }
+  else {
+    air_vector = get_direction();
+    msg += '/fixed direction';
+  }
+  DEBUG_show('(' + msg + ')', 3);
+}
+else {
+  System._browser.on_animation_update.remove(air_blower_frame,phase)
+  DEBUG_show("(🌬️Air blower stopped)", 3)
+  air_blower.reset()
+}
+    }
    ,anytime: true
   }
- ,reset: function () {}
- ,get info() { return System._browser.translation.get('XR_Animator.UI.air_blower.info') + ' (disabled)'; }
+ ,reset: function () {
+if (!MMD_SA.MMD_started || !state) return
+
+state = 0
+var gravity = MMD_SA.MMD.motionManager.para_SA.gravity || [0,-1,0]
+THREE.MMD.setGravity( gravity[0]*9.8*10, gravity[1]*9.8*10, gravity[2]*9.8*10 )
+  }
+
+ ,get info() { return System._browser.translation.get('XR_Animator.UI.air_blower.info'); }
+      };
+
+      return air_blower;
+    })()
+
+   ,"social_distancing": (function () {
+      var social_distancing_started;
+
+      var v3a, v3b;
+      window.addEventListener("jThree_ready", function () {
+v3a = new THREE.Vector3()
+v3b = new THREE.Vector3()
+      });
+
+      var social_distancing = {
+  icon_path: Settings.f_path + '/assets/assets.zip#/icon/coronavirus_social_distancing_64x64.png'
+ ,info_short: "Social meter"
+// ,is_base_inventory: true
+
+ ,get index_default() { return (is_mobile) ? undefined : (MMD_SA_options.Dungeon.inventory.max_base+MMD_SA_options.Dungeon.inventory.max_base*(MMD_SA_options.Dungeon.inventory.max_row-1))+2; }
+// ,get index_default() { return (is_mobile) ? undefined : MMD_SA_options.Dungeon.inventory.max_base+3; }
+
+ ,stock_max: 1
+ ,stock_default: 1//(is_mobile) ? 1 : 0
+ ,action: {
+    func: function (item) {
+var model_mesh = THREE.MMD.getModels()[0].mesh
+if (!model_mesh.visible)
+  return true
+
+var d = MMD_SA_options.Dungeon
+if (d.event_mode && !social_distancing_started)
+  return true
+
+if (social_distancing_started) {
+  if (MMD_SA.WebXR._circle_2m && MMD_SA.WebXR._circle_2m.visible) {
+    d.run_event("circle_2m_hide")
+    DEBUG_show("Social distancing:ON / Circle:OFF", 2)
+  }
+  else {
+    item.reset()
+    DEBUG_show("Social distancing:OFF", 2)
+  }
+  return false
+}
+//DEBUG_show(MMD_SA.MMD.motionManager.filename)
+
+var dis = this._social_distance()
+
+if (dis < 2)
+  return true
+if (!/standmix2_modified/.test(MMD_SA.MMD.motionManager.filename))
+  return true
+if (MMD_SA_options.Dungeon_options.item_base.baseball._started)
+  return true
+
+social_distancing_started = true
+
+d.run_event("circle_2m_show")
+
+d._states.event_mode_locked = true
+
+DEBUG_show("Social distancing:ON / Circle:ON", 2)
+
+this._social_distance_check(999,999)
+    }
+   ,anytime: true
+
+   ,_social_distance: function () {
+return v3a.copy(MMD_SA.camera_position).setY(0).distanceTo(v3b.copy(THREE.MMD.getModels()[0].mesh.position).setY(0))/10 / MMD_SA.WebXR.zoom_scale;
     }
 
-   ,"social_distancing": {
-  icon_path: Settings.f_path + '/assets/assets.zip#/icon/coronavirus_social_distancing_64x64.png'
- ,info_short: "Social meter (disabled)"
- ,index_default: undefined
- ,stock_max: 0
- ,stock_default: 0
- ,action: {
-    func: function () { return true; }
-   ,anytime: true
-   ,_social_distance: function () { return Infinity; }
-   ,_social_distance_check: function () { return false; }
-  }
- ,reset: function () {}
- ,get _started() { return false; }
+   ,_social_distance_check: function (min, max) {
+var dis = this._social_distance()
+//DEBUG_show(dis)
+if ((dis > min) && (dis < max))
+  return true
+
+if (/surrender_v03/.test(MMD_SA.MMD.motionManager.filename)) {
+  MMD_SA_options._motion_shuffle_list_default = [MMD_SA_options.motion_index_by_name["surrender-R_v03"]]
+}
+else if (dis < 0.75) {
+  MMD_SA_options._motion_shuffle_list_default = [MMD_SA_options.motion_index_by_name["surrender_v03"]]
+}
+else if (dis < 2) {
+  MMD_SA_options._motion_shuffle_list_default = [MMD_SA_options.motion_index_by_name["emote-mod_照れる1"], MMD_SA_options.motion_index_by_name["emote-mod_照れる2"]]
+}
+else if (dis < 4) {
+  MMD_SA_options._motion_shuffle_list_default = [MMD_SA_options.motion_index_by_name["emote-mod_お辞儀1"], MMD_SA_options.motion_index_by_name["emote-mod_お辞儀2"], MMD_SA_options.motion_index_by_name["emote-mod_肯定する1"], MMD_SA_options.motion_index_by_name["emote-mod_肯定する2"]]
+}
+else if (dis < 6) {
+  MMD_SA_options._motion_shuffle_list_default = [MMD_SA_options.motion_index_by_name["emote-mod_歓迎する1"], MMD_SA_options.motion_index_by_name["emote-mod_歓迎する2"]]
+}
+else if (dis < 8) {
+  MMD_SA_options._motion_shuffle_list_default = [MMD_SA_options.motion_index_by_name["emote-mod_がっかり1"], MMD_SA_options.motion_index_by_name["emote-mod_がっかり2"], MMD_SA_options.motion_index_by_name["emote-mod_肩をすくめる1"], MMD_SA_options.motion_index_by_name["emote-mod_肩をすくめる2"]]
+}
+else {
+  MMD_SA_options._motion_shuffle_list_default = [MMD_SA_options.motion_index_by_name["emote-mod_すねる1"], MMD_SA_options.motion_index_by_name["emote-mod_すねる2"], MMD_SA_options.motion_index_by_name["emote-mod_よろめく1"], MMD_SA_options.motion_index_by_name["emote-mod_よろめく2"]]
+}
+
+MMD_SA_options.motion_shuffle_list_default = MMD_SA_options._motion_shuffle_list_default.slice()
+MMD_SA._force_motion_shuffle = true
     }
+  }
+ ,reset: function () {
+if (!social_distancing_started)
+  return
+social_distancing_started = false
+
+MMD_SA_options.Dungeon.run_event("circle_2m_hide")
+
+MMD_SA_options.Dungeon._states.event_mode_locked = false
+
+MMD_SA_options._motion_shuffle_list_default = [MMD_SA_options.motion_index_by_name["standmix2_modified"]]
+MMD_SA_options.motion_shuffle_list_default = MMD_SA_options._motion_shuffle_list_default.slice()
+MMD_SA._force_motion_shuffle = true
+  }
+
+ ,get _started() { return social_distancing_started; }
+      };
+
+      return social_distancing;
+    })()
 
    ,"menu": {
   get index_default() { return MMD_SA_options.Dungeon.inventory.max_base + MMD_SA_options.Dungeon.inventory.max_base*(MMD_SA_options.Dungeon.inventory.max_row-1)*2 +1; }
@@ -13418,10 +13784,11 @@ circle_2m_material.opacity = 0.5;
 circle_2m.visible = false;
 
 
-MMD_SA_options.WebXR.AR.item_reticle_id = null
+MMD_SA_options.WebXR.AR.item_reticle_id = "reticle"
 Object.defineProperty(MMD_SA.WebXR, "_item_reticle", {
   get: function () {
-    return null;
+    let item_reticle_id = MMD_SA_options.WebXR.AR.item_reticle_id
+    return MMD_SA_options.Dungeon.inventory.list.find((item)=>item.item_id==item_reticle_id);
   }
 });
 
@@ -13497,7 +13864,44 @@ window.addEventListener("SA_MMD_model0_onmotionplaying", function (e) {
   d.sound.audio_object_by_name["hit-3"].play(model_mesh)
 });
 
-// AR reticle UI hooks removed for browser-only mode.
+if (MMD_SA.WebXR._item_reticle)
+  document.getElementById("Ldungeon_inventory_item" + MMD_SA.WebXR._item_reticle.index + "_icon").style.opacity = 1;
+
+window.addEventListener("SA_AR_onSessionStarted", function (e) {
+  let item_reticle = MMD_SA.WebXR._item_reticle
+  item_reticle._opacity_mod_ = -0.025
+  document.getElementById("Ldungeon_inventory_item" + item_reticle.index + "_icon").style.opacity = 1
+});
+
+window.addEventListener("SA_AR_onSessionEnd", function (e) {
+  document.getElementById("Ldungeon_inventory_item" + MMD_SA.WebXR._item_reticle.index + "_icon").style.opacity = 1
+});
+
+window.addEventListener("SA_AR_onARFrame", (function () {
+  var timerID
+
+  function item_reticle_flash() {
+    timerID = null
+    if (!MMD_SA.WebXR.session)
+      return
+
+    let item_reticle = MMD_SA.WebXR._item_reticle
+    let icon = document.getElementById("Ldungeon_inventory_item" + MMD_SA.WebXR._item_reticle.index + "_icon").style
+    let opacity = parseFloat(icon.opacity) + item_reticle._opacity_mod_
+    icon.opacity = opacity
+    if (opacity >= 1)
+      item_reticle._opacity_mod_ = -Math.abs(item_reticle._opacity_mod_)
+    else if (opacity <= 0.25)
+      item_reticle._opacity_mod_ =  Math.abs(item_reticle._opacity_mod_)
+//DEBUG_show(opacity+'/'+item_reticle._opacity_mod_)
+  }
+
+  return function (e) {
+//    if (!MMD_SA.WebXR.session.domOverlayState) return
+    if (!timerID)
+      timerID = requestAnimationFrame(item_reticle_flash)
+  };
+})());
 
 
 (()=>{
