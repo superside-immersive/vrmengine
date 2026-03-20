@@ -3,6 +3,14 @@
     return
 
   async function importConfig(MMD_SA_options, config) {
+function XRA_dungeon() {
+  return XRA_DungeonCompat();
+}
+
+function XRA_dungeonOptions() {
+  return XRA_DungeonOptionsCompat();
+}
+
 function shoulder_adjust(p) {
   MMD_SA.THREEX.shoulder_adjust = config[p];
 
@@ -145,7 +153,7 @@ try {
 
       case 'gamepad':
         MMD_SA_options.gamepad = config[p];
-        MMD_SA.Gamepad.enabled = MMD_SA_options.gamepad[0].enabled;
+        MMD_SA.Gamepad.enabled = (MMD_SA_options.interaction_animation_disabled) ? false : MMD_SA_options.gamepad[0].enabled;
         break;
 
       case 'model_path_extra':
@@ -154,7 +162,7 @@ try {
 
       case 'hotkeys':
         const hotkeys = System._browser.hotkeys;
-        if (!MMD_SA_options.Dungeon.started) {
+        if (!XRA_dungeon().started) {
           hotkeys.is_global = config[p].is_global;
           break;
         }
@@ -205,16 +213,18 @@ try {
         break;
 
       case 'image_input_handler_as_wallpaper':
-        MMD_SA_options.image_input_handler_as_wallpaper = config[p];
+        MMD_SA_options.image_input_handler_as_wallpaper = (MMD_SA_options.interaction_animation_disabled) ? false : config[p];
         break;
       case 'wallpaper_3d':
+        if (MMD_SA_options.interaction_animation_disabled)
+          break;
         for (const _p of MMD_SA.Wallpaper3D.options_to_save) {
           MMD_SA.Wallpaper3D.options_general[_p] = config[p][_p];
         }
         break;
 
       case 'audio_visualizer':
-        MMD_SA_options.use_CircularSpectrum = config[p];
+        MMD_SA_options.use_CircularSpectrum = (MMD_SA_options.interaction_animation_disabled) ? false : config[p];
         break;
 
       case 'video_capture':
@@ -222,17 +232,17 @@ try {
         break;
 
       case 'selfie_mode':
-        MMD_SA_options.Dungeon_options.item_base.hand_camera.selfie_mode = config[p];
+        XRA_dungeonOptions().item_base.hand_camera.selfie_mode = (MMD_SA_options.interaction_animation_disabled) ? false : config[p];
         break;
 
       case 'hand_camera_fov':
-        MMD_SA_options.Dungeon_options.item_base.hand_camera.fov = config[p];
+        XRA_dungeonOptions().item_base.hand_camera.fov = config[p];
         if (config[p] != null)
           MMD_SA.THREEX.GUI.obj.visual_effects.folders[0].children[1].controllers[1].setValue(config[p]);
         break;
 
       case 'UI_muted':
-        MMD_SA_options.Dungeon.inventory.UI.muted = config[p];
+        XRA_dungeon().inventory.UI.muted = config[p];
         break;
 
       case 'pose':
@@ -299,7 +309,7 @@ try {
             Object.assign(ro, config[p].VMC_receiver.receiver_config[i]);
           });
 
-          if (MMD_SA_options.Dungeon.started) {
+          if (XRA_dungeon().started) {
             const r_off = System._browser.camera.VMC_receiver.options.receiver.every(r=>!r.enabled);
             if (System._browser.camera.VMC_receiver.enabled) {
               if (r_off) {

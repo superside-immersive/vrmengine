@@ -718,7 +718,7 @@ Archivos de Three.js (r160+) y extensiones, la mayoría sin modificar.
 
 | Archivo | Líneas | Función |
 |---------|--------|---------|
-| `js/ui/panel-manager.js` | 453 | `XRA_PanelManager` — sistema de panels CSS modernos que reemplaza speech bubbles 3D, toolbar unificado. IIFE bien estructurado |
+| `js/ui/panel-manager.js` | 453 | `XRA_PanelManager` — modern CSS panel system that replaces 3D speech bubbles. Well-structured IIFE. |
 | `css/main.css` | — | Estilos principales de la aplicación |
 | `css/panels.css` | — | Estilos de paneles XRA |
 | `css/settings.css` | — | Estilos de la página de settings |
@@ -880,7 +880,7 @@ XR_Animator.html
 │   js/jsmediatags.js (ID3 metadata)
 │
 └── UI LAYER ──────────────────────────────────────────────
-    js/ui/panel-manager.js (XRA panels + toolbar)
+    js/ui/panel-manager.js (XRA panels)
     css/*.css
     settings.html
 ```

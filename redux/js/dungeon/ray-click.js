@@ -393,6 +393,9 @@ var e_func = function (e) {
   if (!self.THREE || !THREE.MMD || !THREE.MMD.getModels)
     return
 
+  if (MMD_SA_options.interaction_animation_disabled)
+    return
+
   if (d.object_click_disabled) {
     return
   }

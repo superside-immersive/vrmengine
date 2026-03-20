@@ -447,6 +447,11 @@ var options = MMD_SA_options.Dungeon_options// && Object.clone(MMD_SA_options.Du
 if (!options)
   options = MMD_SA_options.Dungeon_options = {}
 
+if (options.disable_combat_runtime || self.XR_DISABLE_DUNGEON_COMBAT) {
+  options._combat_runtime_disabled_ = true
+  options.combat_mode_enabled = false
+}
+
 if (use_SA_browser_mode && (!is_SA_child_animation && (!webkit_electron_mode || !options.transparent_background))) {
 //  Settings_default._custom_.WallpaperAsBG = "non_default"
   Settings_default._custom_.DisableTransparency = "non_default"
@@ -2535,6 +2540,10 @@ var _boundingBox_expand
 var _v3 = new THREE.Vector3()
 
 var e_func = function (e) {
+  if (MMD_SA_options.interaction_animation_disabled) {
+    return
+  }
+
   if (d.object_click_disabled) {
     return
   }
@@ -5498,7 +5507,12 @@ else {
 // extracted modules (Step 6A)
 SA.loader.loadScriptSync('js/dungeon/inventory.js');
 SA.loader.loadScriptSync('js/dungeon/restart.js');
-SA.loader.loadScriptSync('js/dungeon/multiplayer.js');
+if (MMD_SA_options.Dungeon_options?.disable_multiplayer_runtime || self.XR_DISABLE_DUNGEON_MULTIPLAYER) {
+  SA.loader.loadScriptSync('js/dungeon/multiplayer-stub.js');
+}
+else {
+  SA.loader.loadScriptSync('js/dungeon/multiplayer.js');
+}
 
 // extracted modules (Step 6B)
 SA.loader.loadScriptSync('js/dungeon/check_states.js');

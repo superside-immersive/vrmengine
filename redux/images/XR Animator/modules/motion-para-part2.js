@@ -1,13 +1,17 @@
 // motion-para-part2.js — Motion parameters: social distance emotes, chair physics
 // Extracted from animate.js lines 854-1447
 (function () {
+  function XRA_itemBase() {
+    return XRA_DungeonOptionsCompat().item_base;
+  }
+
   Object.assign(MMD_SA_options.motion_para, {
     "emote-mod_がっかり1": {
   onstart: function () {
 this._duration_end_ = Date.now() + (MMD_SA.MMD.motionManager._timeMax + Math.random()*3+0.5)*1000
-if (MMD_SA_options.Dungeon_options.item_base.baseball._started) {
-  if (MMD_SA_options.Dungeon_options.item_base.baseball.action._ball_para) {
-    MMD_SA.SpeechBubble.message(0, "Your score is " + MMD_SA_options.Dungeon_options.item_base.baseball.action._ball_para.hit_score + ". Not bad.", 3*1000)
+if (XRA_itemBase().baseball._started) {
+  if (XRA_itemBase().baseball.action._ball_para) {
+    MMD_SA.SpeechBubble.message(0, "Your score is " + XRA_itemBase().baseball.action._ball_para.hit_score + ". Not bad.", 3*1000)
   }
   else {
     MMD_SA.SpeechBubble.message(0, "It's too close to throw the ball...", 3*1000)
@@ -20,7 +24,7 @@ else {
 /*
  ,onended: function (loop_end) {
 MMD_SA._no_fading=true; MMD_SA._ignore_physics_reset=true;
-if (MMD_SA_options.Dungeon_options.item_base.social_distancing.action._social_distance_check(6,8))
+if (XRA_itemBase().social_distancing.action._social_distance_check(6,8))
   MMD_SA._freeze_onended=(Date.now()<this._duration_end_)
   }
 */
@@ -30,7 +34,7 @@ if (MMD_SA_options.Dungeon_options.item_base.social_distancing.action._social_di
 var mm = MMD_SA.MMD.motionManager
 var model = THREE.MMD.getModels()[model_index]
 if (model.skin.time > mm._timeMax) {
-  if ((MMD_SA_options.Dungeon_options.item_base.baseball._started) ? ((Date.now() > this._duration_end_) ? !MMD_SA_options.Dungeon_options.item_base.baseball.action._distance_check()||true : false) || (Date.now() > this._duration_end_) : (Date.now() > this._duration_end_) || (MMD_SA_options.Dungeon_options.item_base.social_distancing._started && !MMD_SA_options.Dungeon_options.item_base.social_distancing.action._social_distance_check(6,8))) {
+  if ((XRA_itemBase().baseball._started) ? ((Date.now() > this._duration_end_) ? !XRA_itemBase().baseball.action._distance_check()||true : false) || (Date.now() > this._duration_end_) : (Date.now() > this._duration_end_) || (XRA_itemBase().social_distancing._started && !XRA_itemBase().social_distancing.action._social_distance_check(6,8))) {
     MMD_SA._no_fading=true; MMD_SA._ignore_physics_reset=true;
     MMD_SA._force_motion_shuffle = true;
   }
@@ -51,9 +55,9 @@ if (model.skin.time > mm._timeMax) {
    ,"emote-mod_がっかり2": {
   onstart: function () {
 this._duration_end_ = Date.now() + (MMD_SA.MMD.motionManager._timeMax + Math.random()*3+0.5)*1000
-if (MMD_SA_options.Dungeon_options.item_base.baseball._started) {
-  if (MMD_SA_options.Dungeon_options.item_base.baseball.action._ball_para) {
-    MMD_SA.SpeechBubble.message(0, "Your score is " + MMD_SA_options.Dungeon_options.item_base.baseball.action._ball_para.hit_score + ". It's ok.", 3*1000)
+if (XRA_itemBase().baseball._started) {
+  if (XRA_itemBase().baseball.action._ball_para) {
+    MMD_SA.SpeechBubble.message(0, "Your score is " + XRA_itemBase().baseball.action._ball_para.hit_score + ". It's ok.", 3*1000)
   }
   else {
     MMD_SA.SpeechBubble.message(0, "I need more distance...", 3*1000)
@@ -66,7 +70,7 @@ else {
 /*
  ,onended: function (loop_end) {
 MMD_SA._no_fading=true; MMD_SA._ignore_physics_reset=true;
-if (MMD_SA_options.Dungeon_options.item_base.social_distancing.action._social_distance_check(6,8))
+if (XRA_itemBase().social_distancing.action._social_distance_check(6,8))
   MMD_SA._freeze_onended=(Date.now()<this._duration_end_)
   }
 */
@@ -76,7 +80,7 @@ if (MMD_SA_options.Dungeon_options.item_base.social_distancing.action._social_di
 var mm = MMD_SA.MMD.motionManager
 var model = THREE.MMD.getModels()[model_index]
 if (model.skin.time > mm._timeMax) {
-  if ((MMD_SA_options.Dungeon_options.item_base.baseball._started) ? ((Date.now() > this._duration_end_) ? !MMD_SA_options.Dungeon_options.item_base.baseball.action._distance_check()||true : false) || (Date.now() > this._duration_end_) : (Date.now() > this._duration_end_) || (MMD_SA_options.Dungeon_options.item_base.social_distancing._started && !MMD_SA_options.Dungeon_options.item_base.social_distancing.action._social_distance_check(6,8))) {
+  if ((XRA_itemBase().baseball._started) ? ((Date.now() > this._duration_end_) ? !XRA_itemBase().baseball.action._distance_check()||true : false) || (Date.now() > this._duration_end_) : (Date.now() > this._duration_end_) || (XRA_itemBase().social_distancing._started && !XRA_itemBase().social_distancing.action._social_distance_check(6,8))) {
     MMD_SA._no_fading=true; MMD_SA._ignore_physics_reset=true;
     MMD_SA._force_motion_shuffle = true;
   }
@@ -97,9 +101,9 @@ if (model.skin.time > mm._timeMax) {
    ,"emote-mod_肩をすくめる1": {
   onstart: function () {
 this._duration_end_ = Date.now() + (MMD_SA.MMD.motionManager._timeMax + Math.random()*3+0.5)*1000
-if (MMD_SA_options.Dungeon_options.item_base.baseball._started) {
-  if (MMD_SA_options.Dungeon_options.item_base.baseball.action._ball_para) {
-    MMD_SA.SpeechBubble.message(0, "Your score is " + MMD_SA_options.Dungeon_options.item_base.baseball.action._ball_para.hit_score + ". Do better next time.", 3*1000)
+if (XRA_itemBase().baseball._started) {
+  if (XRA_itemBase().baseball.action._ball_para) {
+    MMD_SA.SpeechBubble.message(0, "Your score is " + XRA_itemBase().baseball.action._ball_para.hit_score + ". Do better next time.", 3*1000)
   }
   else {
     MMD_SA.SpeechBubble.message(0, "Isn't it too close...", 3*1000)
@@ -112,7 +116,7 @@ else {
 /*
  ,onended: function (loop_end) {
 MMD_SA._no_fading=true; MMD_SA._ignore_physics_reset=true;
-if (MMD_SA_options.Dungeon_options.item_base.social_distancing.action._social_distance_check(6,8))
+if (XRA_itemBase().social_distancing.action._social_distance_check(6,8))
   MMD_SA._freeze_onended=(Date.now()<this._duration_end_)
   }
 */
@@ -122,7 +126,7 @@ if (MMD_SA_options.Dungeon_options.item_base.social_distancing.action._social_di
 var mm = MMD_SA.MMD.motionManager
 var model = THREE.MMD.getModels()[model_index]
 if (model.skin.time > mm._timeMax) {
-  if ((MMD_SA_options.Dungeon_options.item_base.baseball._started) ? ((Date.now() > this._duration_end_) ? !MMD_SA_options.Dungeon_options.item_base.baseball.action._distance_check()||true : false) || (Date.now() > this._duration_end_) : (Date.now() > this._duration_end_) || (MMD_SA_options.Dungeon_options.item_base.social_distancing._started && !MMD_SA_options.Dungeon_options.item_base.social_distancing.action._social_distance_check(6,8))) {
+  if ((XRA_itemBase().baseball._started) ? ((Date.now() > this._duration_end_) ? !XRA_itemBase().baseball.action._distance_check()||true : false) || (Date.now() > this._duration_end_) : (Date.now() > this._duration_end_) || (XRA_itemBase().social_distancing._started && !XRA_itemBase().social_distancing.action._social_distance_check(6,8))) {
     MMD_SA._no_fading=true; MMD_SA._ignore_physics_reset=true;
     MMD_SA._force_motion_shuffle = true;
   }
@@ -143,9 +147,9 @@ if (model.skin.time > mm._timeMax) {
    ,"emote-mod_肩をすくめる2": {
   onstart: function () {
 this._duration_end_ = Date.now() + (MMD_SA.MMD.motionManager._timeMax + Math.random()*3+0.5)*1000
-if (MMD_SA_options.Dungeon_options.item_base.baseball._started) {
-  if (MMD_SA_options.Dungeon_options.item_base.baseball.action._ball_para) {
-    MMD_SA.SpeechBubble.message(0, "Your score is " + MMD_SA_options.Dungeon_options.item_base.baseball.action._ball_para.hit_score + ". Still room for improvement.", 3*1000)
+if (XRA_itemBase().baseball._started) {
+  if (XRA_itemBase().baseball.action._ball_para) {
+    MMD_SA.SpeechBubble.message(0, "Your score is " + XRA_itemBase().baseball.action._ball_para.hit_score + ". Still room for improvement.", 3*1000)
   }
   else {
     MMD_SA.SpeechBubble.message(0, "5 meters apart at least, please...?", 3*1000)
@@ -158,7 +162,7 @@ else {
 /*
  ,onended: function (loop_end) {
 MMD_SA._no_fading=true; MMD_SA._ignore_physics_reset=true;
-if (MMD_SA_options.Dungeon_options.item_base.social_distancing.action._social_distance_check(6,8))
+if (XRA_itemBase().social_distancing.action._social_distance_check(6,8))
   MMD_SA._freeze_onended=(Date.now()<this._duration_end_)
   }
 */
@@ -168,7 +172,7 @@ if (MMD_SA_options.Dungeon_options.item_base.social_distancing.action._social_di
 var mm = MMD_SA.MMD.motionManager
 var model = THREE.MMD.getModels()[model_index]
 if (model.skin.time > mm._timeMax) {
-  if ((MMD_SA_options.Dungeon_options.item_base.baseball._started) ? ((Date.now() > this._duration_end_) ? !MMD_SA_options.Dungeon_options.item_base.baseball.action._distance_check()||true : false) || (Date.now() > this._duration_end_) : (Date.now() > this._duration_end_) || (MMD_SA_options.Dungeon_options.item_base.social_distancing._started && !MMD_SA_options.Dungeon_options.item_base.social_distancing.action._social_distance_check(6,8))) {
+  if ((XRA_itemBase().baseball._started) ? ((Date.now() > this._duration_end_) ? !XRA_itemBase().baseball.action._distance_check()||true : false) || (Date.now() > this._duration_end_) : (Date.now() > this._duration_end_) || (XRA_itemBase().social_distancing._started && !XRA_itemBase().social_distancing.action._social_distance_check(6,8))) {
     MMD_SA._no_fading=true; MMD_SA._ignore_physics_reset=true;
     MMD_SA._force_motion_shuffle = true;
   }
@@ -189,8 +193,8 @@ if (model.skin.time > mm._timeMax) {
    ,"emote-mod_すねる1": {
   onstart: function () {
 this._duration_end_ = Date.now() + (MMD_SA.MMD.motionManager._timeMax + Math.random()*3+0.5)*1000
-if (MMD_SA_options.Dungeon_options.item_base.baseball._started && MMD_SA_options.Dungeon_options.item_base.baseball.action._ball_para) {
-  MMD_SA.SpeechBubble.message(0, "Your score is " + MMD_SA_options.Dungeon_options.item_base.baseball.action._ball_para.hit_score + "... oh well...", 3*1000)
+if (XRA_itemBase().baseball._started && XRA_itemBase().baseball.action._ball_para) {
+  MMD_SA.SpeechBubble.message(0, "Your score is " + XRA_itemBase().baseball.action._ball_para.hit_score + "... oh well...", 3*1000)
 }
 else {
   MMD_SA.SpeechBubble.message(0, "You don't like me, do you...", 3*1000)
@@ -199,7 +203,7 @@ else {
 /*
  ,onended: function (loop_end) {
 MMD_SA._no_fading=true; MMD_SA._ignore_physics_reset=true;
-if (MMD_SA_options.Dungeon_options.item_base.social_distancing.action._social_distance_check(8,999))
+if (XRA_itemBase().social_distancing.action._social_distance_check(8,999))
   MMD_SA._freeze_onended=(Date.now()<this._duration_end_)
   }
 */
@@ -209,7 +213,7 @@ if (MMD_SA_options.Dungeon_options.item_base.social_distancing.action._social_di
 var mm = MMD_SA.MMD.motionManager
 var model = THREE.MMD.getModels()[model_index]
 if (model.skin.time > mm._timeMax) {
-  if ((MMD_SA_options.Dungeon_options.item_base.baseball._started) ? ((Date.now() > this._duration_end_) ? !MMD_SA_options.Dungeon_options.item_base.baseball.action._distance_check()||true : false) || (Date.now() > this._duration_end_) : (Date.now() > this._duration_end_) || (MMD_SA_options.Dungeon_options.item_base.social_distancing._started && !MMD_SA_options.Dungeon_options.item_base.social_distancing.action._social_distance_check(8,999))) {
+  if ((XRA_itemBase().baseball._started) ? ((Date.now() > this._duration_end_) ? !XRA_itemBase().baseball.action._distance_check()||true : false) || (Date.now() > this._duration_end_) : (Date.now() > this._duration_end_) || (XRA_itemBase().social_distancing._started && !XRA_itemBase().social_distancing.action._social_distance_check(8,999))) {
     MMD_SA._no_fading=true; MMD_SA._ignore_physics_reset=true;
     MMD_SA._force_motion_shuffle = true;
   }
@@ -230,8 +234,8 @@ if (model.skin.time > mm._timeMax) {
    ,"emote-mod_すねる2": {
   onstart: function () {
 this._duration_end_ = Date.now() + (MMD_SA.MMD.motionManager._timeMax + Math.random()*3+0.5)*1000
-if (MMD_SA_options.Dungeon_options.item_base.baseball._started && MMD_SA_options.Dungeon_options.item_base.baseball.action._ball_para) {
-  MMD_SA.SpeechBubble.message(0, "Your score is " + MMD_SA_options.Dungeon_options.item_base.baseball.action._ball_para.hit_score + "...", 3*1000)
+if (XRA_itemBase().baseball._started && XRA_itemBase().baseball.action._ball_para) {
+  MMD_SA.SpeechBubble.message(0, "Your score is " + XRA_itemBase().baseball.action._ball_para.hit_score + "...", 3*1000)
 }
 else {
   MMD_SA.SpeechBubble.message(0, "This is so boring...", 3*1000)
@@ -240,7 +244,7 @@ else {
 /*
  ,onended: function (loop_end) {
 MMD_SA._no_fading=true; MMD_SA._ignore_physics_reset=true;
-if (MMD_SA_options.Dungeon_options.item_base.social_distancing.action._social_distance_check(8,999))
+if (XRA_itemBase().social_distancing.action._social_distance_check(8,999))
   MMD_SA._freeze_onended=(Date.now()<this._duration_end_)
   }
 */
@@ -250,7 +254,7 @@ if (MMD_SA_options.Dungeon_options.item_base.social_distancing.action._social_di
 var mm = MMD_SA.MMD.motionManager
 var model = THREE.MMD.getModels()[model_index]
 if (model.skin.time > mm._timeMax) {
-  if ((MMD_SA_options.Dungeon_options.item_base.baseball._started) ? ((Date.now() > this._duration_end_) ? !MMD_SA_options.Dungeon_options.item_base.baseball.action._distance_check()||true : false) || (Date.now() > this._duration_end_) : (Date.now() > this._duration_end_) || (MMD_SA_options.Dungeon_options.item_base.social_distancing._started && !MMD_SA_options.Dungeon_options.item_base.social_distancing.action._social_distance_check(8,999))) {
+  if ((XRA_itemBase().baseball._started) ? ((Date.now() > this._duration_end_) ? !XRA_itemBase().baseball.action._distance_check()||true : false) || (Date.now() > this._duration_end_) : (Date.now() > this._duration_end_) || (XRA_itemBase().social_distancing._started && !XRA_itemBase().social_distancing.action._social_distance_check(8,999))) {
     MMD_SA._no_fading=true; MMD_SA._ignore_physics_reset=true;
     MMD_SA._force_motion_shuffle = true;
   }
@@ -271,9 +275,9 @@ if (model.skin.time > mm._timeMax) {
    ,"emote-mod_よろめく1": {
   onstart: function () {
 this._duration_end_ = Date.now() + (MMD_SA.MMD.motionManager._timeMax + Math.random()*3+0.5)*1000
-if (MMD_SA_options.Dungeon_options.item_base.baseball._started) {
-  if (MMD_SA_options.Dungeon_options.item_base.baseball.action._ball_para) {
-    MMD_SA.SpeechBubble.message(0, "Your score is " + MMD_SA_options.Dungeon_options.item_base.baseball.action._ball_para.hit_score + "... isn't it too bad...", 3*1000)
+if (XRA_itemBase().baseball._started) {
+  if (XRA_itemBase().baseball.action._ball_para) {
+    MMD_SA.SpeechBubble.message(0, "Your score is " + XRA_itemBase().baseball.action._ball_para.hit_score + "... isn't it too bad...", 3*1000)
   }
   else {
     MMD_SA.SpeechBubble.message(0, "You think I can throw a magical curveball...?", 3*1000)
@@ -286,7 +290,7 @@ else {
 /*
  ,onended: function (loop_end) {
 MMD_SA._no_fading=true; MMD_SA._ignore_physics_reset=true;
-if (MMD_SA_options.Dungeon_options.item_base.social_distancing.action._social_distance_check(8,999))
+if (XRA_itemBase().social_distancing.action._social_distance_check(8,999))
   MMD_SA._freeze_onended=(Date.now()<this._duration_end_)
   }
 */
@@ -296,7 +300,7 @@ if (MMD_SA_options.Dungeon_options.item_base.social_distancing.action._social_di
 var mm = MMD_SA.MMD.motionManager
 var model = THREE.MMD.getModels()[model_index]
 if (model.skin.time > mm._timeMax) {
-  if ((MMD_SA_options.Dungeon_options.item_base.baseball._started) ? ((Date.now() > this._duration_end_) ? !MMD_SA_options.Dungeon_options.item_base.baseball.action._distance_check()||true : false) || (Date.now() > this._duration_end_) : (Date.now() > this._duration_end_) || (MMD_SA_options.Dungeon_options.item_base.social_distancing._started && !MMD_SA_options.Dungeon_options.item_base.social_distancing.action._social_distance_check(8,999))) {
+  if ((XRA_itemBase().baseball._started) ? ((Date.now() > this._duration_end_) ? !XRA_itemBase().baseball.action._distance_check()||true : false) || (Date.now() > this._duration_end_) : (Date.now() > this._duration_end_) || (XRA_itemBase().social_distancing._started && !XRA_itemBase().social_distancing.action._social_distance_check(8,999))) {
     MMD_SA._no_fading=true; MMD_SA._ignore_physics_reset=true;
     MMD_SA._force_motion_shuffle = true;
   }
@@ -317,9 +321,9 @@ if (model.skin.time > mm._timeMax) {
    ,"emote-mod_よろめく2": {
   onstart: function () {
 this._duration_end_ = Date.now() + (MMD_SA.MMD.motionManager._timeMax + Math.random()*3+0.5)*1000
-if (MMD_SA_options.Dungeon_options.item_base.baseball._started) {
-  if (MMD_SA_options.Dungeon_options.item_base.baseball.action._ball_para) {
-    MMD_SA.SpeechBubble.message(0, "Your score is " + MMD_SA_options.Dungeon_options.item_base.baseball.action._ball_para.hit_score + "... oh no...", 3*1000)
+if (XRA_itemBase().baseball._started) {
+  if (XRA_itemBase().baseball.action._ball_para) {
+    MMD_SA.SpeechBubble.message(0, "Your score is " + XRA_itemBase().baseball.action._ball_para.hit_score + "... oh no...", 3*1000)
   }
   else {
     MMD_SA.SpeechBubble.message(0, "Can you stand in front of me, please...", 3*1000)
@@ -332,7 +336,7 @@ else {
 /*
  ,onended: function (loop_end) {
 MMD_SA._no_fading=true; MMD_SA._ignore_physics_reset=true;
-if (MMD_SA_options.Dungeon_options.item_base.social_distancing.action._social_distance_check(8,999))
+if (XRA_itemBase().social_distancing.action._social_distance_check(8,999))
   MMD_SA._freeze_onended=(Date.now()<this._duration_end_)
   }
 */
@@ -342,7 +346,7 @@ if (MMD_SA_options.Dungeon_options.item_base.social_distancing.action._social_di
 var mm = MMD_SA.MMD.motionManager
 var model = THREE.MMD.getModels()[model_index]
 if (model.skin.time > mm._timeMax) {
-  if ((MMD_SA_options.Dungeon_options.item_base.baseball._started) ? ((Date.now() > this._duration_end_) ? !MMD_SA_options.Dungeon_options.item_base.baseball.action._distance_check()||true : false) || (Date.now() > this._duration_end_) : (Date.now() > this._duration_end_) || (MMD_SA_options.Dungeon_options.item_base.social_distancing._started && !MMD_SA_options.Dungeon_options.item_base.social_distancing.action._social_distance_check(8,999))) {
+  if ((XRA_itemBase().baseball._started) ? ((Date.now() > this._duration_end_) ? !XRA_itemBase().baseball.action._distance_check()||true : false) || (Date.now() > this._duration_end_) : (Date.now() > this._duration_end_) || (XRA_itemBase().social_distancing._started && !XRA_itemBase().social_distancing.action._social_distance_check(8,999))) {
     MMD_SA._no_fading=true; MMD_SA._ignore_physics_reset=true;
     MMD_SA._force_motion_shuffle = true;
   }
@@ -392,7 +396,7 @@ if (model.skin.time > 1) {
 
    ,"baseball_throw": {
   onstart: function () {
-MMD_SA_options.Dungeon_options.item_base.baseball.action._ball_para = null
+XRA_itemBase().baseball.action._ball_para = null
 MMD_SA.SpeechBubble.message(0, "Catch this~!", 1*1000)
   }
 
@@ -400,7 +404,7 @@ MMD_SA.SpeechBubble.message(0, "Catch this~!", 1*1000)
 MMD_SA._no_fading=true; MMD_SA._ignore_physics_reset=true;
 if (!loop_end) return;
 
-var score = MMD_SA_options.Dungeon_options.item_base.baseball.action._ball_para.hit_score
+var score = XRA_itemBase().baseball.action._ball_para.hit_score
 if (score > 75) {
   MMD_SA_options._motion_shuffle_list_default = [MMD_SA_options.motion_index_by_name["emote-mod_お辞儀1"], MMD_SA_options.motion_index_by_name["emote-mod_お辞儀2"], MMD_SA_options.motion_index_by_name["emote-mod_肯定する1"], MMD_SA_options.motion_index_by_name["emote-mod_肯定する2"]]
 }
@@ -420,7 +424,7 @@ MMD_SA._force_motion_shuffle = true
 var mm = MMD_SA.MMD.motionManager
 var model = THREE.MMD.getModels()[model_index]
 if (model.skin.time >= 140/30) {
-  MMD_SA_options.Dungeon_options.item_base.baseball.action._ball_fly()
+  XRA_itemBase().baseball.action._ball_fly()
 }
   }
 

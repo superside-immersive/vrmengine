@@ -1,6 +1,7 @@
 // facemesh-branches-1.js
 (function () {
 var F = window._FMO;
+var dungeon = XRA_DungeonCompat();
 var {
   bg_branch, done_branch, panorama_branch, object3D_branch, about_branch,
   other_options_branch, record_motion_branch, mocap_options_branch, facemesh_options_branch, motion_control_branch,
@@ -17,27 +18,34 @@ F.branches.push(
           _show_other_options_: false,
 
           message: {
-  get content() { this._motion_for_export_ = /\.(bvh|fbx)$/i.test(MMD_SA.vmd_by_filename[MMD_SA.MMD.motionManager.filename].url) || System._browser.camera.motion_recorder.vmd; return (!MMD_SA_options.Dungeon.events["_FACEMESH_OPTIONS_"][0]._show_other_options_ && System._browser.camera.ML_enabled) ? (['record_motion','mocap_options','mocap_off'].map((node,i)=>(i+1) + '. ' + System._browser.translation.get('XR_Animator.UI.motion_capture.ML_on.'+node)).join('\n') + '\n4. ' + System._browser.translation.get('Misc.cancel') /*\n4. Enable motion control\n5. Other options*/ ) : ['UI_and_overlays','scene','miscellaneous_options','about_XR_Animator'].map((node,i)=>(i+1) + '. ' + System._browser.translation.get('XR_Animator.UI.UI_options.'+node)).join('\n') + '\n5. ' + System._browser.translation.get('Misc.cancel'); }//'1. UI and overlays\n2. BG/Scene/3D\n3. Visual effects\n4. Miscellaneous options\n5. About XR Animator\n6. Cancel'; }
+  get content() { this._motion_for_export_ = /\.(bvh|fbx)$/i.test(MMD_SA.vmd_by_filename[MMD_SA.MMD.motionManager.filename].url) || System._browser.camera.motion_recorder.vmd; return (!dungeon.events["_FACEMESH_OPTIONS_"][0]._show_other_options_ && System._browser.camera.ML_enabled) ? (((MMD_SA_options.interaction_animation_disabled) ? ['mocap_options','mocap_off'] : ['record_motion','mocap_options','mocap_off']).map((node,i)=>(i+1) + '. ' + System._browser.translation.get('XR_Animator.UI.motion_capture.ML_on.'+node)).join('\n') + '\n' + ((MMD_SA_options.interaction_animation_disabled) ? '3' : '4') + '. ' + System._browser.translation.get('Misc.cancel') /*\n4. Enable motion control\n5. Other options*/ ) : ((MMD_SA_options.interaction_animation_disabled) ? ['UI_and_overlays','miscellaneous_options','about_XR_Animator'].map((node,i)=>(i+1) + '. ' + System._browser.translation.get('XR_Animator.UI.UI_options.'+node)).join('\n') + '\n4. ' + System._browser.translation.get('Misc.cancel') : ['UI_and_overlays','scene','miscellaneous_options','about_XR_Animator'].map((node,i)=>(i+1) + '. ' + System._browser.translation.get('XR_Animator.UI.UI_options.'+node)).join('\n') + '\n5. ' + System._browser.translation.get('Misc.cancel')); }//'1. UI and overlays\n2. BG/Scene/3D\n3. Visual effects\n4. Miscellaneous options\n5. About XR Animator\n6. Cancel'; }
  ,bubble_index: 3
  ,get branch_list() {
-return (!MMD_SA_options.Dungeon.events["_FACEMESH_OPTIONS_"][0]._show_other_options_ && System._browser.camera.ML_enabled) ? ((this._motion_for_export_) ? [
+return (!dungeon.events["_FACEMESH_OPTIONS_"][0]._show_other_options_ && System._browser.camera.ML_enabled) ? ((MMD_SA_options.interaction_animation_disabled) ? [
+  { key:1, branch_index:mocap_options_branch },
+  { key:2, branch_index:2 },
+  { key:3, is_closing_event:true }
+] : ((this._motion_for_export_) ? [
   { key:1, branch_index:record_motion_branch },
   { key:2, branch_index:mocap_options_branch },
   { key:3, branch_index:2 },
-//  { key:5, event_id:{ func:()=>{MMD_SA_options.Dungeon.events["_FACEMESH_OPTIONS_"][0]._show_other_options_=true;setTimeout(()=>{MMD_SA_options.Dungeon.events["_FACEMESH_OPTIONS_"][0]._show_other_options_=false},0);}, goto_event: { id:"_FACEMESH_OPTIONS_", branch_index:0 } } },
   { key:4, is_closing_event:true }
 ] : [
   { key:1, branch_index:record_motion_branch },
   { key:2, branch_index:mocap_options_branch },
   { key:3, branch_index:2 },
 //  { key:4, branch_index:motion_control_branch },
-//  { key:5, event_id:{ func:()=>{MMD_SA_options.Dungeon.events["_FACEMESH_OPTIONS_"][0]._show_other_options_=true;setTimeout(()=>{MMD_SA_options.Dungeon.events["_FACEMESH_OPTIONS_"][0]._show_other_options_=false},0);}, goto_event: { id:"_FACEMESH_OPTIONS_", branch_index:0 } } },
   { key:4, is_closing_event:true }
-]) : [
+])) : ((MMD_SA_options.interaction_animation_disabled) ? [
+  { key:1, branch_index:1 },
+  { key:2, branch_index:other_options_branch },
+  { key:3, branch_index:about_branch },
+  { key:4, is_closing_event:true }
+] : [
   { key:1, branch_index:1 },
   { key:2, branch_index:3,
     onmouseover: function (e) {
-MMD_SA_options.Dungeon.utils.tooltip(
+XRA_tooltip(
   e.clientX, e.clientY,
   System._browser.translation.get('XR_Animator.UI.UI_options.scene.tooltip')
 );
@@ -46,7 +54,7 @@ MMD_SA_options.Dungeon.utils.tooltip(
   { key:3, branch_index:other_options_branch },
   { key:4, branch_index:about_branch },
   { key:5, is_closing_event:true }
-];
+]);
   }
           }
         }
@@ -70,6 +78,12 @@ ML_off()
      ,[
         {
           func: function () {
+if (MMD_SA_options.interaction_animation_disabled) {
+  DEBUG_show('(Scene menu removed in this build.)', 4);
+  XRA_runEvent('_FACEMESH_OPTIONS_', done_branch, 0);
+  return;
+}
+
 //DragDrop.onDrop_finish = onDrop_scene_JSON;
 
 window.removeEventListener('SA_MMD_before_render', animate_object3D);
@@ -137,7 +151,7 @@ Object.defineProperty(MMD_SA_options, '_Wallpaper3D_status_', {
   set: function (v) {
     status_msg = v;
     if (F.wallpaper_dialog_enabled) {
-      MMD_SA_options.Dungeon.run_event(null,bg_branch,1);
+      XRA_runEvent(null,bg_branch,1);
     }
   }
 });
@@ -150,7 +164,7 @@ Object.defineProperty(MMD_SA_options, '_Wallpaper3D_status2_', {
   set: function (v) {
     status_msg2 = v;
     if (F.wallpaper_generator_dialog_enabled) {
-      MMD_SA_options.Dungeon.run_event(null,bg_branch,3);
+      XRA_runEvent(null,bg_branch,3);
     }
   }
 });
@@ -159,6 +173,12 @@ Object.defineProperty(MMD_SA_options, '_Wallpaper3D_status2_', {
         return [
           {
             func: function () {
+if (MMD_SA_options.interaction_animation_disabled) {
+  F.wallpaper_dialog_enabled = false;
+  DEBUG_show('(Background/Wallpaper menu removed in this build.)', 4);
+  XRA_runEvent('_FACEMESH_OPTIONS_', done_branch, 0);
+  return;
+}
 F.wallpaper_dialog_enabled = true;
             }
            ,message: {
@@ -175,7 +195,7 @@ F.wallpaper_dialog_enabled = true;
 MMD_SA_options.image_input_handler_as_wallpaper = !MMD_SA_options.image_input_handler_as_wallpaper;
       }, goto_event:{event_index:0} },
       onmouseover: function (e) {
-MMD_SA_options.Dungeon.utils.tooltip(
+XRA_tooltip(
   e.clientX, e.clientY,
   System._browser.translation.get('XR_Animator.UI.UI_options.scene.background.image_input_handler_as_wallpaper.tooltip')
 );
@@ -189,7 +209,7 @@ MMD_SA_options.Dungeon.utils.tooltip(
           {
             func: function () {
 F.wallpaper_dialog_enabled = true;
-if (advanced_options_enabled) MMD_SA_options.Dungeon.run_event();
+if (advanced_options_enabled) XRA_runEvent();
             },
             message: {
   get content() {
@@ -285,7 +305,7 @@ else {
   return false;
 }
 
-MMD_SA_options.Dungeon.run_event(null,null,1);
+XRA_runEvent(null,null,1);
 
 return true;
       }
@@ -296,7 +316,7 @@ MMD_SA.Wallpaper3D.enabled = !MMD_SA.Wallpaper3D.enabled;
       }, goto_event:{event_index:1} },
       sb_index: 1,
       onmouseover: function (e) {
-MMD_SA_options.Dungeon.utils.tooltip(
+    XRA_tooltip(
   e.clientX, e.clientY,
   System._browser.translation.get('XR_Animator.UI.UI_options.scene.background.3D_wallpaper.tooltip')
 );
@@ -307,8 +327,8 @@ LR_option_active = 'scale_xy';
       }, goto_event:{event_index:1} },
       sb_index: 1,
       onmouseover: function (e) {
-MMD_SA_options.Dungeon.run_event(this.event_id);
-MMD_SA_options.Dungeon.utils.tooltip(
+    XRA_runEvent(this.event_id);
+    XRA_tooltip(
   e.clientX, e.clientY,
   System._browser.translation.get('XR_Animator.UI.UI_options.scene.background.3D_wallpaper.scale_xy.tooltip').replace(/\<press_to_change_value\>/, (LR_option_active == 'scale_xy') ? ' ('+System._browser.translation.get('XR_Animator.UI.UI_options.scene.background.3D_wallpaper.press_to_change_value')+')' : '')
 );
@@ -319,8 +339,8 @@ LR_option_active = 'scale_z';
       }, goto_event:{event_index:1} },
       sb_index: 1,
       onmouseover: function (e) {
-MMD_SA_options.Dungeon.run_event(this.event_id);
-MMD_SA_options.Dungeon.utils.tooltip(
+    XRA_runEvent(this.event_id);
+    XRA_tooltip(
   e.clientX, e.clientY,
   System._browser.translation.get('XR_Animator.UI.UI_options.scene.background.3D_wallpaper.scale_z.tooltip').replace(/\<press_to_change_value\>/, (LR_option_active == 'scale_z') ? ' ('+System._browser.translation.get('XR_Animator.UI.UI_options.scene.background.3D_wallpaper.press_to_change_value')+')' : '')
 );
@@ -331,8 +351,8 @@ LR_option_active = 'depth_shift';
       }, goto_event:{event_index:1} },
       sb_index: 1,
       onmouseover: function (e) {
-MMD_SA_options.Dungeon.run_event(this.event_id);
-MMD_SA_options.Dungeon.utils.tooltip(
+    XRA_runEvent(this.event_id);
+    XRA_tooltip(
   e.clientX, e.clientY,
   System._browser.translation.get('XR_Animator.UI.UI_options.scene.background.3D_wallpaper.scale_z.depth_shift.tooltip').replace(/\<press_to_change_value\>/, (LR_option_active == 'depth_shift') ? ' ('+System._browser.translation.get('XR_Animator.UI.UI_options.scene.background.3D_wallpaper.press_to_change_value')+')' : '')
 );
@@ -343,8 +363,8 @@ LR_option_active = 'depth_contrast';
       }, goto_event:{event_index:1} },
       sb_index: 1,
       onmouseover: function (e) {
-MMD_SA_options.Dungeon.run_event(this.event_id);
-MMD_SA_options.Dungeon.utils.tooltip(
+    XRA_runEvent(this.event_id);
+    XRA_tooltip(
   e.clientX, e.clientY,
   System._browser.translation.get('XR_Animator.UI.UI_options.scene.background.3D_wallpaper.scale_z.depth_contrast.tooltip').replace(/\<press_to_change_value\>/, (LR_option_active == 'depth_contrast') ? ' ('+System._browser.translation.get('XR_Animator.UI.UI_options.scene.background.3D_wallpaper.press_to_change_value')+')' : '')
 );
@@ -355,8 +375,8 @@ LR_option_active = 'depth_blur';
       }, goto_event:{event_index:1} },
       sb_index: 1,
       onmouseover: function (e) {
-MMD_SA_options.Dungeon.run_event(this.event_id);
-MMD_SA_options.Dungeon.utils.tooltip(
+    XRA_runEvent(this.event_id);
+    XRA_tooltip(
   e.clientX, e.clientY,
   System._browser.translation.get('XR_Animator.UI.UI_options.scene.background.3D_wallpaper.scale_z.depth_blur.tooltip').replace(/\<press_to_change_value\>/, (LR_option_active == 'depth_blur') ? ' ('+System._browser.translation.get('XR_Animator.UI.UI_options.scene.background.3D_wallpaper.press_to_change_value')+')' : '')
 );
@@ -367,8 +387,8 @@ LR_option_active = 'depth_smoothing';
       }, goto_event:{event_index:1} },
       sb_index: 1,
       onmouseover: function (e) {
-MMD_SA_options.Dungeon.run_event(this.event_id);
-MMD_SA_options.Dungeon.utils.tooltip(
+    XRA_runEvent(this.event_id);
+    XRA_tooltip(
   e.clientX, e.clientY,
   System._browser.translation.get('XR_Animator.UI.UI_options.scene.background.3D_wallpaper.scale_z.depth_smoothing.tooltip').replace(/\<press_to_change_value\>/, (LR_option_active == 'depth_smoothing') ? ' ('+System._browser.translation.get('XR_Animator.UI.UI_options.scene.background.3D_wallpaper.press_to_change_value')+')' : '')
 );
@@ -379,8 +399,8 @@ LR_option_active = 'pos_x_offset';
       }, goto_event:{event_index:1} },
       sb_index: 1,
       onmouseover: function (e) {
-MMD_SA_options.Dungeon.run_event(this.event_id);
-MMD_SA_options.Dungeon.utils.tooltip(
+    XRA_runEvent(this.event_id);
+    XRA_tooltip(
   e.clientX, e.clientY,
   System._browser.translation.get('XR_Animator.UI.UI_options.scene.background.3D_wallpaper.position_x_offset.tooltip').replace(/\<press_to_change_value\>/, (LR_option_active == 'pos_x_offset') ? ' ('+System._browser.translation.get('XR_Animator.UI.UI_options.scene.background.3D_wallpaper.press_to_change_value')+')' : '')
 );
@@ -391,8 +411,8 @@ LR_option_active = 'pos_y_offset';
       }, goto_event:{event_index:1} },
       sb_index: 1,
       onmouseover: function (e) {
-MMD_SA_options.Dungeon.run_event(this.event_id);
-MMD_SA_options.Dungeon.utils.tooltip(
+    XRA_runEvent(this.event_id);
+    XRA_tooltip(
   e.clientX, e.clientY,
   System._browser.translation.get('XR_Animator.UI.UI_options.scene.background.3D_wallpaper.position_x_offset.tooltip').replace(/\<press_to_change_value\>/, (LR_option_active == 'pos_y_offset') ? ' ('+System._browser.translation.get('XR_Animator.UI.UI_options.scene.background.3D_wallpaper.press_to_change_value')+')' : '')
 );
@@ -403,8 +423,8 @@ LR_option_active = 'pos_z_offset';
       }, goto_event:{event_index:1} },
       sb_index: 1,
       onmouseover: function (e) {
-MMD_SA_options.Dungeon.run_event(this.event_id);
-MMD_SA_options.Dungeon.utils.tooltip(
+    XRA_runEvent(this.event_id);
+    XRA_tooltip(
   e.clientX, e.clientY,
   System._browser.translation.get('XR_Animator.UI.UI_options.scene.background.3D_wallpaper.position_z_offset.tooltip').replace(/\<press_to_change_value\>/, (LR_option_active == 'pos_z_offset') ? ' ('+System._browser.translation.get('XR_Animator.UI.UI_options.scene.background.3D_wallpaper.press_to_change_value')+')' : '')
 );
@@ -443,7 +463,7 @@ if (++depth_model_index >= depth_model_list.length)
 MMD_SA.Wallpaper3D.options.depth_model = depth_model_list[depth_model_index];
       }, goto_event:{event_index:2} },
       onmouseover: function (e) {
-MMD_SA_options.Dungeon.utils.tooltip(
+XRA_tooltip(
   e.clientX, e.clientY,
   System._browser.translation.get('XR_Animator.UI.UI_options.scene.background.3D_wallpaper.depth_model.tooltip')
 );
@@ -454,7 +474,7 @@ if (++MMD_SA.Wallpaper3D.options.SR_mode > 1)
   MMD_SA.Wallpaper3D.options.SR_mode = 0;
       }, goto_event:{event_index:2} },
       onmouseover: function (e) {
-MMD_SA_options.Dungeon.utils.tooltip(
+XRA_tooltip(
   e.clientX, e.clientY,
   System._browser.translation.get('XR_Animator.UI.UI_options.scene.background.3D_wallpaper.super_resolution.tooltip')
 );
@@ -470,7 +490,7 @@ if (++SR_model_index >= SR_model_list.length)
 MMD_SA.Wallpaper3D.options.SR_model = SR_model_list[SR_model_index];
       }, goto_event:{event_index:2} },
       onmouseover: function (e) {
-MMD_SA_options.Dungeon.utils.tooltip(
+XRA_tooltip(
   e.clientX, e.clientY,
   System._browser.translation.get('XR_Animator.UI.UI_options.scene.background.3D_wallpaper.super_resolution.model.tooltip')
 );
@@ -480,7 +500,7 @@ MMD_SA_options.Dungeon.utils.tooltip(
 MMD_SA.Wallpaper3D.options.keeps_worker_thread = !MMD_SA.Wallpaper3D.options.keeps_worker_thread;
       }, goto_event:{event_index:2} },
       onmouseover: function (e) {
-MMD_SA_options.Dungeon.utils.tooltip(
+    XRA_tooltip(
   e.clientX, e.clientY,
   System._browser.translation.get('XR_Animator.UI.UI_options.scene.background.3D_wallpaper.keep_worker_thread.tooltip')
 );
@@ -488,11 +508,11 @@ MMD_SA_options.Dungeon.utils.tooltip(
     },
     { key:'P', event_id:{ func:function () {
 status_msg2 = (MMD_SA.Wallpaper3D.options.converter_session) ? '⏯️Last session resumable' : '✔️Status: Idle';
-System._browser.on_animation_update.add(()=>{ MMD_SA_options.Dungeon.run_event('_FACEMESH_OPTIONS_',bg_branch,3); }, 0,0);
+    System._browser.on_animation_update.add(()=>{ XRA_runEvent('_FACEMESH_OPTIONS_',bg_branch,3); }, 0,0);
 this.ended = true;
       } },
       onmouseover: function (e) {
-MMD_SA_options.Dungeon.utils.tooltip(
+    XRA_tooltip(
   e.clientX, e.clientY,
   System._browser.translation.get('XR_Animator.UI.UI_options.scene.background.3D_wallpaper.convert_3D_wallpaper.tooltip')
 );
@@ -503,7 +523,7 @@ createAnimationShortcut(Settings.f_path.replace(/XR Animator$/, '2D-to-3D Wallpa
 MMD_SA_options._Wallpaper3D_status_ = '(✔️3D wallpaper desktop shortcut created)';
       }, goto_event:{event_index:2} },
       onmouseover: function (e) {
-MMD_SA_options.Dungeon.utils.tooltip(
+XRA_tooltip(
   e.clientX, e.clientY,
   System._browser.translation.get('XR_Animator.UI.UI_options.scene.background.3D_wallpaper.create_desktop_shortcut.tooltip')
 );
@@ -524,7 +544,7 @@ if (item.isFolder) {
   }
 
   await MMD_SA.Wallpaper3D.converter.start(src, true);
-  MMD_SA_options.Dungeon.run_event(null,bg_branch,3);
+  XRA_runEvent(null,bg_branch,3);
 }
 else if (item.isFileSystem && /([^\/\\]+)\.(png|jpg|jpeg|bmp|webp|mp4|mkv|webm|mov)$/i.test(src) && !/xra\-3d\-wallpaper_[^\/\\]+$/i.test(src)) {
   if (/([^\/\\]+)\.(mp4|mkv|webm|mov)$/i.test(src) && !webkit_electron_mode) {
@@ -533,7 +553,7 @@ else if (item.isFileSystem && /([^\/\\]+)\.(png|jpg|jpeg|bmp|webp|mp4|mkv|webm|m
   }
 
   await MMD_SA.Wallpaper3D.converter.start(src);
-  MMD_SA_options.Dungeon.run_event(null,bg_branch,3);
+  XRA_runEvent(null,bg_branch,3);
 }
 else {
   F._onDrop_finish.call(DragDrop, item);
@@ -593,7 +613,7 @@ else {
   return false;
 }
 
-MMD_SA_options.Dungeon.run_event(null,bg_branch,3);
+XRA_runEvent(null,bg_branch,3);
 
 return true;
       }
@@ -612,7 +632,7 @@ else {
       onmouseover: function (e) {
 if (MMD_SA.Wallpaper3D.converter.running) return;
 
-MMD_SA_options.Dungeon.utils.tooltip(
+XRA_tooltip(
   e.clientX, e.clientY,
   System._browser.translation.get('XR_Animator.UI.UI_options.scene.background.3D_wallpaper.convert_3D_wallpaper.converter.batch_conversion_format.tooltip')
 );
@@ -626,7 +646,7 @@ if (MMD_SA.Wallpaper3D.converter.running) {
       onmouseover: function (e) {
 if (MMD_SA.Wallpaper3D.converter.running) return;
 
-MMD_SA_options.Dungeon.utils.tooltip(
+XRA_tooltip(
   e.clientX, e.clientY,
   System._browser.translation.get('XR_Animator.UI.UI_options.scene.background.3D_wallpaper.convert_3D_wallpaper.converter.batch_conversion_format.quality.tooltip')
 );

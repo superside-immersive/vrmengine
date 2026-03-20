@@ -3,9 +3,15 @@
    Replaces RPG-style speech bubble system with modern CSS panels
    ============================================================ */
 
-/* ── Kill old quick menu (replaced by .xra-toolbar-unified) ── */
+/* ── Kill old quick menu ── */
 #Lquick_menu,
-#LbuttonTL {
+#LbuttonTL,
+#Ldebug,
+#C_media_control,
+#Ldungeon_UI,
+#Ldungeon_inventory,
+#Ldungeon_inventory_backpack,
+#Ljoystick {
   display: none !important;
   visibility: hidden !important;
   pointer-events: none !important;
@@ -74,6 +80,345 @@
 }
 
 /* ── Base Panel ── */
+.xra-loading-shell {
+  position: fixed;
+  inset: 0;
+  z-index: 1400;
+  overflow: hidden;
+  background: #ff5a14;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: opacity 0.35s ease, visibility 0.35s ease;
+}
+
+.xra-loading-shell.is-hidden {
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+}
+
+.xra-loading-shell__grid {
+  position: absolute;
+  inset: 0;
+  background-image:
+    linear-gradient(rgba(255,255,255,0.20) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255,255,255,0.20) 1px, transparent 1px);
+  background-size: 56px 56px;
+}
+
+.xra-loading-shell__center {
+  position: absolute;
+  left: 50%;
+  top: 42%;
+  transform: translate(-50%, -50%);
+  width: min(78vw, 420px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.xra-loading-shell__mascot {
+  width: 100%;
+  height: auto;
+  object-fit: contain;
+  filter: drop-shadow(0 24px 40px rgba(0,0,0,0.14));
+}
+
+.xra-loading-shell__dock {
+  position: absolute;
+  left: 50%;
+  bottom: clamp(22px, 5vh, 42px);
+  transform: translateX(-50%);
+  width: min(92vw, 540px);
+  background: rgba(255,255,255,0.97);
+  border-radius: 32px 32px 0 0;
+  padding: 28px 24px 20px;
+  box-shadow: 0 -14px 40px rgba(0,0,0,0.10);
+}
+
+.xra-loading-shell__pill {
+  min-height: 74px;
+  border-radius: 999px;
+  background: #ff5a14;
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 12px 28px;
+  font-family: "Reddit Sans", "Segoe UI", Roboto, Ubuntu, system-ui, sans-serif;
+  font-size: clamp(22px, 4.8vw, 36px);
+  font-weight: 800;
+  line-height: 1.05;
+  letter-spacing: -0.03em;
+}
+
+.xra-loading-shell__subtitle {
+  margin-top: 12px;
+  text-align: center;
+  color: rgba(35, 39, 42, 0.72);
+  font-family: "Reddit Sans", "Segoe UI", Roboto, Ubuntu, system-ui, sans-serif;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.xra-shell-launcher {
+  position: fixed;
+  left: 18px;
+  bottom: max(18px, env(safe-area-inset-bottom));
+  z-index: 1350;
+  width: 64px;
+  height: 64px;
+  border: none;
+  border-radius: 999px;
+  background: linear-gradient(180deg, rgba(255,255,255,0.96), rgba(248,249,250,0.88));
+  box-shadow: 0 16px 40px rgba(0,0,0,0.32);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.xra-shell-launcher::before,
+.xra-shell-launcher::after,
+.xra-shell-launcher__dot {
+  content: "";
+  position: absolute;
+  width: 6px;
+  height: 6px;
+  border-radius: 999px;
+  background: #ff5a14;
+}
+
+.xra-shell-launcher::before { transform: translateY(-10px); }
+.xra-shell-launcher::after { transform: translateY(10px); }
+
+.xra-shell-launcher.needs-attention {
+  animation: none;
+}
+
+@keyframes xra-launcher-pulse {
+  0%, 100% { box-shadow: 0 16px 40px rgba(0,0,0,0.32); }
+  50% { box-shadow: 0 16px 40px rgba(255,90,20,0.55); }
+}
+
+.xra-settings-sheet {
+  position: fixed;
+  inset: 0;
+  z-index: 1390;
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+  transition: opacity 0.25s ease, visibility 0.25s ease;
+}
+
+.xra-settings-sheet.is-open {
+  opacity: 1;
+  visibility: visible;
+  pointer-events: auto;
+}
+
+.xra-settings-sheet__backdrop {
+  position: absolute;
+  inset: 0;
+  background: rgba(9, 11, 15, 0.68);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+}
+
+.xra-settings-sheet__panel {
+  position: absolute;
+  left: 12px;
+  right: 12px;
+  bottom: 12px;
+  max-height: calc(100dvh - 24px);
+  background: rgba(18, 20, 28, 0.96);
+  color: #f5f7fa;
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 30px;
+  box-shadow: 0 24px 80px rgba(0,0,0,0.45);
+  overflow: hidden;
+  transform: translateY(18px);
+  transition: transform 0.25s ease;
+  display: flex;
+  flex-direction: column;
+}
+
+.xra-settings-sheet.is-open .xra-settings-sheet__panel {
+  transform: translateY(0);
+}
+
+.xra-settings-sheet__header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 18px 18px 12px;
+}
+
+.xra-settings-sheet__eyebrow {
+  color: rgba(255,255,255,0.55);
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  font-size: 10px;
+  font-weight: 700;
+}
+
+.xra-settings-sheet__title {
+  margin: 6px 0 0;
+  font-size: 26px;
+  line-height: 1;
+  font-weight: 800;
+  letter-spacing: -0.03em;
+  font-family: "Reddit Sans", "Segoe UI", Roboto, Ubuntu, system-ui, sans-serif;
+}
+
+.xra-settings-sheet__close {
+  width: 42px;
+  height: 42px;
+  border: 0;
+  border-radius: 999px;
+  background: rgba(255,255,255,0.08);
+  color: #fff;
+  font-size: 28px;
+  line-height: 1;
+}
+
+.xra-settings-sheet__tabs {
+  display: flex;
+  gap: 8px;
+  padding: 0 18px 14px;
+}
+
+.xra-settings-sheet__tab {
+  flex: 1;
+  min-height: 42px;
+  border: 0;
+  border-radius: 999px;
+  background: rgba(255,255,255,0.06);
+  color: rgba(255,255,255,0.68);
+  font-weight: 700;
+}
+
+.xra-settings-sheet__tab.is-active {
+  background: #ff5a14;
+  color: #fff;
+}
+
+.xra-settings-sheet__body {
+  padding: 0 18px 18px;
+  overflow: auto;
+}
+
+.xra-settings-sheet__view { display: none; }
+.xra-settings-sheet__view.is-active { display: block; }
+
+.xra-settings-card {
+  background: rgba(255,255,255,0.04);
+  border: 1px solid rgba(255,255,255,0.06);
+  border-radius: 24px;
+  padding: 16px;
+  margin-bottom: 14px;
+}
+
+.xra-settings-card__title-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 14px;
+}
+
+.xra-settings-card__title-row h3 {
+  margin: 0;
+  font-size: 18px;
+  font-weight: 800;
+}
+
+.xra-chip-button,
+.xra-primary-button,
+.xra-secondary-button {
+  border: 0;
+  border-radius: 999px;
+  min-height: 42px;
+  padding: 0 16px;
+  font-weight: 700;
+}
+
+.xra-chip-button,
+.xra-secondary-button {
+  background: rgba(255,255,255,0.08);
+  color: #fff;
+}
+
+.xra-primary-button {
+  background: #ff5a14;
+  color: #fff;
+}
+
+.xra-field {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-bottom: 14px;
+}
+
+.xra-field span,
+.xra-toggle span {
+  color: rgba(255,255,255,0.72);
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.xra-select {
+  width: 100%;
+  min-height: 46px;
+  border-radius: 16px;
+  border: 1px solid rgba(255,255,255,0.08);
+  background: rgba(8,10,14,0.54);
+  color: #fff;
+  padding: 0 14px;
+}
+
+.xra-grid-2 {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.xra-toggle {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding-top: 30px;
+}
+
+.xra-inline-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.xra-muted-copy {
+  margin: 12px 0 0;
+  color: rgba(255,255,255,0.64);
+  font-size: 12px;
+  line-height: 1.45;
+}
+
+.xra-muted-copy.is-error {
+  color: #ffb4a0;
+}
+
+.xra-settings-iframe {
+  width: 100%;
+  min-height: min(68dvh, 760px);
+  border: 0;
+  border-radius: 18px;
+  background: #fff;
+}
+
 .xra-panel {
   position: fixed;
   z-index: 1200;
@@ -455,134 +800,6 @@
   max-width: 480px;
 }
 
-/* ── Toolbar Restyling ── */
-.xra-toolbar-unified {
-  position: fixed !important;
-  bottom: 12px !important;
-  right: 12px !important;
-  left: auto !important;
-  transform: none !important;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 2px;
-  padding: 8px 6px;
-  background: rgba(16, 20, 30, 0.80);
-  backdrop-filter: blur(14px);
-  -webkit-backdrop-filter: blur(14px);
-  border: 1px solid rgba(255, 255, 255, 0.07);
-  border-radius: 14px;
-  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.35);
-  z-index: 1100;
-  pointer-events: auto;
-  animation: xra-toolbar-in 0.3s cubic-bezier(0.16, 1, 0.3, 1);
-}
-
-@keyframes xra-toolbar-in {
-  from { opacity: 0; transform: translateX(20px); }
-  to   { opacity: 1; transform: translateX(0);    }
-}
-
-/* ── Toolbar Buttons ── */
-.xra-toolbar-btn {
-  width: 34px;
-  height: 34px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border: none;
-  background: transparent;
-  color: #9ba1b0;
-  border-radius: 8px;
-  cursor: pointer;
-  font-size: 17px;
-  line-height: 1;
-  transition: background 0.15s, color 0.15s, transform 0.1s;
-  padding: 0;
-  position: relative;
-}
-
-.xra-toolbar-btn:hover {
-  background: rgba(81, 198, 226, 0.12);
-  color: #e0e4ec;
-}
-
-.xra-toolbar-btn:active {
-  background: rgba(81, 198, 226, 0.22);
-  transform: scale(0.92);
-}
-
-.xra-toolbar-btn--accent {
-  color: #51c6e2;
-}
-
-.xra-toolbar-btn--accent:hover {
-  background: rgba(81, 198, 226, 0.18);
-  color: #7dd8ee;
-}
-
-.xra-toolbar-btn--danger {
-  color: #a0a5b4;
-}
-
-.xra-toolbar-btn--danger:hover {
-  background: rgba(255, 100, 100, 0.12);
-  color: #ff7b7b;
-}
-
-/* VRM Direct toggle */
-.xra-toolbar-btn--vrm-direct {
-  color: #a0d8a0;
-}
-
-.xra-toolbar-btn--vrm-direct:hover {
-  background: rgba(100, 220, 130, 0.15);
-  color: #c0f0c0;
-}
-
-.xra-toolbar-btn--active {
-  background: rgba(80, 220, 120, 0.25) !important;
-  color: #50ff90 !important;
-  box-shadow: 0 0 8px rgba(80, 220, 120, 0.4);
-}
-
-/* Tooltip */
-.xra-toolbar-btn[title] {
-  position: relative;
-}
-
-.xra-toolbar-btn::after {
-  content: attr(title);
-  position: absolute;
-  top: 50%;
-  right: calc(100% + 8px);
-  transform: translateY(-50%);
-  padding: 4px 10px;
-  background: rgba(10, 12, 18, 0.94);
-  color: #d4d8e0;
-  font-size: 11px;
-  font-family: "Segoe UI", Roboto, system-ui, sans-serif;
-  white-space: nowrap;
-  border-radius: 6px;
-  pointer-events: none;
-  opacity: 0;
-  transition: opacity 0.15s;
-  z-index: 1200;
-}
-
-.xra-toolbar-btn:hover::after {
-  opacity: 1;
-}
-
-/* Separator between groups */
-.xra-toolbar-sep {
-  width: 22px;
-  height: 1px;
-  background: rgba(255, 255, 255, 0.08);
-  margin: 2px 0;
-  flex-shrink: 0;
-}
-
 /* ── Media Control Bar Restyled ── */
 .xra-media-bar {
   background: rgba(16, 20, 30, 0.85) !important;
@@ -609,11 +826,6 @@
   color: #51c6e2 !important;
 }
 
-/* ── Toolbar ── */
-#Lxra_toolbar {
-  pointer-events: auto;
-}
-
 /* ── Panel Container ── */
 #Lxra_panels {
   position: fixed;
@@ -627,6 +839,21 @@
 
 /* ── Mobile adjustments ── */
 @media (max-width: 600px), (pointer: coarse) {
+  .xra-loading-shell__dock {
+    width: calc(100vw - 28px);
+    padding: 22px 18px 18px;
+  }
+
+  .xra-settings-sheet__panel {
+    left: 8px;
+    right: 8px;
+    bottom: 8px;
+  }
+
+  .xra-grid-2 {
+    grid-template-columns: 1fr;
+  }
+
   .xra-panel--bottom-center {
     bottom: 72px;
     left: 8px;
@@ -663,19 +890,6 @@
     bottom: 80px;
   }
 
-  .xra-toolbar-unified {
-    padding: 6px 5px;
-    gap: 1px;
-    bottom: 8px !important;
-    right: 8px !important;
-  }
-
-  .xra-toolbar-btn {
-    width: 38px;
-    height: 38px;
-    font-size: 19px;
-  }
-
   @keyframes xra-toast-in {
     from { opacity: 0; transform: translateY(10px); }
     to   { opacity: 1; transform: translateY(0);    }
@@ -684,5 +898,13 @@
   @keyframes xra-toast-out {
     from { opacity: 1; transform: translateY(0);    }
     to   { opacity: 0; transform: translateY(-8px); }
+  }
+}
+
+@media (min-width: 821px) {
+  .xra-settings-sheet__panel {
+    left: auto;
+    right: 18px;
+    width: min(540px, calc(100vw - 36px));
   }
 }

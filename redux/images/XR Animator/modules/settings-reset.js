@@ -31,7 +31,7 @@
         "hotkeys": {
           "is_global": true
         },
-        "audio_visualizer": true,
+        "audio_visualizer": !MMD_SA_options.interaction_animation_disabled,
         "camera_face_locking": null,
         "shoulder_adjust": null,
         "selfie_mode": false,

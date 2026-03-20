@@ -444,6 +444,22 @@ var DEBUG_last_display_time = 0
  * @param {boolean} [always_visible] - If true, keep visible until explicitly cleared
  */
 function DEBUG_show(msg, hide_sec, always_visible) {
+  if (window.XRA_MOBILE_SHELL) {
+    window.XRA_BOOT_STATUS = window.XRA_BOOT_STATUS || { history: [] }
+    window.XRA_BOOT_STATUS.lastMessage = msg
+    window.XRA_BOOT_STATUS.lastHideSec = hide_sec
+    window.XRA_BOOT_STATUS.alwaysVisible = !!always_visible
+    if (msg != null) {
+      window.XRA_BOOT_STATUS.history.push(String(msg))
+      if (window.XRA_BOOT_STATUS.history.length > 20)
+        window.XRA_BOOT_STATUS.history = window.XRA_BOOT_STATUS.history.slice(-20)
+    }
+    try {
+      window.dispatchEvent(new CustomEvent('XRA_debug_status', { detail: { msg: msg, hide_sec: hide_sec, always_visible: !!always_visible } }))
+    }
+    catch (err) {}
+  }
+
   if (always_visible)
     DEBUG_always_visible = true
 //DEBUG_always_visible = true
@@ -476,7 +492,7 @@ function DEBUG_show(msg, hide_sec, always_visible) {
   if (msg != null) {
     Ldebug.innerText = msg
 //console.log(msg)
-    Ldebug.style.visibility = "inherit"
+    Ldebug.style.visibility = (window.XRA_MOBILE_SHELL) ? "hidden" : "inherit"
 
     if (hide_sec && !DEBUG_always_visible) {
       DEBUG_timerID = setTimeout('DEBUG_timerID=null; DEBUG_show()', hide_sec*1000)
@@ -500,14 +516,28 @@ var linux_mode   = /Linux/i.test(navigator.userAgent)
 var non_windows_native_mode
 
 //https://coderwall.com/p/i817wa/one-line-function-to-detect-mobile-devices-with-javascript
-var is_ipad = /iPad/i.test(navigator.userAgent) || (/Macintosh/i.test(navigator.userAgent) && navigator.maxTouchPoints > 1)
-var is_mobile_device = (typeof window.orientation !== "undefined") || (navigator.userAgent.indexOf('IEMobile') !== -1) || is_ipad
+// iPad/iPad Pro should follow the desktop runtime path for XR Animator, matching macOS behavior.
+var _is_ipad_device = /iPad/i.test(navigator.userAgent) || (/Macintosh/i.test(navigator.userAgent) && navigator.maxTouchPoints > 1)
+var is_ipad = false
+var is_mobile_device = (!_is_ipad_device && (typeof window.orientation !== "undefined")) || (navigator.userAgent.indexOf('IEMobile') !== -1)
 var is_mobile = false;
 
 var WallpaperEngine_mode
 var WallpaperEngine_CEF_mode// = true
 var WallpaperEngine_CEF_native_mode
 var Settings_WE = {}
+var Box3D = {
+  init: function () {},
+  animate: function () {}
+}
+var SVG_Clock = {
+  scale: 1,
+  x_center: 0,
+  y_center: 0,
+  draw: function () {},
+  update: function () {},
+  resize: function () {}
+}
 
 var _js_min_mode_ = true
 var localhost_mode = /localhost|192\.168\./.test(self.location.hostname)

@@ -8,6 +8,7 @@
     const toFileProtocol = opts.toFileProtocol || window.toFileProtocol
     const Settings = opts.Settings || window.Settings
     const documentRef = opts.documentRef || document
+    const dungeonOptions = (window.XRA_DungeonOptionsCompat && XRA_DungeonOptionsCompat()) || (MMD_SA_options && MMD_SA_options['Dungeon_options'])
 
     if (window.__XR_ANIMATOR_BOOTSTRAP_SCRIPTS_LOADED__)
       return
@@ -15,7 +16,7 @@
 
     documentRef.write('<script language="JavaScript" src="' + toFileProtocol(Settings.f_path + '/animate_customized.js') + '"></scr'+'ipt>')
 
-    if (MMD_SA_options.Dungeon_options) {
+    if (dungeonOptions) {
       // documentRef.write('<script language="JavaScript" src="js/dungeon.js"></scr'+'ipt>')
     }
     documentRef.write('<script language="JavaScript" src="js/mmd/speech-bubble.js"></scr'+'ipt>')

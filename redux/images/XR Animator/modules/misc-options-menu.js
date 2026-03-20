@@ -29,18 +29,31 @@
         {
           message: {
   get content() {
-return System._browser.translation.get('XR_Animator.UI.UI_options.miscellaneous_options.message').replace(/\<VRM_joint_stiffness_percent\>/, MMD_SA.THREEX.VRM.joint_stiffness_percent).replace(/\<audio_visualizer\>/, (MMD_SA_options.use_CircularSpectrum)?'ON':'OFF');
+let content = System._browser.translation.get('XR_Animator.UI.UI_options.miscellaneous_options.message').replace(/\<VRM_joint_stiffness_percent\>/, MMD_SA.THREEX.VRM.joint_stiffness_percent).replace(/\<audio_visualizer\>/, (MMD_SA_options.interaction_animation_disabled) ? 'REMOVED' : ((MMD_SA_options.use_CircularSpectrum)?'ON':'OFF'));
+
+if (MMD_SA_options.interaction_animation_disabled) {
+  content = content
+    .replace(/^2\..*\n?/m, '')
+    .replace(/^4\..*\n?/m, '')
+    .replace(/^3\./m, '2.')
+    .replace(/^5\./m, '3.')
+    .replace(/^6\./m, '4.')
+    .replace(/^7\./m, '5.');
+}
+
+return content;
   },
   bubble_index: 3,
   para: { no_word_break:true },
-  branch_list: [
+  get branch_list() {
+return [
     { key:'any', func:function (e) {
 let step;
 if (MMD_SA.THREEX.enabled && /(\+|\-)/.test(e.key)) {
   step = (e.key == '+') ? 1 : -1;
   MMD_SA.THREEX.VRM.joint_stiffness_percent = THREE.Math.clamp(MMD_SA.THREEX.VRM.joint_stiffness_percent + step*2, 10,200);
 }
-else if (/Arrow(Up|Down)/.test(e.code)) {
+else if (!MMD_SA_options.interaction_animation_disabled && /Arrow(Up|Down)/.test(e.code)) {
   let index = LR_options.findIndex(v=>v==LR_option_active);
   index -= (e.code == 'ArrowUp') ? 1 : -1;
   if (index < 0) {
@@ -51,7 +64,7 @@ else if (/Arrow(Up|Down)/.test(e.code)) {
   }
   LR_option_active = LR_options[index];
 }
-else if (/Arrow(Left|Right)/.test(e.code)) {
+else if (!MMD_SA_options.interaction_animation_disabled && /Arrow(Left|Right)/.test(e.code)) {
   step = (e.code == 'ArrowLeft') ? -1 : 1;
   if (LR_option_active == 'auto_zoom') {
     let v = THREE.Math.clamp(MMD_SA_options._camera_auto_zoom_percent + step, 0,100);
@@ -93,25 +106,57 @@ else {
   return false;
 }
 
-MMD_SA_options.Dungeon.run_event(null,null,0);
+XRA_runEvent(null,null,0);
 
 return true;
       }
     },
 
+    ...((MMD_SA_options.interaction_animation_disabled) ? [
     { key:1, event_index:3 },
-    { key:2, event_index:9 },
-    { key:3, event_index:0,
+    { key:2, event_index:0,
       onmouseover: function (e) {
-MMD_SA_options.Dungeon.utils.tooltip(
+XRA_tooltip(
   e.clientX, e.clientY,
   System._browser.translation.get('XR_Animator.UI.UI_options.miscellaneous_options.VRM_joint_stiffness.tooltip')
 );
       }
     },
-    { key:4, event_index:2,
+    { key:3, event_index:6,
       onmouseover: function (e) {
-MMD_SA_options.Dungeon.utils.tooltip(
+XRA_tooltip(
+  e.clientX, e.clientY,
+  System._browser.translation.get('XR_Animator.UI.UI_options.miscellaneous_options.export_all_settings.tooltip')
+);
+      }
+    },
+    { key:4, event_index:7 },
+    { key:5, is_closing_event:true, event_index:99 },
+    ] : [
+    { key:1, event_index:3 },
+    { key:2,
+      get event_index() { return (MMD_SA_options.interaction_animation_disabled) ? 0 : 9; },
+      func: function () {
+if (MMD_SA_options.interaction_animation_disabled)
+  DEBUG_show('(Gamepad control removed in this build.)', 4);
+      }
+    },
+    { key:3, event_index:0,
+      onmouseover: function (e) {
+XRA_tooltip(
+  e.clientX, e.clientY,
+  System._browser.translation.get('XR_Animator.UI.UI_options.miscellaneous_options.VRM_joint_stiffness.tooltip')
+);
+      }
+    },
+    { key:4,
+      get event_index() { return (MMD_SA_options.interaction_animation_disabled) ? 0 : 2; },
+      func: function () {
+if (MMD_SA_options.interaction_animation_disabled)
+  DEBUG_show('(Audio visualizer removed in this build.)', 4);
+      },
+      onmouseover: function (e) {
+XRA_tooltip(
   e.clientX, e.clientY,
   System._browser.translation.get('XR_Animator.UI.UI_options.miscellaneous_options.audio_visualizer.tooltip')
 );
@@ -119,7 +164,7 @@ MMD_SA_options.Dungeon.utils.tooltip(
     },
     { key:5, event_index:6,
       onmouseover: function (e) {
-MMD_SA_options.Dungeon.utils.tooltip(
+XRA_tooltip(
   e.clientX, e.clientY,
   System._browser.translation.get('XR_Animator.UI.UI_options.miscellaneous_options.export_all_settings.tooltip')
 );
@@ -127,7 +172,8 @@ MMD_SA_options.Dungeon.utils.tooltip(
     },
     { key:6, event_index:7 },
     { key:7, is_closing_event:true, event_index:99 },
-  ],
+    ])];
+  },
           },
           next_step: {},
         },
@@ -135,6 +181,9 @@ MMD_SA_options.Dungeon.utils.tooltip(
         {
           message: {
   get content() {
+    if (MMD_SA_options.interaction_animation_disabled)
+      return '(Camera extras removed in this build.)';
+
     return [
 'A. ' + System._browser.translation.get('XR_Animator.UI.UI_options.miscellaneous_options.camera_face_locking') + ': ' + ((MMD_SA_options.camera_face_locking==null)?System._browser.translation.get('Misc.auto'):(MMD_SA_options.camera_face_locking)?'ON':'OFF'),
 'B. ┣  ' + System._browser.translation.get('XR_Animator.UI.UI_options.miscellaneous_options.camera_face_locking.locking_percent') + ': ' + ((MMD_SA_options.camera_face_locking !== false) ? MMD_SA_options.camera_face_locking_percent + '%' : 'N/A') + ((LR_option_active == 'locking_percent')?'⬅️➡️':'  　　'),
@@ -151,7 +200,7 @@ MMD_SA_options.Dungeon.utils.tooltip(
   index: 1,
   bubble_index: 3,
   para: { row_max:11, no_word_break:true },
-  branch_list: [
+  get branch_list() { return (MMD_SA_options.interaction_animation_disabled) ? [] : [
     { key:'A', event_id:{ func:()=>{
 if (MMD_SA_options.camera_face_locking == null) {
   MMD_SA_options.camera_face_locking = true;
@@ -166,7 +215,7 @@ else {
       }, goto_event:{event_index:1} },
       sb_index: 1,
       onmouseover: function (e) {
-MMD_SA_options.Dungeon.utils.tooltip(
+XRA_tooltip(
   e.clientX, e.clientY,
   System._browser.translation.get('XR_Animator.UI.UI_options.miscellaneous_options.camera_face_locking.tooltip')
 );
@@ -177,8 +226,8 @@ LR_option_active = 'locking_percent';
     }, goto_event:{event_index:1} },
       sb_index: 1,
       onmouseover: function (e) {
-MMD_SA_options.Dungeon.run_event(this.event_id);
-MMD_SA_options.Dungeon.utils.tooltip(
+XRA_runEvent(this.event_id);
+XRA_tooltip(
   e.clientX, e.clientY,
   System._browser.translation.get('XR_Animator.UI.UI_options.miscellaneous_options.camera_face_locking.locking_percent.tooltip').replace(/\<press_to_change_value\>/, (LR_option_active == 'locking_percent') ? ' ('+System._browser.translation.get('XR_Animator.UI.UI_options.miscellaneous_options.camera_face_locking.press_to_change_value')+')' : '')
 );
@@ -189,8 +238,8 @@ LR_option_active = 'look_at_target';
     }, goto_event:{event_index:1} },
       sb_index: 1,
       onmouseover: function (e) {
-MMD_SA_options.Dungeon.run_event(this.event_id);
-MMD_SA_options.Dungeon.utils.tooltip(
+XRA_runEvent(this.event_id);
+XRA_tooltip(
   e.clientX, e.clientY,
   System._browser.translation.get('XR_Animator.UI.UI_options.miscellaneous_options.camera_face_locking.locking_percent.look_at_target.tooltip').replace(/\<press_to_change_value\>/, (LR_option_active == 'look_at_target') ? ' ('+System._browser.translation.get('XR_Animator.UI.UI_options.miscellaneous_options.camera_face_locking.press_to_change_value')+')' : '')
 );
@@ -201,8 +250,8 @@ LR_option_active = 'movement_x';
     }, goto_event:{event_index:1} },
       sb_index: 1,
       onmouseover: function (e) {
-MMD_SA_options.Dungeon.run_event(this.event_id);
-MMD_SA_options.Dungeon.utils.tooltip(
+XRA_runEvent(this.event_id);
+XRA_tooltip(
   e.clientX, e.clientY,
   System._browser.translation.get('XR_Animator.UI.UI_options.miscellaneous_options.camera_face_locking.locking_percent.movement_x.tooltip').replace(/\<press_to_change_value\>/, (LR_option_active == 'movement_x') ? ' ('+System._browser.translation.get('XR_Animator.UI.UI_options.miscellaneous_options.camera_face_locking.press_to_change_value')+')' : '')
 );
@@ -213,8 +262,8 @@ LR_option_active = 'movement_y';
     }, goto_event:{event_index:1} },
       sb_index: 1,
       onmouseover: function (e) {
-MMD_SA_options.Dungeon.run_event(this.event_id);
-MMD_SA_options.Dungeon.utils.tooltip(
+XRA_runEvent(this.event_id);
+XRA_tooltip(
   e.clientX, e.clientY,
   System._browser.translation.get('XR_Animator.UI.UI_options.miscellaneous_options.camera_face_locking.locking_percent.movement_x.tooltip').replace(/\<press_to_change_value\>/, (LR_option_active == 'movement_y') ? ' ('+System._browser.translation.get('XR_Animator.UI.UI_options.miscellaneous_options.camera_face_locking.press_to_change_value')+')' : '')
 );
@@ -225,8 +274,8 @@ LR_option_active = 'movement_z';
     }, goto_event:{event_index:1} },
       sb_index: 1,
       onmouseover: function (e) {
-MMD_SA_options.Dungeon.run_event(this.event_id);
-MMD_SA_options.Dungeon.utils.tooltip(
+XRA_runEvent(this.event_id);
+XRA_tooltip(
   e.clientX, e.clientY,
   System._browser.translation.get('XR_Animator.UI.UI_options.miscellaneous_options.camera_face_locking.movement_z.tooltip').replace(/\<press_to_change_value\>/, (LR_option_active == 'movement_z') ? ' ('+System._browser.translation.get('XR_Animator.UI.UI_options.miscellaneous_options.camera_face_locking.press_to_change_value')+')' : '')
 );
@@ -237,8 +286,8 @@ LR_option_active = 'z_min';
     }, goto_event:{event_index:1} },
       sb_index: 1,
       onmouseover: function (e) {
-MMD_SA_options.Dungeon.run_event(this.event_id);
-MMD_SA_options.Dungeon.utils.tooltip(
+XRA_runEvent(this.event_id);
+XRA_tooltip(
   e.clientX, e.clientY,
   System._browser.translation.get('XR_Animator.UI.UI_options.miscellaneous_options.camera_face_locking.movement_z.minimum_distance.tooltip').replace(/\<press_to_change_value\>/, (LR_option_active == 'z_min') ? ' ('+System._browser.translation.get('XR_Animator.UI.UI_options.miscellaneous_options.camera_face_locking.press_to_change_value')+')' : '')
 );
@@ -249,8 +298,8 @@ LR_option_active = 'vertical_constraint';
     }, goto_event:{event_index:1} },
       sb_index: 1,
       onmouseover: function (e) {
-MMD_SA_options.Dungeon.run_event(this.event_id);
-MMD_SA_options.Dungeon.utils.tooltip(
+XRA_runEvent(this.event_id);
+XRA_tooltip(
   e.clientX, e.clientY,
   System._browser.translation.get('XR_Animator.UI.UI_options.miscellaneous_options.camera_face_locking.vertical_constraint.tooltip').replace(/\<press_to_change_value\>/, (LR_option_active == 'vertical_constraint') ? ' ('+System._browser.translation.get('XR_Animator.UI.UI_options.miscellaneous_options.camera_face_locking.press_to_change_value')+')' : '')
 );
@@ -261,8 +310,8 @@ LR_option_active = 'smooth_time';
     }, goto_event:{event_index:1} },
       sb_index: 1,
       onmouseover: function (e) {
-MMD_SA_options.Dungeon.run_event(this.event_id);
-MMD_SA_options.Dungeon.utils.tooltip(
+XRA_runEvent(this.event_id);
+XRA_tooltip(
   e.clientX, e.clientY,
   System._browser.translation.get('XR_Animator.UI.UI_options.miscellaneous_options.camera_face_locking.smooth_time.tooltip').replace(/\<press_to_change_value\>/, (LR_option_active == 'smooth_time') ? ' ('+System._browser.translation.get('XR_Animator.UI.UI_options.miscellaneous_options.camera_face_locking.press_to_change_value')+')' : '')
 );
@@ -273,14 +322,14 @@ LR_option_active = 'auto_zoom';
     }, goto_event:{event_index:1} },
       sb_index: 1,
       onmouseover: function (e) {
-MMD_SA_options.Dungeon.run_event(this.event_id);
-MMD_SA_options.Dungeon.utils.tooltip(
+XRA_runEvent(this.event_id);
+XRA_tooltip(
   e.clientX, e.clientY,
   System._browser.translation.get('XR_Animator.UI.UI_options.miscellaneous_options.camera_auto_zoom.tooltip')
 );
       },
     },
-  ],
+  ]; },
           }
         }
           ];
@@ -288,6 +337,10 @@ MMD_SA_options.Dungeon.utils.tooltip(
 
         {
           func: ()=>{
+if (MMD_SA_options.interaction_animation_disabled) {
+  DEBUG_show('(Audio visualizer removed in this build.)', 4);
+  return;
+}
 MMD_SA_options.use_CircularSpectrum = !MMD_SA_options.use_CircularSpectrum;
           },
           goto_event: { event_index:0 },
@@ -297,7 +350,15 @@ MMD_SA_options.use_CircularSpectrum = !MMD_SA_options.use_CircularSpectrum;
 message: {
   index: 1,
   bubble_index: 3,
-  get content() { return System._browser.translation.get('XR_Animator.UI.UI_options.miscellaneous_options.hotkey.extra').replace(/\<switch_avatar_model\>/, (System._browser.hotkeys.config_by_id['switch_avatar_model'].accelerator[0] == 'Alt+1')?'Alt+1-4':'Ctrl+1-4'); }
+  get content() {
+const switch_avatar_model_hotkey = System._browser.hotkeys.config_by_id['switch_avatar_model']?.accelerator?.[0];
+let content = System._browser.translation.get('XR_Animator.UI.UI_options.miscellaneous_options.hotkey.extra').replace(/\<switch_avatar_model\>/, (switch_avatar_model_hotkey == 'Alt+1') ? 'Alt+1-4' : 'Ctrl+1-4');
+
+if (MMD_SA_options.interaction_animation_disabled)
+  content = content.replace(/\nA\.[^\n]*/, '');
+
+return content;
+  }
 },
 next_step: {},
         },
@@ -347,7 +408,7 @@ if (hotkey_acc) return false;
 
 if (e.code == 'Escape') {
   hotkey_acc = hotkey_combo = null;
-  MMD_SA_options.Dungeon.run_event(null,null,5);
+  XRA_runEvent(null,null,5);
   return true;
 }
 
@@ -369,11 +430,13 @@ if (check_hotkey()) {
   System._browser.hotkeys.disabled = false;
 }
 
-MMD_SA_options.Dungeon.run_event(null,null,5);
+XRA_runEvent(null,null,5);
 
 return true;
     } },
-    ...['switch_motion','arm_to_leg_control_mode','mocap_auto_grounding','hand_camera','selfie_mode','auto_look_at_camera','hip_camera'].map((id,i)=>{
+    ...((MMD_SA_options.interaction_animation_disabled)
+      ? ['mocap_auto_grounding','auto_look_at_camera','hip_camera']
+      : ['switch_motion','mocap_auto_grounding','hand_camera','selfie_mode','auto_look_at_camera','hip_camera']).map((id,i)=>{
       return { key:i+1, event_id:{ func:()=>{
 hotkey_id = id;
 hotkey_combo = hotkey_info = hotkey_acc = null;
@@ -381,7 +444,7 @@ hotkey_combo = hotkey_info = hotkey_acc = null;
       };
     }),
 
-    { key:'A', event_id:{ func:()=>{
+    ...((MMD_SA_options.interaction_animation_disabled) ? [] : [{ key:'A', event_id:{ func:()=>{
 if (hotkey_id) return;
 
 const id = 'switch_avatar_model';
@@ -401,12 +464,12 @@ if (!hotkeys.register(id, acc)) {
       }, goto_event:{event_index:3} },
       sb_index: 1,
       onmouseover: function (e) {
-MMD_SA_options.Dungeon.utils.tooltip(
+XRA_tooltip(
   e.clientX, e.clientY,
   System._browser.translation.get('XR_Animator.UI.UI_options.miscellaneous_options.hotkey.extra.switch_avatar_model.tooltip')
 );
       }
-    },
+    }]),
 
     { key:'D', event_id:{ func:()=>{
 if (!hotkey_id) return;
@@ -466,7 +529,7 @@ hotkey_id = hotkey_combo = hotkey_info = hotkey_acc = null;
 
     { key:'G', event_id:{ func:()=>{System._browser.hotkeys.register_global(!System._browser.hotkeys.is_global)}, goto_event:{event_index:3} },
       onmouseover: function (e) {
-MMD_SA_options.Dungeon.utils.tooltip(
+XRA_tooltip(
   e.clientX, e.clientY,
   System._browser.translation.get('XR_Animator.UI.UI_options.miscellaneous_options.hotkey.global_hotkey_mode.tooltip')
 );
@@ -483,21 +546,27 @@ hotkey_id = hotkey_combo = hotkey_info = hotkey_acc = null;
 // 4
             {
               func: ()=>{
-if (hotkey_id) MMD_SA_options.Dungeon.run_event();
+if (hotkey_id) XRA_runEvent();
               },
               message: {
   get content() {
 const hotkeys = System._browser.hotkeys;
 
 return [
-  '1. ' + get_state('switch_motion') + 'Alt/Ctrl+Num0-9' + System._browser.translation.get('XR_Animator.UI.UI_options.miscellaneous_options.hotkey.switch_motion'),
-  '2. ' + get_state('arm_to_leg_control_mode') + hotkeys.config_by_id['arm_to_leg_control_mode'].accelerator[0] + System._browser.translation.get('XR_Animator.UI.UI_options.miscellaneous_options.hotkey.arm_as_leg_control'),
-  '3. ' + get_state('mocap_auto_grounding') + hotkeys.config_by_id['mocap_auto_grounding'].accelerator[0] + System._browser.translation.get('XR_Animator.UI.UI_options.miscellaneous_options.hotkey.auto_grounding'),
-//  '・' + get_state('camera_3D_lock') + 'Ctrl+L to toggle 3D camera lock',
-  '4. ' + get_state('hand_camera') + hotkeys.config_by_id['hand_camera'].accelerator[0] + System._browser.translation.get('XR_Animator.UI.UI_options.miscellaneous_options.hotkey.hand_camera'),
-  '5. ' + get_state('selfie_mode') + hotkeys.config_by_id['selfie_mode'].accelerator[0] + System._browser.translation.get('XR_Animator.UI.UI_options.miscellaneous_options.hotkey.selfie_mode'),
-  '6. ' + get_state('auto_look_at_camera') + hotkeys.config_by_id['auto_look_at_camera'].accelerator[0] + System._browser.translation.get('XR_Animator.UI.UI_options.miscellaneous_options.hotkey.auto_look_at_camera'),
-  '7. ' + get_state('hip_camera') + hotkeys.config_by_id['hip_camera'].accelerator[0] + System._browser.translation.get('XR_Animator.UI.UI_options.miscellaneous_options.hotkey.hip_camera'),
+  ...((MMD_SA_options.interaction_animation_disabled)
+    ? [
+  get_state('mocap_auto_grounding') + hotkeys.config_by_id['mocap_auto_grounding'].accelerator[0] + System._browser.translation.get('XR_Animator.UI.UI_options.miscellaneous_options.hotkey.auto_grounding'),
+  get_state('auto_look_at_camera') + hotkeys.config_by_id['auto_look_at_camera'].accelerator[0] + System._browser.translation.get('XR_Animator.UI.UI_options.miscellaneous_options.hotkey.auto_look_at_camera'),
+  get_state('hip_camera') + hotkeys.config_by_id['hip_camera'].accelerator[0] + System._browser.translation.get('XR_Animator.UI.UI_options.miscellaneous_options.hotkey.hip_camera'),
+      ]
+    : [
+  get_state('switch_motion') + 'Alt/Ctrl+Num0-9' + System._browser.translation.get('XR_Animator.UI.UI_options.miscellaneous_options.hotkey.switch_motion'),
+  get_state('mocap_auto_grounding') + hotkeys.config_by_id['mocap_auto_grounding'].accelerator[0] + System._browser.translation.get('XR_Animator.UI.UI_options.miscellaneous_options.hotkey.auto_grounding'),
+  get_state('hand_camera') + hotkeys.config_by_id['hand_camera'].accelerator[0] + System._browser.translation.get('XR_Animator.UI.UI_options.miscellaneous_options.hotkey.hand_camera'),
+  get_state('selfie_mode') + hotkeys.config_by_id['selfie_mode'].accelerator[0] + System._browser.translation.get('XR_Animator.UI.UI_options.miscellaneous_options.hotkey.selfie_mode'),
+  get_state('auto_look_at_camera') + hotkeys.config_by_id['auto_look_at_camera'].accelerator[0] + System._browser.translation.get('XR_Animator.UI.UI_options.miscellaneous_options.hotkey.auto_look_at_camera'),
+  get_state('hip_camera') + hotkeys.config_by_id['hip_camera'].accelerator[0] + System._browser.translation.get('XR_Animator.UI.UI_options.miscellaneous_options.hotkey.hip_camera'),
+      ]).map((label, i)=> (i+1) + '. ' + label),
   'G. ' + System._browser.translation.get('XR_Animator.UI.UI_options.miscellaneous_options.hotkey.global_hotkey_mode') + '🌐: ' + ((System._browser.hotkeys.is_global) ? 'ON' : 'OFF'),
   'X. ' + System._browser.translation.get('Misc.done'),
 ].join('\n');
@@ -570,10 +639,10 @@ if (!hotkey_combo) {
           '[XR Animator] Settings actions module unavailable'
         ),
 
-        ...loadModuleEvents(
+        ...((MMD_SA_options.interaction_animation_disabled) ? [] : loadModuleEvents(
           'images/XR Animator/modules/gamepad-control-menu.js',
           'XR_Animator_GamepadControlMenu'
-        ),
+        )),
       ];
     },
   }

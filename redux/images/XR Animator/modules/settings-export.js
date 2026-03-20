@@ -4,6 +4,14 @@
 
   window.XR_Animator_SettingsExport = {
     build: function (MMD_SA_options) {
+function XRA_dungeon() {
+  return XRA_DungeonCompat();
+}
+
+function XRA_dungeonOptions() {
+  return XRA_DungeonOptionsCompat();
+}
+
 function custom_motion() {
   const cm = (webkit_electron_mode) ? MMD_SA_options._XRA_pose_list[0].filter(m=>m.is_custom_motion).map(m=>m.path) : [];
   return cm.slice(Math.max(cm.length-10,0));
@@ -140,23 +148,26 @@ config.hotkeys = {
 };
 config.VRM_joint_stiffness_percent = MMD_SA.THREEX.VRM.joint_stiffness_percent;
 config.camera_auto_zoom_percent = MMD_SA_options._camera_auto_zoom_percent;
-config.audio_visualizer = MMD_SA_options.use_CircularSpectrum;
+config.audio_visualizer = (MMD_SA_options.interaction_animation_disabled) ? false : MMD_SA_options.use_CircularSpectrum;
 
 for (const p of ['camera_face_locking', 'camera_face_locking_percent', 'camera_face_locking_look_at_target_percent', 'camera_face_locking_movement_x_percent', 'camera_face_locking_movement_y_percent', 'camera_face_locking_movement_z_percent', 'camera_face_locking_z_min', 'camera_face_locking_vertical_constraint_percent', 'camera_face_locking_smooth_time']) {
   config[p] = MMD_SA_options[p];
 }
 
-config.image_input_handler_as_wallpaper = !!MMD_SA_options.image_input_handler_as_wallpaper;
+config.image_input_handler_as_wallpaper = (MMD_SA_options.interaction_animation_disabled) ? false : !!MMD_SA_options.image_input_handler_as_wallpaper;
 const wallpaper_3d_config = {};
 for (const p of MMD_SA.Wallpaper3D.options_to_save) {
   wallpaper_3d_config[p] = MMD_SA.Wallpaper3D.options_general[p];
+}
+if (MMD_SA_options.interaction_animation_disabled) {
+  wallpaper_3d_config.enabled = false;
 }
 config.wallpaper_3d = wallpaper_3d_config;
 
 config.shoulder_adjust = MMD_SA.THREEX.shoulder_adjust;
 
-config.selfie_mode = MMD_SA_options.Dungeon_options.item_base.hand_camera.selfie_mode;
-config.hand_camera_fov = MMD_SA_options.Dungeon_options.item_base.hand_camera.fov;
+config.selfie_mode = (MMD_SA_options.interaction_animation_disabled) ? false : XRA_dungeonOptions().item_base.hand_camera.selfie_mode;
+config.hand_camera_fov = XRA_dungeonOptions().item_base.hand_camera.fov;
 
 const vc = System._browser.video_capture;
 config.video_capture = {
@@ -166,7 +177,7 @@ config.video_capture = {
   target_mime_type: vc.target_mime_type,
 };
 
-config.UI_muted = MMD_SA_options.Dungeon.inventory.UI._muted;
+config.UI_muted = XRA_dungeon().inventory.UI._muted;
 
 config.language = (System._browser.translation.language && (System._browser.translation.language_full != System._browser.translation.language_default)) ? System._browser.translation.language : null;
 

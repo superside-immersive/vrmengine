@@ -1,6 +1,14 @@
 // motion-para-part3.js — Motion parameters: walking, stand/sit IIFEs
 // Extracted from animate.js lines 1448-2090
 (function () {
+  function XRA_dungeon() {
+    return XRA_DungeonCompat();
+  }
+
+  function XRA_dungeonOptions() {
+    return XRA_DungeonOptionsCompat();
+  }
+
   Object.assign(MMD_SA_options.motion_para, {
     "モブ歩き男80f": {
   look_at_screen: false,
@@ -42,7 +50,7 @@
  ,trackball_camera_limit: { "min": { length:8 } }
 
  ,motion_tracking_enabled: true
- ,get motion_tracking_upper_body_only() { return this.center_view_enforced || !MMD_SA_options.Dungeon_options.character_movement_disabled; }
+ ,get motion_tracking_upper_body_only() { return this.center_view_enforced || !XRA_dungeonOptions().character_movement_disabled; }
 
  ,camera_auto_adjust: false
  ,get camera_auto_adjust_fov() { return !!this.center_view_enforced; }
@@ -70,7 +78,7 @@ if (this.center_view_enforced) {
   let f_fov = 0.93261531630999718566001238959912;//2 * Math.tan(Math.PI/180 * MMD_SA.THREEX.camera.obj.fov / 2);
   let d = height_ref / f_fov;
 //DEBUG_show(d+'/'+neck_y);
-  let cz = -(cb[2] - Math.max(d*1.7, 10)) * MMD_SA_options.Dungeon_options.camera_position_z_sign;
+  let cz = -(cb[2] - Math.max(d*1.7, 10)) * XRA_dungeonOptions().camera_position_z_sign;
 
   center_view = [0, (neck_y-cb[1]), cz];
 //DEBUG_show(Date.now()+'\n'+cz)
@@ -229,7 +237,7 @@ MMD_SA.WebXR.ground_plane.visible = _ground_plane_visible
 
 jThree.MMD.groundLevel = 0
 
-MMD_SA_options.Dungeon.character.hp_add(9999)
+XRA_dungeon().character.hp_add(9999)
   }
 
  ,onplaying: function () {
@@ -278,7 +286,7 @@ var weight = model_speed.length()/5
 var score = Math.min((Math.abs(model_speed.y)*3+Math.abs(model_speed.x)+Math.abs(model_speed.z))/20, 1)
 var damage = (score > 0.5) ? -score : 0.1
 
-MMD_SA_options.Dungeon.character.hp_add(damage, function (c) {
+XRA_dungeon().character.hp_add(damage, function (c) {
   var time_diff = (RAF_timestamp - timestamp) / 1000
   if (c.hp == 0) {
     orgy_cooling = 1

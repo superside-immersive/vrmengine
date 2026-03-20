@@ -135,9 +135,9 @@ return obj;
   }
 
 // Kiss
-  if (!MMD_SA_options.MMD_disabled && MMD_SA_options.allows_kissing && (MMD_SA_options.custom_action.indexOf("kissing") == -1))
+  if (!MMD_SA_options.interaction_animation_disabled && !MMD_SA_options.MMD_disabled && MMD_SA_options.allows_kissing && (MMD_SA_options.custom_action.indexOf("kissing") == -1))
     MMD_SA_options.custom_action.push("kissing")
-  if (MMD_SA_options.custom_action.indexOf("kissing") != -1) {
+  if (!MMD_SA_options.interaction_animation_disabled && (MMD_SA_options.custom_action.indexOf("kissing") != -1)) {
     MMD_SA_options.mesh_obj_preload_list.push({ id:'KissMESH', create:function () {
 const THREE = MMD_SA.THREEX.THREE;
 

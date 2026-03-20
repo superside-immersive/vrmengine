@@ -1,8 +1,12 @@
 // events-default-base.js — events_default: SELFIE, ENTER_AR, FACEMESH, VMC, RECORDER
 // Extracted from animate.js
 (function () {
-  if (!MMD_SA_options.Dungeon_options) return;
-  Object.assign(MMD_SA_options.Dungeon_options.events_default, {
+  function XRA_dungeonOptions() {
+    return XRA_DungeonOptionsCompat();
+  }
+
+  if (!XRA_dungeonOptions()) return;
+  Object.assign(XRA_dungeonOptions().events_default, {
     "_SELFIE_": [
 //0
       [
@@ -75,7 +79,7 @@ options = {
  ,branch_list: [
     { key:1, branch_index:4,
       onmouseover: function (e) {
-MMD_SA_options.Dungeon.utils.tooltip(
+XRA_tooltip(
   e.clientX, e.clientY,
   System._browser.translation.get('XR_Animator.UI.webcam_media.options.resolution_limit.tooltip')
 );
@@ -90,7 +94,7 @@ if (options.portrait_mode)
   
       }, goto_event: { branch_index:3, step:1 } },
       onmouseover: function (e) {
-MMD_SA_options.Dungeon.utils.tooltip(
+XRA_tooltip(
   e.clientX, e.clientY,
   System._browser.translation.get('XR_Animator.UI.webcam_media.options.portrait_mode.tooltip')
 );
@@ -98,7 +102,7 @@ MMD_SA_options.Dungeon.utils.tooltip(
     },
     { key:3, branch_index:5,
       onmouseover: function (e) {
-MMD_SA_options.Dungeon.utils.tooltip(
+XRA_tooltip(
   e.clientX, e.clientY,
   System._browser.translation.get('XR_Animator.UI.webcam_media.options.frame_rate.tooltip')
 );
@@ -215,7 +219,7 @@ return [
    ,{ key:4, branch_index:4 }
    ,{ key:5, branch_index:5,
       onmouseover: function (e) {
-MMD_SA_options.Dungeon.utils.tooltip(
+XRA_tooltip(
   e.clientX, e.clientY,
   System._browser.translation.get('XR_Animator.UI.motion_capture.ML_off.full_body_mediapipe_vision.tooltip')
 );
@@ -223,7 +227,7 @@ MMD_SA_options.Dungeon.utils.tooltip(
     }
    ,{ key:6, branch_index:6,
       onmouseover: function (e) {
-MMD_SA_options.Dungeon.utils.tooltip(
+XRA_tooltip(
   e.clientX, e.clientY,
   System._browser.translation.get('XR_Animator.UI.motion_capture.ML_off.full_body_legacy_holistic.tooltip')
 );
@@ -308,7 +312,7 @@ if (/(\+|\-)/.test(e.key) && (VMC_receiver_index != -1)) {
   step = (e.key == '+') ? 1 : -1;
   System._browser.camera.VMC_receiver.config.prop_mocap_factor_percent = THREE.Math.clamp(System._browser.camera.VMC_receiver.config.prop_mocap_factor_percent + step, 0,100);
 
-  MMD_SA_options.Dungeon.run_event(null,branch_to_return,0);
+  XRA_runEvent(null,branch_to_return,0);
 }
 else if (/Arrow(Left|Right)/.test(e.code) && (VMC_receiver_index != -1)) {
   step = (e.code == 'ArrowLeft') ? -1 : 1;
@@ -320,13 +324,13 @@ else if (/Arrow(Left|Right)/.test(e.code) && (VMC_receiver_index != -1)) {
     VMC_receiver_index = 0;
   }
 
-  MMD_SA_options.Dungeon.run_event(null,branch_to_return,0);
+  XRA_runEvent(null,branch_to_return,0);
 }
 else if (change_port) {
   if (/^\d$/.test(e.key)) {
     if (port.length == 5) port = '';
     port += e.key;
-    MMD_SA_options.Dungeon.run_event(null,null,0);
+    XRA_runEvent(null,null,0);
   }
   else if (e.key == 'Enter') {
     const port_number = parseInt(port);
@@ -349,7 +353,7 @@ else if (change_port) {
     if (port_used[port]) {
       msg = '(❌' + 'port already used/reserved' + ')';
       port = '';
-      MMD_SA_options.Dungeon.run_event(null,null,0);
+      XRA_runEvent(null,null,0);
     }
     else if ((port_number > port_min) && (port_number < 65536)) {
       if (VMC_receiver_index == -1) {
@@ -373,22 +377,22 @@ else if (change_port) {
         }
       }
 
-      MMD_SA_options.Dungeon.run_event(null,branch_to_return,0);
+      XRA_runEvent(null,branch_to_return,0);
     }
     else {
       msg = (port_number) ? ((port_number <= port_min) ? '(❌' + System._browser.translation.get('XR_Animator.UI.VMC_protocol.port.3_digit_number_at_least') + ')' : '(❌' + System._browser.translation.get('XR_Animator.UI.VMC_protocol.port.no_bigger_than_65535') + ')') : '(❌' + System._browser.translation.get('XR_Animator.UI.VMC_protocol.port.invalid_port_number') + ')';
       port = '';
-      MMD_SA_options.Dungeon.run_event(null,null,0);
+      XRA_runEvent(null,null,0);
     }
   }
   else if (e.code == 'KeyR') {
     port = (VMC_receiver_index == -1) ? MMD_SA.OSC.VMC.options_default.plugin.send.port : System._browser.camera.VMC_receiver.options.receiver[VMC_receiver_index].port_default;
     msg = '';
-    MMD_SA_options.Dungeon.run_event(null,null,0);
+    XRA_runEvent(null,null,0);
   }
   else if (e.code == 'Escape') {
     port = '';
-    MMD_SA_options.Dungeon.run_event(null,branch_to_return,0);
+    XRA_runEvent(null,branch_to_return,0);
   }
   else {
     cancel_default = false;
@@ -397,7 +401,7 @@ else if (change_port) {
 else if (change_host) {
   if (/^[\d\.]$/.test(e.key)) {
     host += e.key;
-    MMD_SA_options.Dungeon.run_event(null,null,0);
+    XRA_runEvent(null,null,0);
   }
   else if (e.key == 'Enter') {
     let valid_host;
@@ -413,22 +417,22 @@ else if (change_host) {
       if (MMD_SA.OSC.VMC.plugin)
         MMD_SA.OSC.VMC.plugin.options.send.host = host;
 
-      MMD_SA_options.Dungeon.run_event(null,0,0);
+      XRA_runEvent(null,0,0);
     }
     else {
       msg = '(❌' + System._browser.translation.get('XR_Animator.UI.VMC_protocol.host.invalid_IP_address') + ')';
       host = '';
-      MMD_SA_options.Dungeon.run_event(null,null,0);
+      XRA_runEvent(null,null,0);
     }
   }
   else if (e.code == 'KeyR') {
     host = MMD_SA.OSC.VMC.options_default.plugin.send.host;
     msg = '';
-    MMD_SA_options.Dungeon.run_event(null,null,0);
+    XRA_runEvent(null,null,0);
   }
   else if (e.code == 'Escape') {
     host = '';
-    MMD_SA_options.Dungeon.run_event(null,0,0);
+    XRA_runEvent(null,0,0);
   }
   else {
     cancel_default = false;
@@ -447,7 +451,7 @@ const branch_list = [
   { key:'B', branch_index:2 },
   { key:1, event_id:{ func:()=>{ MMD_SA.OSC.VMC.sender_enabled   = MMD_SA_options.user_camera.streamer_mode.VMC_sender_enabled   = !MMD_SA.OSC.VMC.sender_enabled; System._browser.update_tray(); }, goto_event: { id:"_VMC_PROTOCOL_", branch_index:0 } },
     onmouseover: function (e) {
-MMD_SA_options.Dungeon.utils.tooltip(
+XRA_tooltip(
   e.clientX, e.clientY,
   System._browser.translation.get('XR_Animator.UI.VMC_protocol.tooltip')
 );
@@ -455,7 +459,7 @@ MMD_SA_options.Dungeon.utils.tooltip(
   },
   { key:2, event_id:{ func:()=>{ MMD_SA.OSC.VMC.send_camera_data = MMD_SA_options.user_camera.streamer_mode.VMC_send_camera_data = !MMD_SA.OSC.VMC.send_camera_data; System._browser.update_tray(); }, goto_event: { id:"_VMC_PROTOCOL_", branch_index:0 } },
     onmouseover: function (e) {
-MMD_SA_options.Dungeon.utils.tooltip(
+XRA_tooltip(
   e.clientX, e.clientY,
   System._browser.translation.get('XR_Animator.UI.VMC_protocol.send_camera_data.tooltip')
 );
@@ -478,7 +482,7 @@ MMD_SA.OSC.app_mode = app_mode[app_index];
 System._browser.update_tray();
     }, goto_event: { id:"_VMC_PROTOCOL_", branch_index:0 } },
     onmouseover: function (e) {
-MMD_SA_options.Dungeon.utils.tooltip(
+XRA_tooltip(
   e.clientX, e.clientY,
   System._browser.translation.get('XR_Animator.UI.VMC_protocol.app_mode.tooltip')
 );
@@ -486,7 +490,7 @@ MMD_SA_options.Dungeon.utils.tooltip(
   },
   { key:4, event_id:{ func:()=>{ MMD_SA.hide_3D_avatar=!MMD_SA.hide_3D_avatar; System._browser.update_tray(); }, goto_event: { id:"_VMC_PROTOCOL_", branch_index:0 } },
     onmouseover: function (e) {
-MMD_SA_options.Dungeon.utils.tooltip(
+XRA_tooltip(
   e.clientX, e.clientY,
   System._browser.translation.get('XR_Animator.UI.VMC_protocol.3D_avatar_display.tooltip')
 );
@@ -495,7 +499,7 @@ MMD_SA_options.Dungeon.utils.tooltip(
   { key:5, func:()=>{ VMC_receiver_index=0; },
     branch_index:3,
     onmouseover: function (e) {
-MMD_SA_options.Dungeon.utils.tooltip(
+XRA_tooltip(
   e.clientX, e.clientY,
   System._browser.translation.get('XR_Animator.UI.VMC_protocol.VMC_receiver_options.tooltip')
 );
@@ -508,7 +512,7 @@ const branch_list_VMC_receiver = [
   key_any,
   { key:1, branch_index:3,
     onmouseover: function (e) {
-MMD_SA_options.Dungeon.utils.tooltip(
+XRA_tooltip(
   e.clientX, e.clientY,
   System._browser.translation.get('XR_Animator.UI.VMC_protocol.VMC_receiver_options.VMC_receiver.tooltip')
 );
@@ -530,7 +534,7 @@ else {
     },
     branch_index:3,
     onmouseover: function (e) {
-MMD_SA_options.Dungeon.utils.tooltip(
+XRA_tooltip(
   e.clientX, e.clientY,
   System._browser.translation.get('XR_Animator.UI.VMC_protocol.VMC_receiver_options.status.tooltip')
 );
@@ -549,7 +553,7 @@ if (r.enabled) r.reset();
     },
     branch_index:3,
     onmouseover: function (e) {
-MMD_SA_options.Dungeon.utils.tooltip(
+XRA_tooltip(
   e.clientX, e.clientY,
   System._browser.translation.get('XR_Animator.UI.VMC_protocol.VMC_receiver_options.face.tooltip')
 );
@@ -567,7 +571,7 @@ if (r.enabled) r.reset();
     },
     branch_index:3,
     onmouseover: function (e) {
-MMD_SA_options.Dungeon.utils.tooltip(
+XRA_tooltip(
   e.clientX, e.clientY,
   System._browser.translation.get('XR_Animator.UI.VMC_protocol.VMC_receiver_options.pose.tooltip')
 );
@@ -585,7 +589,7 @@ if (r.enabled) r.reset();
     },
     branch_index:3,
     onmouseover: function (e) {
-MMD_SA_options.Dungeon.utils.tooltip(
+XRA_tooltip(
   e.clientX, e.clientY,
   System._browser.translation.get('XR_Animator.UI.VMC_protocol.VMC_receiver_options.hand.tooltip')
 );
@@ -599,7 +603,7 @@ R.reset();
     },
     branch_index:3,
     onmouseover: function (e) {
-MMD_SA_options.Dungeon.utils.tooltip(
+XRA_tooltip(
   e.clientX, e.clientY,
   System._browser.translation.get('XR_Animator.UI.VMC_protocol.VMC_receiver_options.mocap_expression_constraint.tooltip')
 );
@@ -613,7 +617,7 @@ R.reset();
     },
     branch_index:3,
     onmouseover: function (e) {
-MMD_SA_options.Dungeon.utils.tooltip(
+XRA_tooltip(
   e.clientX, e.clientY,
   System._browser.translation.get('XR_Animator.UI.VMC_protocol.VMC_receiver_options.mocap_head_constraint.tooltip')
 );
@@ -627,7 +631,7 @@ R.reset();
     },
     branch_index:3,
     onmouseover: function (e) {
-MMD_SA_options.Dungeon.utils.tooltip(
+XRA_tooltip(
   e.clientX, e.clientY,
   System._browser.translation.get('XR_Animator.UI.VMC_protocol.VMC_receiver_options.mocap_wrist_constraint.tooltip')
 );
@@ -635,7 +639,7 @@ MMD_SA_options.Dungeon.utils.tooltip(
   },
   { key:'D', branch_index:3,
     onmouseover: function (e) {
-MMD_SA_options.Dungeon.utils.tooltip(
+XRA_tooltip(
   e.clientX, e.clientY,
   System._browser.translation.get('XR_Animator.UI.VMC_protocol.VMC_receiver_options.prop_mocap_factor.tooltip')
 );
@@ -660,7 +664,7 @@ let VMC_status_countdown = 60;
 function update_VMC_status() {
   if ((VMC_receiver_index != -1) && !change_port && (--VMC_status_countdown == 0)) {
     VMC_status_countdown = 60;
-    MMD_SA_options.Dungeon.run_event(null,3,0);
+    XRA_runEvent(null,3,0);
   }
 }
 

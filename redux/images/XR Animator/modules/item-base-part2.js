@@ -1,17 +1,34 @@
 // item-base-part2.js — Item base entries: selfie, facemesh, baseball, hand_camera
 // Extracted from animate.js
 (function () {
-  if (!MMD_SA_options.Dungeon_options) return;
-  Object.assign(MMD_SA_options.Dungeon_options.item_base, {
+  function XRA_dungeon() {
+    return XRA_DungeonCompat();
+  }
+
+  function XRA_dungeonOptions() {
+    return XRA_DungeonOptionsCompat();
+  }
+
+  function XRA_inventory() {
+    return XRA_dungeon().inventory;
+  }
+
+  if (!XRA_dungeonOptions()) return;
+  Object.assign(XRA_dungeonOptions().item_base, {
     "selfie" : {
   icon_path: Settings.f_path + '/assets/assets.zip#/icon/' + ((is_mobile) ? 'selfie_64x64.png' : 'webcamera_64x64.png')
  ,get info_short() { return System._browser.translation.get('XR_Animator.UI.webcam_media.info_short.' + ((is_mobile) ? 'selfie_camera' : 'webcam_media')); }
 // ,is_base_inventory: true
  ,stock_max: 1
- ,stock_default: 1
+   ,stock_default: (MMD_SA_options.interaction_animation_disabled) ? 0 : 1
 
  ,action: {
     func: function (item) {
+  if (MMD_SA_options.interaction_animation_disabled) {
+    DEBUG_show('(Webcam/selfie shortcut removed in this build.)', 4);
+    return true;
+  }
+
 if (System._browser.camera.streamer_mode.running) return true;
 
 if (MMD_SA.WebXR.session && !MMD_SA.WebXR.user_camera.initialized) {
@@ -20,8 +37,7 @@ if (MMD_SA.WebXR.session && !MMD_SA.WebXR.user_camera.initialized) {
 }
 
 if (!MMD_SA.WebXR.user_camera.initialized || !MMD_SA.WebXR.user_camera.visible) {
-//  if (MMD_SA_options.Dungeon.inventory.action_disabled) return true
-  MMD_SA_options.Dungeon.run_event("_SELFIE_",0)
+  XRA_runEvent("_SELFIE_",0)
 }
 else {
   MMD_SA.WebXR.user_camera.start()
@@ -117,10 +133,10 @@ if (System._browser.camera.motion_recorder.speed) {
   System._browser.camera.motion_recorder.speed = 0
 }
 else if (!MMD_SA.WebXR.user_camera.ML_enabled) {
-  MMD_SA_options.Dungeon.run_event("_FACEMESH_",0)
+  XRA_runEvent("_FACEMESH_",0)
 }
 else  {
-  MMD_SA_options.Dungeon.run_event("_FACEMESH_OPTIONS_",0)
+  XRA_runEvent("_FACEMESH_OPTIONS_",0)
 }
     }
 //   ,anytime: true
@@ -173,19 +189,21 @@ v3b = new THREE.Vector3()
  ,info_short: "Baseball catcher"
 // ,is_base_inventory: true
 
- ,get index_default() { return (is_mobile) ? 5 : (MMD_SA_options.Dungeon.inventory.max_base+MMD_SA_options.Dungeon.inventory.max_base*(MMD_SA_options.Dungeon.inventory.max_row-1))+1; }
-// ,get index_default() { return (is_mobile) ? undefined : MMD_SA_options.Dungeon.inventory.max_base+1; }
+   ,get index_default() { return (is_mobile) ? 5 : (XRA_inventory().max_base+XRA_inventory().max_base*(XRA_inventory().max_row-1))+1; }
 
  ,stock_max: 1
- ,stock_default: 1
+   ,stock_default: (MMD_SA_options.interaction_animation_disabled) ? 0 : 1
 
  ,action: {
     func: function (item) {
+  if (MMD_SA_options.interaction_animation_disabled)
+    return true
+
 var model_mesh = THREE.MMD.getModels()[0].mesh
 if (!model_mesh.visible)
   return true
 
-var d = MMD_SA_options.Dungeon
+var d = XRA_dungeon()
 if (d.event_mode && !baseball_started)
   return true
 
@@ -199,7 +217,7 @@ if (baseball_started) {
 
 if (!MMD_SA_options._XRA_pose_list[0].some(p=>p.name == MMD_SA.MMD.motionManager.filename))
   return true
-if (MMD_SA_options.Dungeon_options.item_base.social_distancing._started)
+if (XRA_dungeonOptions().item_base.social_distancing._started)
   return
 
 baseball_started = true
@@ -246,7 +264,7 @@ MMD_SA._force_motion_shuffle = true
 
    ,_ball_fly: function () {
 var mesh = THREE.MMD.getModels()[0].mesh
-var obj = MMD_SA_options.Dungeon.object_base_list[0].object_list[0]._obj
+var obj = XRA_dungeon().object_base_list[0].object_list[0]._obj
 
 if (!this._ball_para) {
   let pos_ini = obj.position.clone()
@@ -333,8 +351,8 @@ if (c_to_ball > c_to_camera) {
 */
     para.scale *= 0.1;
     para.scale *= 1.5;
-    MMD_SA_options.Dungeon.sprite.animate(para.name, para)
-    MMD_SA_options.Dungeon.sound.audio_object_by_name["hit-1"].play()
+    XRA_dungeon().sprite.animate(para.name, para)
+    XRA_dungeon().sound.audio_object_by_name["hit-1"].play()
   }
 }
 
@@ -347,7 +365,7 @@ if (!baseball_started)
   return
 baseball_started = false
 
-MMD_SA_options.Dungeon._states.event_mode_locked = false
+XRA_dungeon()._states.event_mode_locked = false
 
 this.action._ball_para = null
 
@@ -444,10 +462,10 @@ if (MMD_SA.THREEX.enabled) {
     camera.near = 0.1;
     camera.updateProjectionMatrix();
   }
-  if (MMD_SA_options.Dungeon.no_camera_collision !== true) {
+  if (XRA_dungeon().no_camera_collision !== true) {
 // convert to non-null boolean
-    no_camera_collision = !!MMD_SA_options.Dungeon.no_camera_collision;
-    MMD_SA_options.Dungeon.no_camera_collision = true;
+    no_camera_collision = !!XRA_dungeon().no_camera_collision;
+    XRA_dungeon().no_camera_collision = true;
   }
   avatar_visible_distance = MMD_SA_options.avatar_visible_distance;
   MMD_SA_options.avatar_visible_distance = 1;
@@ -544,7 +562,7 @@ if (MMD_SA.THREEX.enabled) {
     camera_near_last = null;
   }
   if (no_camera_collision != null) {
-    MMD_SA_options.Dungeon.no_camera_collision = no_camera_collision;
+    XRA_dungeon().no_camera_collision = no_camera_collision;
     no_camera_collision = null;
   }
   MMD_SA_options.avatar_visible_distance = avatar_visible_distance;
@@ -608,13 +626,12 @@ window.addEventListener('SA_MMD_before_render', ()=>{
 // ,is_base_inventory: true
 
  ,get index_default() { return (is_mobile) ? undefined : 6; }
-// ,get index_default() { return (is_mobile) ? undefined : (browser_native_mode) ? 4 : 6;}//MMD_SA_options.Dungeon.inventory.max_base+4; }
 
  ,stock_max: 1
- ,stock_default: 1
+ ,get stock_default() { return (MMD_SA_options.interaction_animation_disabled) ? 0 : 1; }
 
  ,get selfie_mode() { return selfie_mode; }
- ,set selfie_mode(v) { selfie_mode = v; }
+ ,set selfie_mode(v) { selfie_mode = (MMD_SA_options.interaction_animation_disabled) ? false : v; }
 
  ,get _hand_camera_enabled() { return hand_camera_enabled; }
  ,get _hand_camera_active() { return hand_camera_enabled && hand_camera_active; }
@@ -622,6 +639,12 @@ window.addEventListener('SA_MMD_before_render', ()=>{
 
  ,action: {
     func: function (item) {
+if (MMD_SA_options.interaction_animation_disabled) {
+  if (hand_camera_enabled)
+    disable_hand_camera();
+  DEBUG_show('(Hand camera removed in this build.)', 4);
+  return true;
+}
 const c = System._browser.camera;
 if (!c.poseNet.pose_enabled && !c.VMC_receiver.pose_enabled) {
   DEBUG_show('(For mocap mode only)', 3);

@@ -33,9 +33,8 @@ if (!self.System) {
   use_SA_system_emulation = true
   SA.loader.loadScriptSync('js/SA_system_emulation.min.js')
 }
-if (WallpaperEngine_CEF_mode && !browser_native_mode) {
-  SA.loader.loadScriptSync('js/settings_WE.js')
-}
+// [REDUCED BUILD] settings_WE.js is quarantined. Keep the shared empty
+// Settings_WE object instead of trying to load the legacy Wallpaper Engine file.
 
 var path_demo, path_demo_by_url
 var SA_startup_context

@@ -132,13 +132,13 @@ else {
   return false;
 }
 
-MMD_SA_options.Dungeon.run_event(null,facemesh_options_branch,0);
+XRA_runEvent(null,facemesh_options_branch,0);
 return true;
       }
     },
     { key:1, branch_index:facemesh_options_branch+2,
       onmouseover: function (e) {
-MMD_SA_options.Dungeon.utils.tooltip(
+XRA_tooltip(
   e.clientX, e.clientY,
   System._browser.translation.get('XR_Animator.UI.motion_capture.mocap_options.face_tracking_options.eye_tracking.tooltip')
 );
@@ -146,7 +146,7 @@ MMD_SA_options.Dungeon.utils.tooltip(
     },
     { key:2, branch_index:facemesh_options_branch+1,
       onmouseover: function (e) {
-MMD_SA_options.Dungeon.utils.tooltip(
+XRA_tooltip(
   e.clientX, e.clientY,
   System._browser.translation.get('XR_Animator.UI.motion_capture.mocap_options.face_tracking_options.blink_LR_sync.tooltip')
 );
@@ -159,7 +159,7 @@ if (System._browser.camera.facemesh.eye_tracking) {
 }
       }, goto_branch:facemesh_options_branch },
       onmouseover: function (e) {
-MMD_SA_options.Dungeon.utils.tooltip(
+XRA_tooltip(
   e.clientX, e.clientY,
   System._browser.translation.get('XR_Animator.UI.motion_capture.mocap_options.face_tracking_options.blink_clarity.tooltip')
 );
@@ -167,7 +167,7 @@ MMD_SA_options.Dungeon.utils.tooltip(
     },
     { key:4, event_id:{ func:()=>{ System._browser.camera.facemesh.auto_blink = !System._browser.camera.facemesh.auto_blink; }, goto_branch:facemesh_options_branch },
       onmouseover: function (e) {
-MMD_SA_options.Dungeon.utils.tooltip(
+XRA_tooltip(
   e.clientX, e.clientY,
   System._browser.translation.get('XR_Animator.UI.motion_capture.mocap_options.face_tracking_options.auto_blink.tooltip')
 );
@@ -175,7 +175,7 @@ MMD_SA_options.Dungeon.utils.tooltip(
     },
     { key:5, event_id:{ func:()=>{}, goto_branch:facemesh_options_branch },
       onmouseover: function (e) {
-MMD_SA_options.Dungeon.utils.tooltip(
+XRA_tooltip(
   e.clientX, e.clientY,
   System._browser.translation.get('XR_Animator.UI.motion_capture.mocap_options.face_tracking_options.eye_bone_rotation.tooltip')
 );
@@ -188,7 +188,7 @@ page_index = (page_index == 2) ? 3 : 2;
         goto_branch:facemesh_options_branch,
       },
       onmouseover: function (e) {
-MMD_SA_options.Dungeon.utils.tooltip(
+XRA_tooltip(
   e.clientX, e.clientY,
   System._browser.translation.get('XR_Animator.UI.motion_capture.mocap_options.face_tracking_options.emotion_tracking_options.tooltip')
 );
@@ -202,7 +202,7 @@ if (System._browser.camera.facemesh.enabled && System._browser.camera.video) {
         goto_branch:facemesh_options_branch,
       },
       onmouseover: function (e) {
-MMD_SA_options.Dungeon.utils.tooltip(
+XRA_tooltip(
   e.clientX, e.clientY,
   System._browser.translation.get('XR_Animator.UI.motion_capture.mocap_options.face_tracking_options.calibration_options.tooltip')
 );
@@ -272,8 +272,8 @@ option_active = 'General weighting';
     },
     sb_index: 1,
     onmouseover: function (e) {
-MMD_SA_options.Dungeon.run_event(this.event_id);
-MMD_SA_options.Dungeon.utils.tooltip(
+XRA_runEvent(this.event_id);
+XRA_tooltip(
   e.clientX, e.clientY,
   System._browser.translation.get('XR_Animator.UI.motion_capture.mocap_options.face_tracking_options.emotion_tracking_options.general_weighting') + ((option_active=='General weighting')?' (' + System._browser.translation.get('XR_Animator.UI.motion_capture.mocap_options.face_tracking_options.emotion_tracking_options.press_to_change_value.short') + ')':'') + ':\n' + System._browser.translation.get('XR_Animator.UI.motion_capture.mocap_options.face_tracking_options.emotion_tracking_options.general_weighting.tooltip')
 );
@@ -287,8 +287,8 @@ option_active = 'Joy/Fun';
     },
     sb_index: 1,
     onmouseover: function (e) {
-MMD_SA_options.Dungeon.run_event(this.event_id);
-MMD_SA_options.Dungeon.utils.tooltip(
+XRA_runEvent(this.event_id);
+XRA_tooltip(
   e.clientX, e.clientY,
   System._browser.translation.get('XR_Animator.UI.motion_capture.mocap_options.face_tracking_options.emotion_tracking_options.joy_fun') + ((option_active=='Joy/Fun')?' (' + System._browser.translation.get('XR_Animator.UI.motion_capture.mocap_options.face_tracking_options.emotion_tracking_options.press_to_change_value.short') + ')':'') + ':\n' + System._browser.translation.get('XR_Animator.UI.motion_capture.mocap_options.face_tracking_options.emotion_tracking_options.joy_fun.tooltip')
 );
@@ -302,8 +302,8 @@ option_active = 'Angry';
     },
     sb_index: 1,
     onmouseover: function (e) {
-MMD_SA_options.Dungeon.run_event(this.event_id);
-MMD_SA_options.Dungeon.utils.tooltip(
+XRA_runEvent(this.event_id);
+XRA_tooltip(
   e.clientX, e.clientY,
   System._browser.translation.get('XR_Animator.UI.motion_capture.mocap_options.face_tracking_options.emotion_tracking_options.angry') + ((option_active=='Angry')?' (' + System._browser.translation.get('XR_Animator.UI.motion_capture.mocap_options.face_tracking_options.emotion_tracking_options.press_to_change_value.short') + ')':'') + ':\n' + System._browser.translation.get('XR_Animator.UI.motion_capture.mocap_options.face_tracking_options.emotion_tracking_options.angry.tooltip')
 );
@@ -317,8 +317,8 @@ option_active = 'Sorrow';
     },
     sb_index: 1,
     onmouseover: function (e) {
-MMD_SA_options.Dungeon.run_event(this.event_id);
-MMD_SA_options.Dungeon.utils.tooltip(
+XRA_runEvent(this.event_id);
+XRA_tooltip(
   e.clientX, e.clientY,
   System._browser.translation.get('XR_Animator.UI.motion_capture.mocap_options.face_tracking_options.emotion_tracking_options.sorrow') + ((option_active=='Sorrow')?' (' + System._browser.translation.get('XR_Animator.UI.motion_capture.mocap_options.face_tracking_options.emotion_tracking_options.press_to_change_value.short') + ')':'') + ':\n' + System._browser.translation.get('XR_Animator.UI.motion_capture.mocap_options.face_tracking_options.emotion_tracking_options.sorrow.tooltip')
 );
@@ -332,8 +332,8 @@ option_active = 'Surprised';
     },
     sb_index: 1,
     onmouseover: function (e) {
-MMD_SA_options.Dungeon.run_event(this.event_id);
-MMD_SA_options.Dungeon.utils.tooltip(
+XRA_runEvent(this.event_id);
+XRA_tooltip(
   e.clientX, e.clientY,
   System._browser.translation.get('XR_Animator.UI.motion_capture.mocap_options.face_tracking_options.emotion_tracking_options.surprised') + ((option_active=='Surprised')?' (' + System._browser.translation.get('XR_Animator.UI.motion_capture.mocap_options.face_tracking_options.emotion_tracking_options.press_to_change_value.short') + ')':'') + ':\n' + System._browser.translation.get('XR_Animator.UI.motion_capture.mocap_options.face_tracking_options.emotion_tracking_options.surprised.tooltip')
 );
@@ -347,8 +347,8 @@ option_active = 'Tongue out';
     },
     sb_index: 1,
     onmouseover: function (e) {
-MMD_SA_options.Dungeon.run_event(this.event_id);
-MMD_SA_options.Dungeon.utils.tooltip(
+XRA_runEvent(this.event_id);
+XRA_tooltip(
   e.clientX, e.clientY,
   System._browser.translation.get('XR_Animator.UI.motion_capture.mocap_options.face_tracking_options.emotion_tracking_options.tongue_out') + ((option_active=='Tongue out')?' (' + System._browser.translation.get('XR_Animator.UI.motion_capture.mocap_options.face_tracking_options.emotion_tracking_options.press_to_change_value.short') + ')':'') + ':\n' + System._browser.translation.get('XR_Animator.UI.motion_capture.mocap_options.face_tracking_options.emotion_tracking_options.tongue_out.tooltip')
 );
@@ -362,8 +362,8 @@ option_active = 'Others';
     },
     sb_index: 1,
     onmouseover: function (e) {
-MMD_SA_options.Dungeon.run_event(this.event_id);
-MMD_SA_options.Dungeon.utils.tooltip(
+XRA_runEvent(this.event_id);
+XRA_tooltip(
   e.clientX, e.clientY,
   System._browser.translation.get('Misc.others') + ((option_active=='Others')?' (' + System._browser.translation.get('XR_Animator.UI.motion_capture.mocap_options.face_tracking_options.emotion_tracking_options.press_to_change_value.short') + ')':'') + ':\n' + System._browser.translation.get('XR_Animator.UI.motion_capture.mocap_options.face_tracking_options.emotion_tracking_options.others.tooltip')
 );
@@ -377,8 +377,8 @@ option_active = 'AI';
     },
     sb_index: 1,
     onmouseover: function (e) {
-MMD_SA_options.Dungeon.run_event(this.event_id);
-MMD_SA_options.Dungeon.utils.tooltip(
+XRA_runEvent(this.event_id);
+XRA_tooltip(
   e.clientX, e.clientY,
   System._browser.translation.get('XR_Animator.UI.motion_capture.mocap_options.face_tracking_options.emotion_tracking_options.AI_detection') + ((option_active=='AI')?' (' + System._browser.translation.get('XR_Animator.UI.motion_capture.mocap_options.face_tracking_options.emotion_tracking_options.press_to_change_value.short') + ')':'') + ':\n' + System._browser.translation.get('XR_Animator.UI.motion_capture.mocap_options.face_tracking_options.emotion_tracking_options.AI_detection.tooltip')
 );
@@ -398,7 +398,7 @@ System._browser.camera.facemesh.emotion_AI_detection_interval = interval[index];
     },
     sb_index: 1,
     onmouseover: function (e) {
-MMD_SA_options.Dungeon.utils.tooltip(
+XRA_tooltip(
   e.clientX, e.clientY,
   System._browser.translation.get('XR_Animator.UI.motion_capture.mocap_options.face_tracking_options.emotion_tracking_options.AI_detection.interval.tooltip')
 );
@@ -412,8 +412,8 @@ option_active = 'AI neutralness';
     },
     sb_index: 1,
     onmouseover: function (e) {
-MMD_SA_options.Dungeon.run_event(this.event_id);
-MMD_SA_options.Dungeon.utils.tooltip(
+XRA_runEvent(this.event_id);
+XRA_tooltip(
   e.clientX, e.clientY,
   System._browser.translation.get('XR_Animator.UI.motion_capture.mocap_options.face_tracking_options.emotion_tracking_options.AI_detection.neutralness') + ((option_active=='AI neutralness')?' (' + System._browser.translation.get('XR_Animator.UI.motion_capture.mocap_options.face_tracking_options.emotion_tracking_options.press_to_change_value.short') + ')':'') + ':\n' + System._browser.translation.get('XR_Animator.UI.motion_capture.mocap_options.face_tracking_options.emotion_tracking_options.AI_detection.neutralness.tooltip')
 );
@@ -427,8 +427,8 @@ option_active = 'Vowel';
     },
     sb_index: 1,
     onmouseover: function (e) {
-MMD_SA_options.Dungeon.run_event(this.event_id);
-MMD_SA_options.Dungeon.utils.tooltip(
+XRA_runEvent(this.event_id);
+XRA_tooltip(
   e.clientX, e.clientY,
   System._browser.translation.get('XR_Animator.UI.motion_capture.mocap_options.face_tracking_options.emotion_tracking_options.vowel') + ((option_active=='Vowel')?' (' + System._browser.translation.get('XR_Animator.UI.motion_capture.mocap_options.face_tracking_options.emotion_tracking_options.press_to_change_value.short') + ')':'') + ':\n' + System._browser.translation.get('XR_Animator.UI.motion_capture.mocap_options.face_tracking_options.emotion_tracking_options.vowel.tooltip')
 );
@@ -517,7 +517,7 @@ System._browser.camera.facemesh.model_inference_device = (System._browser.camera
       },
       sb_index: 1,
       onmouseover: function (e) {
-MMD_SA_options.Dungeon.utils.tooltip(
+XRA_tooltip(
   e.clientX, e.clientY,
   System._browser.translation.get('XR_Animator.UI.motion_capture.mocap_options.face_tracking_options.AI_model_inference_device.tooltip')
 );
@@ -530,7 +530,7 @@ System._browser.camera.facemesh.auto_look_at_camera = !System._browser.camera.fa
       },
       sb_index: 1,
       onmouseover: function (e) {
-MMD_SA_options.Dungeon.utils.tooltip(
+XRA_tooltip(
   e.clientX, e.clientY,
   System._browser.translation.get('XR_Animator.UI.motion_capture.mocap_options.face_tracking_options.auto_look_at_camera.tooltip').replace(/\<hotkey\>/, System._browser.hotkeys.config_by_id['auto_look_at_camera']?.accelerator[0]||'')
 );
@@ -544,7 +544,7 @@ if (++System._browser.camera.facemesh.mouth_tracking_sensitivity > 3)
       },
       sb_index: 1,
       onmouseover: function (e) {
-MMD_SA_options.Dungeon.utils.tooltip(
+XRA_tooltip(
   e.clientX, e.clientY,
   System._browser.translation.get('XR_Animator.UI.motion_capture.mocap_options.face_tracking_options.mouth_tracking_sensitivity.tooltip')
 );
@@ -558,7 +558,7 @@ if (++System._browser.camera.facemesh.lean_tracking > 3)
       },
       sb_index: 1,
       onmouseover: function (e) {
-MMD_SA_options.Dungeon.utils.tooltip(
+XRA_tooltip(
   e.clientX, e.clientY,
   System._browser.translation.get('XR_Animator.UI.motion_capture.mocap_options.face_tracking_options.lean_tracking.tooltip')
 );
@@ -608,7 +608,7 @@ else {
 
             return function () {
 System._browser.camera.facemesh.reset_calibration(true);
-MMD_SA_options.Dungeon.run_event(null,done_branch,0);
+XRA_runEvent(null,done_branch,0);
 
 window.addEventListener('SA_camera_facemesh_calibrating', check_calibration);
             };
@@ -639,12 +639,12 @@ const facemesh = System._browser.camera.facemesh;
 
 if (!facemesh.calibrated) {
 //  System._browser.on_animation_update.add(()=>{MMD_SA.SpeechBubble.message(0, 'Calibration needs to be complete before it can be exported.', 3*1000);}, 0,0);
-  System._browser.camera.DEBUG_show('(Calibration needs to be complete before it can be exported.)', 5); MMD_SA_options.Dungeon.run_event(null, facemesh_options_branch, 0); return;
+  System._browser.camera.DEBUG_show('(Calibration needs to be complete before it can be exported.)', 5); XRA_runEvent(null, facemesh_options_branch, 0); return;
 }
 else {
   facemesh.export_calibration();
 }
-MMD_SA_options.Dungeon.run_event(null,done_branch,0);
+XRA_runEvent(null,done_branch,0);
           }
         }
       ]
@@ -654,26 +654,24 @@ MMD_SA_options.Dungeon.run_event(null,done_branch,0);
         {
           func: function () {
 if (1) {
-  MMD_SA_options.Dungeon.run_event(null,done_branch,0)
+  XRA_runEvent(null,done_branch,0)
   MMD_SA.SpeechBubble.message(0, '(🚧 Work in progress 🚧)', 3*1000)
 }
 else if (!webkit_electron_mode) {
-  MMD_SA_options.Dungeon.run_event(null,done_branch,0)
+  XRA_runEvent(null,done_branch,0)
   MMD_SA.SpeechBubble.message(0, 'This option is for native app mode only.', 3*1000)
 }
 else {
-  MMD_SA_options.Dungeon.run_event()
+  XRA_runEvent()
 }
           }
         }
        ,{
           message: {
-  content: '1. Virtual mouse\n2. Game 01 (PSO2NGS) \n3. Cancel'
+    content: 'Motion control feature has been removed in this build.\n\n1. Cancel'
  ,bubble_index: 3
  ,branch_list: [
-  { key:1, branch_index:motion_control_branch+1 },
-  { key:2, branch_index:motion_control_branch+2 },
-  { key:3, is_closing_event:true, branch_index:done_branch }
+    { key:1, is_closing_event:true, branch_index:done_branch }
   ]
           }
         }
@@ -682,9 +680,7 @@ else {
      ,[
         {
           func: function () {
-System._browser.motion_control.virtual_mouse.enabled = true
-System._browser.motion_control.enabled = true
-MMD_SA.SpeechBubble.message(0, 'Hold an index-up gesture for 1 second to start, flipped backward for 1 second to end.', 3*1000)
+MMD_SA.SpeechBubble.message(0, 'Motion control feature has been removed.', 3*1000)
           }
          ,ended: true
         }
@@ -693,9 +689,7 @@ MMD_SA.SpeechBubble.message(0, 'Hold an index-up gesture for 1 second to start, 
      ,[
         {
           func: function () {
-System._browser.motion_control.game01.enabled = true
-System._browser.motion_control.enabled = true
-MMD_SA.SpeechBubble.message(0, 'Hold an index-up gesture for 1 second to start, flipped backward for 1 second to end.', 3*1000)
+MMD_SA.SpeechBubble.message(0, 'Motion control feature has been removed.', 3*1000)
           }
          ,ended: true
         }

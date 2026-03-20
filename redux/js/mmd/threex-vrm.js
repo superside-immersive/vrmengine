@@ -7,6 +7,50 @@
 window.MMD_SA_createTHREEX_VRM = function(TX) {
     var _self;
 
+    var THREEX_VRM_EMPTY_DUNGEON = {
+started: false,
+area_id: 'start',
+character: {
+  boundingBox: null,
+  icon: null,
+},
+utils: {
+  adjust_boundingBox: function () {},
+},
+update_status_bar: function () {},
+    };
+
+    var THREEX_VRM_EMPTY_DUNGEON_OPTIONS = {
+options_by_area_id: {
+  start: {
+    _startup_position_: new TX.THREE.Vector3(),
+  },
+},
+    };
+
+    function threex_vrm_dungeon() {
+return MMD_SA_options.Dungeon || THREEX_VRM_EMPTY_DUNGEON;
+    }
+
+    function threex_vrm_dungeon_options() {
+return MMD_SA_options.Dungeon_options || THREEX_VRM_EMPTY_DUNGEON_OPTIONS;
+    }
+
+    function threex_vrm_startup_position() {
+var dungeon = threex_vrm_dungeon();
+var dungeon_options = threex_vrm_dungeon_options();
+var area_id = dungeon.area_id || 'start';
+
+if (!dungeon_options.options_by_area_id)
+  dungeon_options.options_by_area_id = {};
+if (!dungeon_options.options_by_area_id[area_id])
+  dungeon_options.options_by_area_id[area_id] = { _startup_position_:new TX.THREE.Vector3() };
+if (!dungeon_options.options_by_area_id[area_id]._startup_position_)
+  dungeon_options.options_by_area_id[area_id]._startup_position_ = new TX.THREE.Vector3();
+
+return dungeon_options.options_by_area_id[area_id]._startup_position_;
+    }
+
     function init() {
 
 // three-vrm 1.0
@@ -45,16 +89,14 @@ vrm.boundingBox.min.multiplyScalar(vrm_scale);
 vrm.boundingBox.max.multiplyScalar(vrm_scale);
 
 vrm.boundingSphere = vrm.boundingBox.getBoundingSphere(new TX.THREE.Sphere());
-if (MMD_SA_options.Dungeon)
-  MMD_SA_options.Dungeon.utils.adjust_boundingBox(vrm);
+threex_vrm_dungeon().utils.adjust_boundingBox(vrm);
 
 const MMD_geo = TX._THREE.MMD.getModels()[vrm.index].mesh.geometry;
 MMD_geo.boundingBox = new TX._THREE.Box3().copy(vrm.boundingBox);
 MMD_geo.boundingBox_list = [MMD_geo.boundingBox];
 MMD_geo.boundingSphere = new TX._THREE.Sphere().copy(vrm.boundingSphere);
 
-if (MMD_SA_options.Dungeon)
-  MMD_SA_options.Dungeon.character.boundingBox = MMD_geo.boundingBox.clone();
+threex_vrm_dungeon().character.boundingBox = MMD_geo.boundingBox.clone();
         });
       });
     }
@@ -704,7 +746,7 @@ if (MMD_SA.OSC.VMC.sender_enabled && MMD_SA.OSC.VMC.ready) {
 
   const model_pos_scale = 1/vrm_scale;
 
-  const model_position0 = MMD_SA_options.Dungeon_options.options_by_area_id[MMD_SA_options.Dungeon.area_id]._startup_position_;
+  const model_position0 = threex_vrm_startup_position();
   const model_position_offset = TX.v4.copy(mesh.position).sub(model_position0).multiplyScalar(model_pos_scale);
 
   const warudo_mode = MMD_SA.OSC.app_mode == 'Warudo';
@@ -1043,7 +1085,7 @@ MMD_SA.THREEX.get_model(0).resetPhysics();
       get joint_stiffness_percent () { return (joint_stiffness_percent == null) ? 100 : joint_stiffness_percent; },
       set joint_stiffness_percent (v) {
 joint_stiffness_percent = v;
-if (MMD_SA_options.Dungeon.started) {
+if (threex_vrm_dungeon().started) {
   System._browser.on_animation_update.remove(resetPhysics, 0);
   System._browser.on_animation_update.add(resetPhysics, 60,0);
 }
@@ -1419,10 +1461,12 @@ System._browser.on_animation_update.add(()=>{
 
   const icon = (model_new.is_VRM1) ? model_new.model.meta.thumbnailImage : model_new.model.meta.texture?.source.data;
   if (icon) {
-    const canvas = MMD_SA_options.Dungeon.character.icon;
-    const ctx = canvas.getContext("2d");
-    ctx.drawImage(icon, 0,0,64,64);
-    MMD_SA_options.Dungeon.update_status_bar(true);
+    const canvas = threex_vrm_dungeon().character.icon;
+    const ctx = canvas?.getContext && canvas.getContext("2d");
+    if (ctx) {
+      ctx.drawImage(icon, 0,0,64,64);
+      threex_vrm_dungeon().update_status_bar(true);
+    }
   }
 
   MMD_SA._force_motion_shuffle = true;

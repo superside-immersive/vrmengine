@@ -24,24 +24,33 @@
         buildMiscOptionsMenuEvents,
       } = context;
 
+      const dungeon = XRA_DungeonCompat();
+      const dungeon_options = XRA_DungeonOptionsCompat();
+
       return [
 // 20
      [
         {
           func: ()=>{
+if (MMD_SA_options.interaction_animation_disabled) {
+  speech_bubble2('(Explorer mode removed in this build.)', 4);
+  XRA_runEvent("_FACEMESH_OPTIONS_", object3D_branch, 0);
+  return;
+}
+
 if (getExplorerMode()) {
   reset_scene_explorer(true);
 
   MMD_SA.reset_camera(true);
 
-  MMD_SA_options.Dungeon.run_event("_FACEMESH_OPTIONS_", object3D_branch, 0);
+  XRA_runEvent("_FACEMESH_OPTIONS_", object3D_branch, 0);
   return;
 }
 
 if (!MMD_SA.OSC.VMC.sender_enabled) {
   if (!object3d_cache.size) {
     speech_bubble2(System._browser.translation.get('XR_Animator.UI.UI_options.scene.3D_scene_builder.explorer_mode.no_object'), 5, { no_word_break:true });
-    MMD_SA_options.Dungeon.run_event("_FACEMESH_OPTIONS_", object3D_branch, 0);
+    XRA_runEvent("_FACEMESH_OPTIONS_", object3D_branch, 0);
     return;
   }
 
@@ -49,7 +58,7 @@ if (!MMD_SA.OSC.VMC.sender_enabled) {
   for (const value of object3d_cache.values()) {
     if (!value) {
       speech_bubble2(System._browser.translation.get('XR_Animator.UI.UI_options.scene.3D_scene_builder.explorer_mode.still_loading'), 5);
-      MMD_SA_options.Dungeon.run_event("_FACEMESH_OPTIONS_", object3D_branch, 0);
+      XRA_runEvent("_FACEMESH_OPTIONS_", object3D_branch, 0);
       return;
     }
     if (!value.parent_bone) obj_count++;
@@ -57,12 +66,12 @@ if (!MMD_SA.OSC.VMC.sender_enabled) {
 
   if (!obj_count) {
     speech_bubble2(System._browser.translation.get('XR_Animator.UI.UI_options.scene.3D_scene_builder.explorer_mode.no_explorable_object'), 5);
-    MMD_SA_options.Dungeon.run_event("_FACEMESH_OPTIONS_", object3D_branch, 0);
+    XRA_runEvent("_FACEMESH_OPTIONS_", object3D_branch, 0);
     return;
   }
 }
 
-MMD_SA_options.Dungeon.run_event();
+XRA_runEvent();
           }
         },
         {
@@ -84,7 +93,7 @@ MMD_SA_options.user_camera.ML_models.look_at_screen = false;
 
 setUseAvatarAsCenter(true);
 
-System._browser.on_animation_update.add(()=>{MMD_SA_options.Dungeon.run_event()},2*30,1);
+System._browser.on_animation_update.add(()=>{XRA_runEvent()},2*30,1);
           },
           next_step:{}
         },
@@ -105,19 +114,19 @@ object3d_list.forEach(object3d=>{
 
 window.addEventListener('SA_keydown', adjust_object3D);
 
-MMD_SA_options.Dungeon._states.action_allowed_in_event_mode = true;
-MMD_SA_options.Dungeon_options.character_movement_disabled = false;
+dungeon._states.action_allowed_in_event_mode = true;
+dungeon_options.character_movement_disabled = false;
 
-MMD_SA_options.Dungeon_options.camera_position_z_sign = -1;
-MMD_SA_options.Dungeon.update_camera_position_base();
+dungeon_options.camera_position_z_sign = -1;
+dungeon.update_camera_position_base();
 
 const motion_list_index = (System._browser.camera.poseNet.enabled) ? 2 : 1;
 if (MMD_SA.MMD.motionManager.para_SA._speed) {
-  MMD_SA_options.Dungeon_options.item_base.pose._change_motion_(MMD_SA_options._XRA_pose_list[motion_list_index].findIndex(p=>p.name == MMD_SA.MMD.motionManager.filename), true);
+  dungeon_options.item_base.pose._change_motion_(MMD_SA_options._XRA_pose_list[motion_list_index].findIndex(p=>p.name == MMD_SA.MMD.motionManager.filename), true);
 }
-MMD_SA_options.Dungeon_options.item_base.pose._change_motion_(MMD_SA_options._XRA_pose_list[motion_list_index].findIndex(p=>p.name == 'tsuna_standby'), true);
+dungeon_options.item_base.pose._change_motion_(MMD_SA_options._XRA_pose_list[motion_list_index].findIndex(p=>p.name == 'tsuna_standby'), true);
 
-MMD_SA_options.Dungeon.para_by_grid_id[2].ground_y = explorer_ground_y;
+dungeon.para_by_grid_id[2].ground_y = explorer_ground_y;
           }
          ,goto_event: { id:"_FACEMESH_OPTIONS_", branch_index:object3D_branch }
         },

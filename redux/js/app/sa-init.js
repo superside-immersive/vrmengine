@@ -149,7 +149,7 @@ return true
 
   if (is_mobile) {
     if (!is_SA_child_animation) {
-      // [XRA] Old quick menu replaced by unified toolbar
+      // [XRA] The old quick menu stays disabled on mobile too.
       // Lquick_menu.style.visibility = "inherit"
       // Lquick_menu._activated = true
     }

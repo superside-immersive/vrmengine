@@ -1,8 +1,16 @@
 // item-base-part1.js — Item base entries: reticle, streamer_mode, pose
 // Extracted from animate.js
 (function () {
-  if (!MMD_SA_options.Dungeon_options) return;
-  Object.assign(MMD_SA_options.Dungeon_options.item_base, {
+  function XRA_dungeon() {
+    return XRA_DungeonCompat();
+  }
+
+  function XRA_dungeonOptions() {
+    return XRA_DungeonOptionsCompat();
+  }
+
+  if (!XRA_dungeonOptions()) return;
+  Object.assign(XRA_dungeonOptions().item_base, {
     "reticle" : {
   icon_path: Settings.f_path + '/assets/assets.zip#/icon/yellow-target_64x64.png'
  ,info_short: "AR reticle"
@@ -10,7 +18,6 @@
  ,is_base_inventory: is_mobile
 // NOTE: use undefined for index_default ((null >= 0) is true...)
  ,index_default: undefined
-// ,get index_default() { return (is_mobile) ? undefined : MMD_SA_options.Dungeon?.inventory.max_base+1; }
 
  ,stock_default: (is_mobile) ? 1 : 0
  ,stock_max: 1
@@ -18,7 +25,7 @@
     func: function (item) {
 if (!MMD_SA.WebXR.session) {
 //  DEBUG_show("(AR mode only)", 3); return true;
-  MMD_SA_options.Dungeon?.run_event("_ENTER_AR_",0)
+  XRA_runEvent("_ENTER_AR_",0)
 }
 else {
 //SA_AR_dblclick
@@ -97,11 +104,11 @@ System._browser.on_animation_update.add(()=>{
   }
 }, 0,1);
 
-MMD_SA_options.Dungeon_options.item_base.social_distancing && MMD_SA_options.Dungeon_options.item_base.social_distancing.reset();
+XRA_dungeonOptions().item_base.social_distancing && XRA_dungeonOptions().item_base.social_distancing.reset();
 
 if (System._browser.camera.initialized) System._browser.on_animation_update.add(()=>{ System._browser.camera._update_camera_reset(); }, 1,1);
 
-if (MMD_SA_options.Dungeon?._event_active.id == '_POSE_') MMD_SA_options.Dungeon?.run_event(null,null,0);
+if (XRA_dungeon()._event_active.id == '_POSE_') XRA_runEvent(null,null,0);
       }
 
       async function change_motion(motion_index_absolute, ignore_event) {
@@ -114,11 +121,11 @@ if (ignore_event) {
     return;
   }
 }
-else if ((motion_index_absolute == null) && !MMD_SA_options.Dungeon?.event_mode) {
-  MMD_SA_options.Dungeon?.run_event("_POSE_",0)
+else if ((motion_index_absolute == null) && !XRA_dungeon().event_mode) {
+  XRA_runEvent("_POSE_",0)
   return
 }
-else if ((motion_index_absolute != null) && (MMD_SA_options.Dungeon?._event_active.id != "_POSE_"))
+else if ((motion_index_absolute != null) && (XRA_dungeon()._event_active.id != "_POSE_"))
   return true
 
 //DEBUG_show(MMD_SA.MMD.motionManager.filename)
@@ -151,8 +158,8 @@ if (!motion_loading) {//MMD_SA_options.motion_shuffle_list_default && (MMD_SA_op
   motion_list[motion_index].action && motion_list[motion_index].action(motion_name)
 
   const motion_para = MMD_SA_options.motion_para[motion_name];
-  if (motion_para?._speed && !MMD_SA_options.Dungeon_options.character_movement_disabled) {
-    const mov = MMD_SA_options.Dungeon?.motion['PC movement forward'];
+  if (motion_para?._speed && !XRA_dungeonOptions().character_movement_disabled) {
+    const mov = XRA_dungeon().motion['PC movement forward'];
     mov.index = motion_para._index;
     mov.name = motion_name;
     mov.path = motion_para._path;
@@ -165,9 +172,9 @@ if (!motion_loading) {//MMD_SA_options.motion_shuffle_list_default && (MMD_SA_op
     });
     Object.assign(mov.para, motion_para);
 
-    if (MMD_SA_options.Dungeon?.motion_filename_by_id) {
-      MMD_SA_options.Dungeon.motion_filename_by_id['PC movement forward'] = motion_name;
-      MMD_SA_options.Dungeon.motion_id_by_filename[motion_name] = 'PC movement forward';
+    if (XRA_dungeon().motion_filename_by_id) {
+      XRA_dungeon().motion_filename_by_id['PC movement forward'] = motion_name;
+      XRA_dungeon().motion_id_by_filename[motion_name] = 'PC movement forward';
     }
 
     return;
@@ -233,7 +240,7 @@ return animation_on;
 
       window.addEventListener("jThree_ready", function () {
 function delay_dialogue() {
-  MMD_SA_options.Dungeon?.run_event();
+  XRA_runEvent();
 }
 
 function export_motion_config() {
@@ -621,7 +628,7 @@ let _has_custom_animation_;
 
 function get_target_index(sb, key) {
   if (key != null) {
-    const msg_branch_list = MMD_SA_options.Dungeon?.dialogue_branch_mode.filter(b=>!b.sb_index);
+    const msg_branch_list = XRA_dungeon().dialogue_branch_mode.filter(b=>!b.sb_index);
     const branch = msg_branch_list?.findIndex(b=>((b.sb_index||0)==(sb.index||0)) && (b.key==key));
     return branch;
   }
@@ -652,7 +659,7 @@ else {
 //DEBUG_show(index+'/'+index_to_swap)
 swap_motion(index, index_to_swap);
 
-MMD_SA_options.Dungeon?.run_event('_POSE_',0,0);
+XRA_runEvent('_POSE_',0,0);
     }
   }
 };
@@ -668,14 +675,14 @@ let index_to_swap = get_target_index(sb, sb._branch_key_)+offset + _motion_page*
 if (index > index_to_swap) index_to_swap--;
 swap_motion(index, index_to_swap, false);
 
-MMD_SA_options.Dungeon?.run_event('_POSE_',0,0);
+XRA_runEvent('_POSE_',0,0);
   }
 };
 
 const hip_adjustment_set = ['_default_', 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H'];
 const hip_adjustment_set_emoji = ['', 'Ⓐ', 'Ⓑ', 'Ⓒ', 'Ⓓ', 'Ⓔ', 'Ⓕ', 'Ⓖ', 'Ⓗ'];
 
-MMD_SA_options.Dungeon_options.events_default["_POSE_"] = [
+XRA_dungeonOptions().events_default["_POSE_"] = [
 //0
       [
 
@@ -685,7 +692,7 @@ if (THREE.MMD.motionPlaying) {
   window.addEventListener('SA_MMD_model0_process_bones_after_IK', delay_dialogue, {once:true});
 }
 else {
-  MMD_SA_options.Dungeon?.run_event();
+  XRA_runEvent();
 }
           }
         },
@@ -708,7 +715,7 @@ const content =  _motion_list[index].slice(ini, ini+9).map((m,i)=>{
     if ((m.name != 'stand_simple') || (!motion_para.motion_tracking_upper_body_only == !!m.is_full_body))
       info_prefix = '✔️';
   }
-  if (motion_para?._speed && (MMD_SA_options.Dungeon?.motion['PC movement forward'].name == m.name)) {
+    if (motion_para?._speed && (XRA_dungeon().motion['PC movement forward'].name == m.name)) {
     info_suffix = '🏃';
   }
 
@@ -739,8 +746,8 @@ const index = (System._browser.camera.poseNet.enabled || System._browser.camera.
 
 let ini = _motion_page * 9;
 
-return _motion_list[index].slice(ini, ini+9).map((m,i) => { return { key:i+1, on_drag:(_motion_page || (i > 3-index))?_on_drag:null, on_drop:_on_drop, event_id:{ func:()=>{ change_motion(ini+i); System._browser.on_animation_update.add(()=>{MMD_SA_options.Dungeon?.run_event('_POSE_',0,0)},20,0); }, } }; })
-  .concat((_has_custom_animation_)?[{ key:0, event_id:{ func:()=>{ this._animation_on_=change_custom_motion(); System._browser.on_animation_update.add(()=>{MMD_SA_options.Dungeon?.run_event('_POSE_',0,0)},20,0); }, } }]:[]);
+return _motion_list[index].slice(ini, ini+9).map((m,i) => { return { key:i+1, on_drag:(_motion_page || (i > 3-index))?_on_drag:null, on_drop:_on_drop, event_id:{ func:()=>{ change_motion(ini+i); System._browser.on_animation_update.add(()=>{XRA_runEvent('_POSE_',0,0)},20,0); }, } }; })
+  .concat((_has_custom_animation_)?[{ key:0, event_id:{ func:()=>{ this._animation_on_=change_custom_motion(); System._browser.on_animation_update.add(()=>{XRA_runEvent('_POSE_',0,0)},20,0); }, } }]:[]);
   },
           },
 
@@ -810,14 +817,14 @@ else {
   return false;
 }
 
-MMD_SA_options.Dungeon?.run_event(null, 0, 0);
+XRA_runEvent(null, 0, 0);
 
 return true;
     } },
 
     { key:'A', event_index:0,
       onmouseover: function (e) {
-MMD_SA_options.Dungeon?.utils.tooltip(
+XRA_tooltip(
   e.clientX, e.clientY,
   System._browser.translation.get('XR_Animator.UI.pose.hip_adjustment_set.tooltip')
 );
@@ -825,7 +832,7 @@ MMD_SA_options.Dungeon?.utils.tooltip(
     },
     { key:'B', event_id:{ func:()=>{ mirror_pose(); }, goto_event:{id:'_POSE_',branch_index:0} },
       onmouseover: function (e) {
-MMD_SA_options.Dungeon?.utils.tooltip(
+XRA_tooltip(
   e.clientX, e.clientY,
   System._browser.translation.get('XR_Animator.UI.pose.mirror_current_pose.tooltip')
 );
@@ -833,7 +840,7 @@ MMD_SA_options.Dungeon?.utils.tooltip(
     },
     { key:'C', event_id:{ func:()=>{ swap_motion(); }, goto_event:{id:'_POSE_',branch_index:0} },
       onmouseover: function (e) {
-MMD_SA_options.Dungeon?.utils.tooltip(
+XRA_tooltip(
   e.clientX, e.clientY,
   System._browser.translation.get('XR_Animator.UI.pose.push_current_pose_to_list_top.tooltip')
 );
@@ -841,7 +848,7 @@ MMD_SA_options.Dungeon?.utils.tooltip(
     },
     { key:'D', event_id:{ func:()=>{ export_motion_config() }, goto_event:{id:'_POSE_',branch_index:0} },
       onmouseover: function (e) {
-MMD_SA_options.Dungeon?.utils.tooltip(
+XRA_tooltip(
   e.clientX, e.clientY,
   System._browser.translation.get('XR_Animator.UI.pose.export_current_pose_config.tooltip') 
 );
@@ -856,7 +863,7 @@ MMD_SA.THREEX.shoulder_adjust = para[index];
 System._browser.camera.DEBUG_show('NOTE: Restart the app for changes to apply to existing motions and poses.', 5);
       }, goto_event:{id:'_POSE_',branch_index:0} },
       onmouseover: function (e) {
-MMD_SA_options.Dungeon?.utils.tooltip(
+XRA_tooltip(
   e.clientX, e.clientY,
   System._browser.translation.get('XR_Animator.UI.pose.shoulder_adjust.tooltip')
 );
@@ -864,7 +871,7 @@ MMD_SA_options.Dungeon?.utils.tooltip(
     },
     { key:'F', event_id:{ func:()=>{ reset_list_order(); DEBUG_show('(pose list reset)',3); }, goto_event:{id:'_POSE_',branch_index:0} },
       onmouseover: function (e) {
-MMD_SA_options.Dungeon?.utils.tooltip(
+XRA_tooltip(
   e.clientX, e.clientY,
   System._browser.translation.get('XR_Animator.UI.pose.reset_pose_list_order.tooltip')
 );
@@ -882,7 +889,7 @@ MMD_SA_options.Dungeon?.utils.tooltip(
         },
       },
       onmouseover: function (e) {
-MMD_SA_options.Dungeon?.utils.tooltip(
+XRA_tooltip(
   e.clientX, e.clientY,
   System._browser.translation.get('XR_Animator.UI.pose.clear_all_custom_poses.tooltip')
 );
@@ -933,7 +940,8 @@ let info = '';
 info = (System._browser.camera.ML_enabled) ? ((MMD_SA.MMD.motionManager.para_SA.motion_tracking_enabled) ? System._browser.translation.get('XR_Animator.UI.pose.info.ML_on.tracking_on').replace(/\<tracking_mode\>/, System._browser.translation.get('XR_Animator.UI.pose.info.ML_on.tracking_on.' + ((MMD_SA.MMD.motionManager.para_SA.motion_tracking_upper_body_only) ? 'upper_body' : 'full_body'))) : System._browser.translation.get('XR_Animator.UI.pose.info.ML_on.tracking_off')) : System._browser.translation.get('XR_Animator.UI.pose.info.ML_off');
 info += '\n';
 
-info += System._browser.translation.get('XR_Animator.UI.pose.info.extra').replace(/\<hotkey\>/, System._browser.hotkeys.config_by_id['arm_to_leg_control_mode']?.accelerator[0]||'');
+if (!MMD_SA_options.interaction_animation_disabled)
+  info += System._browser.translation.get('XR_Animator.UI.pose.info.extra').replace(/\<hotkey\>/, System._browser.hotkeys.config_by_id['arm_to_leg_control_mode']?.accelerator[0]||'');
 
 return info;
   }

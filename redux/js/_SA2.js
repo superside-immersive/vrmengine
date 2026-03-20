@@ -27,11 +27,7 @@ var IPC
   Settings.UseAudioFFT = false
   Settings.UseAudioFFTLiveInput = false
 
-  Settings.CSSTransform3DBoxAnimate = parseInt(System.Gadget.Settings.readString("CSSTransform3DBoxAnimate"))
-  if (!Settings.CSSTransform3DBoxAnimate)
-    Settings.CSSTransform3DBoxAnimate = parseInt(Settings_default.CSSTransform3DBoxAnimate)
-  if (Settings.CSSTransform3DBoxAnimate)
-    SA.loader.loadScriptSync('js/box3d.js')
+  Settings.CSSTransform3DBoxAnimate = 0
 
   if (!is_SA_child_animation && returnBoolean("UseWebcamHeadtracking"))
     SA.loader.loadScriptSync('js/tracking/headtracker_ar.js')

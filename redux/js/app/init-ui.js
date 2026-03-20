@@ -11,7 +11,7 @@ function SA_init_browser_ui() {
 // in SA_child_animation_host mode, hide the menu of parent window
 if (is_SA_child_animation_host && !is_SA_child_animation) return
 
-// [XRA] Old quick menu replaced by unified toolbar
+// [XRA] The old quick menu is intentionally kept disabled.
 // Lquick_menu.style.visibility = "inherit"
 // Lquick_menu._activated = true
 
@@ -23,7 +23,7 @@ if (this._onmouseout_waiting_custom0_timerID) {
 if (this._drag_disabled)
   return
 
-// [XRA] LbuttonTL hidden — toolbar replaces it
+// [XRA] Keep the top-left legacy button hidden.
 // if ((B_content_width > 64) && (B_content_height > 64))
 //   LbuttonTL.style.visibility = "inherit"
 if ((B_content_width > 64) && (B_content_height > 32))

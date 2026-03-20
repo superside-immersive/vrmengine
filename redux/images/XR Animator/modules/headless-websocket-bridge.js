@@ -110,9 +110,17 @@ if (blob) {
           DEBUG_show();
         }
 
+        function XRA_dungeon() {
+          return XRA_DungeonCompat();
+        }
+
+        function XRA_itemBase() {
+          return XRA_DungeonOptionsCompat().item_base;
+        }
+
         function get_stage() {
           let stage = 0;
-          if (MMD_SA_options.Dungeon.started) {
+          if (XRA_dungeon().started) {
             if (System._browser.camera.ML_enabled) {
               stage = 3;
             }
@@ -143,7 +151,7 @@ if (blob) {
         }
 
         function start_streamer_mode() {
-          if (MMD_SA_options.Dungeon.event_mode) {
+          if (XRA_dungeon().event_mode) {
             document.dispatchEvent(new KeyboardEvent('keydown', { code: 'Escape' }));
           }
 
@@ -154,7 +162,7 @@ if (blob) {
           }
 
           System._browser.on_animation_update.add(() => {
-            const inv = MMD_SA_options.Dungeon.inventory.find('streamer_mode');
+            const inv = XRA_dungeon().inventory.find('streamer_mode');
             inv.action_check().then((actionable) => {
               if (actionable) {
                 inv.item.action.func();
@@ -318,7 +326,7 @@ if (blob) {
             let initializing = stage < 2;
             on_XRA_loaded(() => {
               const motion_index = data + ((System._browser.camera.poseNet.enabled) ? 0 : 1);
-              MMD_SA_options.Dungeon_options.item_base.pose._change_motion_(motion_index, true);
+              XRA_itemBase().pose._change_motion_(motion_index, true);
 
               if (initializing) {
                 window.addEventListener('SA_MMD_model0_onmotionchange', (e) => {

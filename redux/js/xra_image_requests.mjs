@@ -16,7 +16,7 @@ page.on('requestfinished', (request) => {
   }
 });
 
-await page.goto('http://127.0.0.1:8080/redux/XR_Animator.html', {
+await page.goto('http://127.0.0.1:8080/redux/index.html', {
   waitUntil: 'domcontentloaded',
   timeout: 45000
 });

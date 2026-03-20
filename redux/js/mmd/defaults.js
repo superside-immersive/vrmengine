@@ -140,7 +140,7 @@ MMD_SA_options.texture_resolution_limit=2048
   if (!MMD_SA_options.x_object)
     MMD_SA_options.x_object = []
   if (!MMD_SA_options.custom_action)
-    MMD_SA_options.custom_action = ["kissing"]
+    MMD_SA_options.custom_action = (MMD_SA_options.interaction_animation_disabled) ? [] : ["kissing"]
   MMD_SA_options.custom_action.unshift("motion_blending_model0")
   if (!MMD_SA_options.AR_camera_mod)
     MMD_SA_options.AR_camera_mod = 1.2
@@ -231,6 +231,8 @@ MMD_SA_options.texture_resolution_limit=2048
   MMD_SA_options.gamepad.forEach(g=>{
     if (!g.axes) g.axes = { '0':{}, '2':{} };
     if (!g.buttons) g.buttons = { '6':{} };
+    if (MMD_SA_options.interaction_animation_disabled)
+      g.enabled = false;
   });
 
   if (!MMD_SA_options.OSC)
@@ -1080,9 +1082,9 @@ return obj;
   }
 
 // Kiss
-  if (!MMD_SA_options.MMD_disabled && MMD_SA_options.allows_kissing && (MMD_SA_options.custom_action.indexOf("kissing") == -1))
+  if (!MMD_SA_options.interaction_animation_disabled && !MMD_SA_options.MMD_disabled && MMD_SA_options.allows_kissing && (MMD_SA_options.custom_action.indexOf("kissing") == -1))
     MMD_SA_options.custom_action.push("kissing")
-  if (MMD_SA_options.custom_action.indexOf("kissing") != -1) {
+  if (!MMD_SA_options.interaction_animation_disabled && (MMD_SA_options.custom_action.indexOf("kissing") != -1)) {
     MMD_SA_options.mesh_obj_preload_list.push({ id:'KissMESH', create:function () {
 const THREE = MMD_SA.THREEX.THREE;
 

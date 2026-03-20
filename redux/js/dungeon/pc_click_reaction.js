@@ -7,6 +7,9 @@ var Dungeon = MMD_SA_options.Dungeon;
 Dungeon._initSoundsAndClickReaction = function () {
 var options = MMD_SA_options.Dungeon_options;
 
+if (MMD_SA_options.interaction_animation_disabled)
+  options.use_PC_click_reaction_default = false
+
 if (!options.sound)
   options.sound = []
 
@@ -76,7 +79,7 @@ if (!options.sound.some(function(s){return(s.name=="car_engine01")})) {
 
 
 // PC click reaction default START
-if (options.use_PC_click_reaction_default) {
+if (options.use_PC_click_reaction_default && !MMD_SA_options.interaction_animation_disabled) {
 
   if (!options.sound.some(function(s){return(s.name=="hit-1")})) {
     options.sound.push({

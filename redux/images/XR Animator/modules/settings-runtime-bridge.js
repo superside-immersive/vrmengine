@@ -3,6 +3,10 @@
     return
 
   function create(MMD_SA_options) {
+    function XRA_dungeon() {
+      return XRA_DungeonCompat();
+    }
+
     function exportSettingsToStorage() {
       const config = MMD_SA_options._XRA_settings_export()
       System.Gadget.Settings.writeString('LABEL_XRA_settings', JSON.stringify(config))
@@ -38,7 +42,7 @@
 
       if (window.XR_Animator_SettingsLifecycle && (typeof window.XR_Animator_SettingsLifecycle.install === 'function')) {
         window.XR_Animator_SettingsLifecycle.install({
-          shouldWriteSettings: function () { return MMD_SA_options.Dungeon.started },
+          shouldWriteSettings: function () { return XRA_dungeon().started },
           onWriteSettings: exportSettingsToStorage,
           onImportFromJSON: function (e) {
             tryImportSettingsFromJSON(e.detail.json, e.detail.result)
@@ -61,7 +65,7 @@
       window.__XR_ANIMATOR_SETTINGS_LIFECYCLE_INSTALLED__ = true
 
       window.addEventListener('SA_writeSettings', function () {
-        if (!MMD_SA_options.Dungeon.started)
+        if (!XRA_dungeon().started)
           return
         exportSettingsToStorage()
       })

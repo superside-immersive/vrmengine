@@ -41,7 +41,7 @@ var absolute_screen_mode = (webkit_electron_mode && !returnBoolean("MoveWithinPr
 
 var spectrum_analyser, use_full_fps, use_full_fps_registered
 
-var use_SVG_Clock = returnBoolean("UseSVGClock") // [9D] ie9_mode always true
+var use_SVG_Clock = false // [REMOVED] SVG Clock disabled in reduced browser build
 
 var use_EQP_ripple = false // returnBoolean("UseCanvasRipple") // [9D] ie9_mode always true
 var use_EQP_fireworks = false // returnBoolean("UseCanvasFireworks") // [9D] ie9_mode always true
@@ -737,6 +737,6 @@ function loadFolder_CORE() {
     SA_select_entry('MMD.js/MMD_SA.js', 'mmd_runtime_fallback')
     SA.loader.loadScriptSync('MMD.js/MMD_SA.js')
   }
-  else if (!EQP_gallery && returnBoolean("UseFilters"))
+  else if (!EQP_gallery && false)
     SA.loader.loadScriptSync('js/animate_filters.js')
 })();

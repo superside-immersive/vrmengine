@@ -2,7 +2,7 @@
 
 import { chromium } from 'playwright-core';
 
-const DEFAULT_URL = 'http://127.0.0.1:8080/redux/XR_Animator.html';
+const DEFAULT_URL = 'http://127.0.0.1:8080/redux/index.html';
 const DEFAULT_TIMEOUT_MS = 90000;
 const DEFAULT_CHROME_PATH = '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome';
 const VRM_MARKER = '[XRA][VRM_LOADED]';

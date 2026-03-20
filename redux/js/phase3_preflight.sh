@@ -5,7 +5,7 @@ BASE_URL="${1:-http://127.0.0.1:8080}"
 RUN_VRM_CHECK="${RUN_VRM_CHECK:-1}"
 
 URLS=(
-  "$BASE_URL/redux/XR_Animator.html"
+  "$BASE_URL/redux/index.html"
   "$BASE_URL/redux/js/mocap_lib_module.js"
   "$BASE_URL/redux/js/tracking/mocap-mediapipe-bridge.js"
   "$BASE_URL/redux/js/tracking/one_euro_filter.js"
@@ -35,7 +35,7 @@ echo "[Phase3 Preflight] OK: todos los endpoints críticos responden 200"
 
 if [[ "$RUN_VRM_CHECK" == "1" ]]; then
   echo "[Phase3 Preflight] VRM console-check: buscando [XRA][VRM_LOADED]"
-  node redux/js/vrm_console_check.mjs "$BASE_URL/redux/XR_Animator.html"
+  node redux/js/vrm_console_check.mjs "$BASE_URL/redux/index.html"
   echo "[Phase3 Preflight] VRM console-check OK"
 fi
 

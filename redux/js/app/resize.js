@@ -537,12 +537,12 @@ if (fullscreen) {
   oBody.pixelHeight = B_content_height
 
   if (use_SA_system_emulation) {
-    // [XRA] Old quick menu layout replaced by unified toolbar
+    // [XRA] The old quick menu layout is no longer used.
     // let ls = Lquick_menu.style
     // let qmb_list = ...
     let qmb_count = 6
 
-    // [XRA] LbuttonTL replaced by toolbar
+    // [XRA] Keep the top-left legacy control disabled.
     // LbuttonTL.style.posLeft = ...
     // LbuttonTL.style.posTop  = 12
     if (is_mobile && (is_SA_child_animation_host || self.MMD_SA)) {
@@ -569,7 +569,7 @@ if (fullscreen) {
     LbuttonLR.style.posLeft = ((browser_native_mode) ? screen_w : Math.min(B_content_width, screen_w)) - 24
     LbuttonLR.style.posTop  = ((browser_native_mode) ? screen_h : Math.min(B_content_height, screen.availHeight)) - 24
 
-    // [XRA] Old quick menu buttons replaced by toolbar
+    // [XRA] Legacy quick-menu button layout is no longer used.
     // if (!self.EQP_dragdrop_target) {
     //   Lquick_menu_gallery_button.style.display = "none"
     //   qmb_count--

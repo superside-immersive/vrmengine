@@ -30,9 +30,17 @@
 
       let _Object3D_proxy;
 
+      function XRA_dungeon() {
+        return XRA_DungeonCompat();
+      }
+
+      function XRA_dungeonOptions() {
+        return XRA_DungeonOptionsCompat();
+      }
+
       function createObject3DProxyClass() {
         const _Object3D_proxy_base =
-          (MMD_SA_options && MMD_SA_options.Dungeon && MMD_SA_options.Dungeon.Object3D_proxy_base)
+          (XRA_dungeon() && XRA_dungeon().Object3D_proxy_base)
           || class {
             constructor(object3d) {
               this._parent = object3d;
@@ -138,7 +146,7 @@
         MMD_SA.THREEX._object3d_list_ = object3d_list;
 
         if (object3d.parent_bone) {
-          MMD_SA_options.Dungeon.accessory_list.push(object3d);
+          XRA_dungeon().accessory_list.push(object3d);
         }
 
         object3d.user_data.id = model_id;
@@ -339,7 +347,7 @@
                 texture = new THREE.Texture(canvas);
                 const material = new THREE.MeshBasicMaterial({ map: texture, side: THREE.BackSide, fog: false, transparent: true });
 
-                const sd = MMD_SA_options.Dungeon_options.skydome;
+                const sd = XRA_dungeonOptions().skydome;
                 let dw = para.panorama.json?.width_segments || sd.width_segments;
                 let dh = para.panorama.json?.height_segments || sd.height_segments;
                 geometry = new THREE.SphereGeometry(64 * 4, dw, dh);

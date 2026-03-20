@@ -1,17 +1,26 @@
 // item-base-part3.js — Item base entries: body_pix, snapshot, rec, options, social_distancing, laughing_man
 // Extracted from animate.js
 (function () {
-  if (!MMD_SA_options.Dungeon_options) return;
-  Object.assign(MMD_SA_options.Dungeon_options.item_base, {
+  function XRA_dungeon() {
+    return XRA_DungeonCompat();
+  }
+
+  function XRA_dungeonOptions() {
+    return XRA_DungeonOptionsCompat();
+  }
+
+  function XRA_inventory() {
+    return XRA_dungeon().inventory;
+  }
+
+  if (!XRA_dungeonOptions()) return;
+  Object.assign(XRA_dungeonOptions().item_base, {
     "body_pix" : {
   icon_path: Settings.f_path + '/assets/assets.zip#/icon/selfie_segmentation_64x64.png'
  ,info_short: "Segmentation AI"
 // ,is_base_inventory: true
 
 // ,index_default: (is_mobile) ? undefined : 5
-// ,get index_default() { return (is_mobile) ? undefined : MMD_SA_options.Dungeon.inventory.max_base + MMD_SA_options.Dungeon.inventory.max_base*(MMD_SA_options.Dungeon.inventory.max_row-1)*2 +3; }
-
-// ,get index_default() { return (is_mobile) ? undefined : (browser_native_mode) ? 4 : 6;}//MMD_SA_options.Dungeon.inventory.max_base+4; }
 
  ,stock_max: 1
  ,stock_default: 1
@@ -160,7 +169,7 @@ e.detail.result.return_value = true;
  ,get info_short() { return System._browser.translation.get('XR_Animator.UI.media_recorder.info_short'); }
 // ,is_base_inventory: true
 
- ,get index_default() { return (is_mobile) ? undefined : MMD_SA_options.Dungeon.inventory.max_base+1; }
+ ,get index_default() { return (is_mobile) ? undefined : XRA_inventory().max_base+1; }
 
  ,stock_max: 1
  ,stock_default: 0
@@ -191,8 +200,8 @@ return true;
 
  ,action: {
     func: function (item) {
-MMD_SA_options.Dungeon.events["_FACEMESH_OPTIONS_"][0]._show_other_options_=true;setTimeout(()=>{MMD_SA_options.Dungeon.events["_FACEMESH_OPTIONS_"][0]._show_other_options_=false},0);
-MMD_SA_options.Dungeon.run_event("_FACEMESH_OPTIONS_",0);
+XRA_dungeon().events["_FACEMESH_OPTIONS_"][0]._show_other_options_=true;setTimeout(()=>{XRA_dungeon().events["_FACEMESH_OPTIONS_"][0]._show_other_options_=false},0);
+XRA_runEvent("_FACEMESH_OPTIONS_",0);
     }
 //   ,anytime: true
   }
@@ -216,7 +225,7 @@ if (!webkit_electron_mode || !MMD_SA.THREEX.enabled) {
   return true;
 }
 
-MMD_SA_options.Dungeon.run_event("_VMC_PROTOCOL_",0);
+XRA_runEvent("_VMC_PROTOCOL_",0);
     }
 //   ,anytime: true
   }
@@ -258,7 +267,6 @@ return MMD_SA.TEMP_v3.copy(camera.position).sub(camera._lookAt).normalize().mult
 // ,is_base_inventory: true
 
  ,index_default: undefined
-// ,get index_default() { return (is_mobile) ? undefined : MMD_SA_options.Dungeon.inventory.max_base+2; }
 
  ,stock_max: 1
  ,stock_default: 1
@@ -319,18 +327,20 @@ v3b = new THREE.Vector3()
  ,info_short: "Social meter"
 // ,is_base_inventory: true
 
- ,get index_default() { return (is_mobile) ? undefined : (MMD_SA_options.Dungeon.inventory.max_base+MMD_SA_options.Dungeon.inventory.max_base*(MMD_SA_options.Dungeon.inventory.max_row-1))+2; }
-// ,get index_default() { return (is_mobile) ? undefined : MMD_SA_options.Dungeon.inventory.max_base+3; }
+   ,get index_default() { return (is_mobile) ? undefined : (XRA_inventory().max_base+XRA_inventory().max_base*(XRA_inventory().max_row-1))+2; }
 
  ,stock_max: 1
- ,stock_default: 1//(is_mobile) ? 1 : 0
+ ,stock_default: (MMD_SA_options.interaction_animation_disabled) ? 0 : 1//(is_mobile) ? 1 : 0
  ,action: {
     func: function (item) {
+if (MMD_SA_options.interaction_animation_disabled)
+  return true
+
 var model_mesh = THREE.MMD.getModels()[0].mesh
 if (!model_mesh.visible)
   return true
 
-var d = MMD_SA_options.Dungeon
+var d = XRA_dungeon()
 if (d.event_mode && !social_distancing_started)
   return true
 
@@ -353,7 +363,7 @@ if (dis < 2)
   return true
 if (!/standmix2_modified/.test(MMD_SA.MMD.motionManager.filename))
   return true
-if (MMD_SA_options.Dungeon_options.item_base.baseball._started)
+if (XRA_dungeonOptions().item_base.baseball._started)
   return true
 
 social_distancing_started = true
@@ -409,9 +419,9 @@ if (!social_distancing_started)
   return
 social_distancing_started = false
 
-MMD_SA_options.Dungeon.run_event("circle_2m_hide")
+XRA_runEvent("circle_2m_hide")
 
-MMD_SA_options.Dungeon._states.event_mode_locked = false
+XRA_dungeon()._states.event_mode_locked = false
 
 MMD_SA_options._motion_shuffle_list_default = [MMD_SA_options.motion_index_by_name["standmix2_modified"]]
 MMD_SA_options.motion_shuffle_list_default = MMD_SA_options._motion_shuffle_list_default.slice()
@@ -425,21 +435,21 @@ MMD_SA._force_motion_shuffle = true
     })()
 
    ,"menu": {
-  get index_default() { return MMD_SA_options.Dungeon.inventory.max_base + MMD_SA_options.Dungeon.inventory.max_base*(MMD_SA_options.Dungeon.inventory.max_row-1)*2 +1; }
+    get index_default() { return XRA_inventory().max_base + XRA_inventory().max_base*(XRA_inventory().max_row-1)*2 +1; }
     }
 
    ,"_map_": {
-  get index_default() { return MMD_SA_options.Dungeon.inventory.max_base + MMD_SA_options.Dungeon.inventory.max_base*(MMD_SA_options.Dungeon.inventory.max_row-1)*2 +2; }
+    get index_default() { return XRA_inventory().max_base + XRA_inventory().max_base*(XRA_inventory().max_row-1)*2 +2; }
     }
 
    ,"bag01": {
   info_short: 'Bag (AR)',
-  get index_default() { return MMD_SA_options.Dungeon.inventory.max_base; },
+    get index_default() { return XRA_inventory().max_base; },
     }
 
   ,"bag02": {
   info_short: 'Bag (misc)',
-  get index_default() { return MMD_SA_options.Dungeon.inventory.max_base * MMD_SA_options.Dungeon.inventory.max_row -1; },
+    get index_default() { return XRA_inventory().max_base * XRA_inventory().max_row -1; },
     }
 
 
@@ -451,20 +461,8 @@ MMD_SA._force_motion_shuffle = true
  ,stock_default: 0//1
  ,action: {
     func: function (item) {
-/*
-if (!MMD_SA.WebXR.user_camera.visible) {
-  DEBUG_show("(You need to activate selfie AR first.)", 3)
-  return true
-}
-*/
-if (MMD_SA.WebXR.user_camera.face_detection.enabled) {
-  MMD_SA.WebXR.user_camera.face_detection.enabled = false
-  DEBUG_show("Laughing Man:OFF", 2)
-}
-else {
-  MMD_SA.WebXR.user_camera.face_detection.enabled = true
-  DEBUG_show("Laughing Man:ON", 2)
-}
+MMD_SA.SpeechBubble.message(0, 'Laughing Man feature has been removed.', 3*1000);
+return true;
     }
    ,anytime: true
   }

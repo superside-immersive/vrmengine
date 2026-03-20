@@ -9,6 +9,28 @@
   // ── Singleton ──
   var XRA = window.XRA_PanelManager = {};
 
+  XRA.isDebugMode = function () {
+    return !!window.XRA_DEBUG_MODE;
+  };
+
+  XRA.shouldShowRuntimeOverlay = function () {
+    return !window.XRA_MOBILE_SHELL || XRA.isDebugMode();
+  };
+
+  XRA.getAutoBranchKey = function (plainLines, branches) {
+    if (!window.XRA_MOBILE_SHELL || XRA.isDebugMode() || !branches || !branches.length) return null;
+
+    var text = (plainLines || []).join('\n').toLowerCase();
+    var finishPrompt = /xr animator is now ready|you may choose to turn ui off|finish and turn ui off|press esc to toggle the bottom ui|press esc to toggle the bottom menu/i;
+    if (!finishPrompt.test(text)) return null;
+
+    var finishOnly = branches.find(function (branch) { return branch.key === 'X'; });
+    if (finishOnly) return finishOnly.key;
+
+    var firstBranch = branches[0];
+    return firstBranch ? firstBranch.key : null;
+  };
+
   var _container = null;
   var _activePanels = {};   // keyed by sb_index
   var _hooked = false;
@@ -41,11 +63,10 @@
 
     XRA.installHooks();
 
-    // Build the unified bottom toolbar
-    XRA._createToolbar();
-
     // Extra performance HUD
-    XRA._createPerfHUD();
+    if (XRA.shouldShowRuntimeOverlay()) {
+      XRA._createPerfHUD();
+    }
 
     // Apply glass-morphism to media control bar
     XRA._styleMediaBar();
@@ -150,14 +171,24 @@
     });
 
     var hasBranches = branches.length > 0;
+    var allowRuntimeOverlay = XRA.shouldShowRuntimeOverlay();
 
     if (hasBranches) {
+      var autoBranchKey = XRA.getAutoBranchKey(plainLines, branches);
+      if (autoBranchKey) {
+        setTimeout(function () {
+          _dispatchBranchKey(autoBranchKey);
+        }, 0);
+        return;
+      }
       // Menu panel with clickable options
       XRA._showMenuPanel(sbIndex, plainLines, branches, duration, para);
     } else if (duration && duration > 0) {
+      if (!allowRuntimeOverlay) return;
       // Timed message → toast
       XRA._showToast(sbIndex, msg, duration);
     } else {
+      if (!allowRuntimeOverlay) return;
       // Persistent message (dialogue mode)
       if (sbIndex === 1) {
         XRA._showInfoPanel(sbIndex, msg);
@@ -359,129 +390,6 @@
     }
   };
 
-  // ── Unified Bottom Toolbar ──
-  var _toolbar = null;
-
-  XRA._createToolbar = function () {
-    if (_toolbar) return;
-
-    _toolbar = document.createElement('div');
-    _toolbar.className = 'xra-toolbar-unified';
-    _toolbar.id = 'Lxra_toolbar';
-
-    var compactTrackingToolbar = !!window.XRA_TRACKING_COMPACT_TOOLBAR;
-    var buttons = compactTrackingToolbar ? [
-      { icon: '🎥', title: 'Streamer Mode', id: 'btn_streamer_mode', cls: 'xra-toolbar-btn--accent',
-        action: function () { XRA._startStreamerMode(); } },
-      'sep',
-      { icon: '📊', title: 'Performance HUD', id: 'btn_perf_toggle', cls: '',
-        action: function () { XRA._toggleDebugPanel(); } },
-      'sep',
-      { icon: '🪢', title: 'Ropes UI', id: 'btn_ropes_toggle', cls: 'xra-toolbar-btn--vrm-direct',
-        action: function () { XRA._toggleRopesPanel(); } },
-      'sep',
-      { icon: '💥', title: 'Collision ON/OFF', id: 'btn_collision_toggle', cls: 'xra-toolbar-btn--vrm-direct xra-toolbar-btn--active',
-        action: function () { XRA._toggleCollisionEnabled(); } },
-      { icon: '🧪', title: 'Collision Debug', id: 'btn_collision_debug', cls: 'xra-toolbar-btn--vrm-direct',
-        action: function () { XRA._toggleCollisionDebug(); } },
-    ] : [
-      // ── Start/Stop Tracking (sends 'C' key to SA system) ──
-      { icon: '📷', title: 'Tracking Menu', id: 'btn_tracking', cls: 'xra-toolbar-btn--accent',
-        action: function () { XRA._openTrackingMenu(); } },
-      'sep',
-      // ── Performance HUD toggle ──
-      { icon: '📊', title: 'Performance HUD', id: 'btn_perf_toggle', cls: '',
-        action: function () { XRA._toggleDebugPanel(); } },
-      'sep',
-      // ── Ropes toggle ──
-      { icon: '🪢', title: 'Ropes UI', id: 'btn_ropes_toggle', cls: 'xra-toolbar-btn--vrm-direct',
-        action: function () { XRA._toggleRopesPanel(); } },
-      'sep',
-      // ── Collision toggles ──
-      { icon: '💥', title: 'Collision ON/OFF', id: 'btn_collision_toggle', cls: 'xra-toolbar-btn--vrm-direct xra-toolbar-btn--active',
-        action: function () { XRA._toggleCollisionEnabled(); } },
-      { icon: '🧪', title: 'Collision Debug', id: 'btn_collision_debug', cls: 'xra-toolbar-btn--vrm-direct',
-        action: function () { XRA._toggleCollisionDebug(); } },
-    ];
-
-    // AR button only when WebXR API is available
-    if (navigator.xr) {
-      buttons.push('sep');
-      buttons.push({
-        icon: '📱', title: 'AR Mode', cls: 'xra-toolbar-btn--accent',
-        action: function () {
-          if (typeof MMD_SA !== 'undefined' && MMD_SA.WebXR && typeof MMD_SA.WebXR.enter_AR === 'function') {
-            MMD_SA.WebXR.enter_AR();
-          }
-        }
-      });
-    }
-
-    buttons.forEach(function (b) {
-      if (b === 'sep') {
-        var sep = document.createElement('div');
-        sep.className = 'xra-toolbar-sep';
-        _toolbar.appendChild(sep);
-        return;
-      }
-      var btn = document.createElement('button');
-      btn.className = 'xra-toolbar-btn' + (b.cls ? ' ' + b.cls : '');
-      btn.setAttribute('title', b.title);
-      if (b.id) btn.id = b.id;
-      btn.innerHTML = '<span>' + b.icon + '</span>';
-      btn.addEventListener('click', function (e) {
-        e.stopPropagation();
-        e.preventDefault();
-        b.action();
-      });
-      _toolbar.appendChild(btn);
-    });
-
-    document.body.appendChild(_toolbar);
-
-    // Init perf button as active (panel is visible by default)
-    var perfBtn = document.getElementById('btn_perf_toggle');
-    if (perfBtn) perfBtn.classList.add('xra-toolbar-btn--active');
-  };
-
-  // ── Debug / Performance panel toggle ──
-  XRA._debugHidden = false;
-  XRA._debugPatched = false;
-
-  XRA._toggleDebugPanel = function () {
-    XRA._debugHidden = !XRA._debugHidden;
-
-    // Patch DEBUG_show once so our hide state survives every update call
-    if (!XRA._debugPatched && typeof window.DEBUG_show === 'function') {
-      var _orig = window.DEBUG_show;
-      window.DEBUG_show = function (msg, hide_sec, always_visible) {
-        _orig.apply(this, arguments);
-        if (XRA._debugHidden) {
-          var el = document.getElementById('Ldebug');
-          if (el) el.style.visibility = 'hidden';
-        }
-      };
-      XRA._debugPatched = true;
-    }
-
-    // Apply immediately
-    var el = document.getElementById('Ldebug');
-    if (el) {
-      if (XRA._debugHidden) {
-        el.style.visibility = 'hidden';
-      }
-      // When un-hiding: don't force visible — let the next DEBUG_show call restore it
-      // This avoids flashing a stale/empty box
-    }
-
-    // Extra perf panel: always hide when suppressing; let the interval re-show when restoring
-    var extra = document.getElementById('xra_perf_extra');
-    if (extra && XRA._debugHidden) extra.style.display = 'none';
-
-    var btn = document.getElementById('btn_perf_toggle');
-    if (btn) btn.classList.toggle('xra-toolbar-btn--active', !XRA._debugHidden);
-  };
-
   // ── Extra Performance HUD ──
   var _perfRafHandle = null;
   var _perfFrameCount = 0;
@@ -491,6 +399,7 @@
   var _perfGPU = null;
 
   XRA._createPerfHUD = function () {
+    if (!XRA.shouldShowRuntimeOverlay()) return;
     if (document.getElementById('xra_perf_extra')) return;
 
     // Detect GPU renderer once
@@ -597,58 +506,6 @@
       }
     } catch (e) {}
     XRA._openTrackingMenu();
-  };
-
-  // ── Ropes panel toggle ──
-  XRA._ropesVisible = false;  // panel starts hidden; toggle button opens it
-  XRA._toggleRopesPanel = function () {
-    var panel = document.getElementById('XRA_rope_panel');
-    if (!panel) {
-      // Panel hasn't been created yet — nothing to toggle
-      return;
-    }
-    XRA._ropesVisible = !XRA._ropesVisible;
-    panel.style.display = XRA._ropesVisible ? '' : 'none';
-
-    var btn = document.getElementById('btn_ropes_toggle');
-    if (btn) btn.classList.toggle('xra-toolbar-btn--active', XRA._ropesVisible);
-  };
-
-  // ── Collision toggles ──
-  XRA._collisionEnabled = true;
-  XRA._collisionDebugOn = false;
-
-  XRA._toggleCollisionEnabled = function () {
-    if (!window.VRMCollision) return;
-    XRA._collisionEnabled = !VRMCollision.isEnabled();
-    VRMCollision.setEnabled(XRA._collisionEnabled);
-    if (!XRA._collisionEnabled) {
-      XRA._collisionDebugOn = false;
-      VRMCollision.setDebugVisualization(false);
-    }
-
-    var btn = document.getElementById('btn_collision_toggle');
-    if (btn) btn.classList.toggle('xra-toolbar-btn--active', XRA._collisionEnabled);
-
-    var dbgBtn = document.getElementById('btn_collision_debug');
-    if (dbgBtn) dbgBtn.classList.toggle('xra-toolbar-btn--active', XRA._collisionDebugOn);
-
-    console.log('[VRMCollision] Collision toggled:', XRA._collisionEnabled ? 'ON' : 'OFF',
-      VRMCollision.getStats());
-  };
-
-  XRA._toggleCollisionDebug = function () {
-    if (!window.VRMCollision) return;
-    if (!VRMCollision.isEnabled()) return;
-
-    XRA._collisionDebugOn = !XRA._collisionDebugOn;
-    VRMCollision.setDebugVisualization(XRA._collisionDebugOn);
-
-    var dbgBtn = document.getElementById('btn_collision_debug');
-    if (dbgBtn) dbgBtn.classList.toggle('xra-toolbar-btn--active', XRA._collisionDebugOn);
-
-    console.log('[VRMCollision] Debug visualization:', XRA._collisionDebugOn,
-      VRMCollision.getStats());
   };
 
   // ── Media Bar Glass-morphism ──
@@ -847,39 +704,7 @@
       if (!_hooked) {
         XRA.init();
       }
-      // Watch for ropes panel creation so we can sync button state
-      XRA._watchRopesPanel();
     }, 500);
   });
-
-  // ── Watch for XRA_rope_panel creation and sync button ──
-  XRA._watchRopesPanel = function () {
-    if (document.getElementById('XRA_rope_panel')) {
-      XRA._syncRopesButton();
-      return;
-    }
-    // Use MutationObserver to detect when panel is added to DOM
-    var observer = new MutationObserver(function (mutations) {
-      for (var i = 0; i < mutations.length; i++) {
-        var added = mutations[i].addedNodes;
-        for (var j = 0; j < added.length; j++) {
-          if (added[j].id === 'XRA_rope_panel') {
-            XRA._syncRopesButton();
-            observer.disconnect();
-            return;
-          }
-        }
-      }
-    });
-    observer.observe(document.body, { childList: true, subtree: true });
-  };
-
-  XRA._syncRopesButton = function () {
-    var btn = document.getElementById('btn_ropes_toggle');
-    if (btn) btn.classList.toggle('xra-toolbar-btn--active', XRA._ropesVisible);
-    // Also apply current visibility state to the panel itself
-    var panel = document.getElementById('XRA_rope_panel');
-    if (panel) panel.style.display = XRA._ropesVisible ? '' : 'none';
-  };
 
 })();

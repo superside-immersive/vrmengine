@@ -1,5 +1,9 @@
 // facemesh-branches-2.js
 (function () {
+function XRA_dungeon() {
+  return XRA_DungeonCompat();
+}
+
 var F = window._FMO;
 var {
   bg_branch, done_branch, panorama_branch, object3D_branch, about_branch,
@@ -111,6 +115,11 @@ reset_scene_UI();
         return [
           {
             func: function () {
+if (MMD_SA_options.interaction_animation_disabled) {
+  DEBUG_show('(Panorama menu removed in this build.)', 4);
+  XRA_runEvent('_FACEMESH_OPTIONS_', done_branch, 0);
+  return;
+}
 DragDrop.onDrop_finish = onDrop_change_panorama;
             }
            ,message: {
@@ -173,7 +182,7 @@ else {
   return false;
 }
 
-MMD_SA_options.Dungeon.run_event(null, panorama_branch, 0);
+XRA_runEvent(null, panorama_branch, 0);
 
 return true;
     } }
@@ -193,8 +202,8 @@ return true;
         goto_branch: panorama_branch
       },
       onmouseover: function (e) {
-MMD_SA_options.Dungeon.run_event(this.event_id);
-MMD_SA_options.Dungeon.utils.tooltip(
+XRA_runEvent(this.event_id);
+XRA_tooltip(
   e.clientX, e.clientY,
   System._browser.translation.get('XR_Animator.UI.UI_options.scene.skybox.rotation_speed') + ((skybox_option_active=='rotation_speed')?' (' + System._browser.translation.get('XR_Animator.UI.UI_options.scene.skybox.press_to_change_value') + ')':'') + ':\n' + System._browser.translation.get('XR_Animator.UI.UI_options.scene.skybox.rotation_speed.tooltip')
 );
@@ -205,8 +214,8 @@ MMD_SA_options.Dungeon.utils.tooltip(
         goto_branch: panorama_branch
       },
       onmouseover: function (e) {
-MMD_SA_options.Dungeon.run_event(this.event_id);
-MMD_SA_options.Dungeon.utils.tooltip(
+XRA_runEvent(this.event_id);
+XRA_tooltip(
   e.clientX, e.clientY,
   System._browser.translation.get('XR_Animator.UI.UI_options.scene.skybox.rotation_axis_angle') + ((skybox_option_active=='rotation_axis_angle')?' (' + System._browser.translation.get('XR_Animator.UI.UI_options.scene.skybox.press_to_change_value') + ')':'') + ':\n' + System._browser.translation.get('XR_Animator.UI.UI_options.scene.skybox.rotation_axis_angle.tooltip')
 );
@@ -229,7 +238,7 @@ else
           },
           {
             func: function () {
-if (MMD_SA.THREEX.enabled) MMD_SA_options.Dungeon.run_event();
+if (MMD_SA.THREEX.enabled) XRA_runEvent();
             }
           },
           {
@@ -285,7 +294,7 @@ if (MMD_SA.THREEX.utils.HDRI.mode == 2) {
         goto_branch: panorama_branch
       },
       onmouseover: function (e) {
-MMD_SA_options.Dungeon.utils.tooltip(
+XRA_tooltip(
   e.clientX, e.clientY,
   System._browser.translation.get('XR_Animator.UI.UI_options.scene.skybox.HDRI.mode.tooltip')
 );
@@ -296,7 +305,7 @@ MMD_SA_options.Dungeon.utils.tooltip(
         goto_branch: panorama_branch
       },
       onmouseover: function (e) {
-MMD_SA_options.Dungeon.utils.tooltip(
+XRA_tooltip(
   e.clientX, e.clientY,
   System._browser.translation.get('XR_Animator.UI.UI_options.scene.skybox.HDRI.light_intensity.tooltip')
 );
@@ -352,7 +361,12 @@ change_panorama(3);
      ,[
         {
           func: function () {
-MMD_SA_options.Dungeon._3D_scene_builder_mode_ = true;
+if (MMD_SA_options.interaction_animation_disabled) {
+  DEBUG_show('(3D scene builder removed in this build.)', 4);
+  XRA_runEvent('_FACEMESH_OPTIONS_', done_branch, 0);
+  return;
+}
+XRA_dungeon()._3D_scene_builder_mode_ = true;
 
 if (F._overlay_mode > -1)
   System._browser.overlay_mode = F._overlay_mode;
@@ -416,15 +430,15 @@ return System._browser.translation.get('XR_Animator.UI.UI_options.scene.3D_scene
        ,goto_event: { id:"_FACEMESH_OPTIONS_", branch_index:object3D_branch }
       }
     },
-    { key:4, branch_index:object3D_branch+2,
+    ...((MMD_SA_options.interaction_animation_disabled) ? [] : [{ key:4, branch_index:object3D_branch+2,
       onmouseover: function (e) {
-MMD_SA_options.Dungeon.utils.tooltip(
+XRA_tooltip(
   e.clientX, e.clientY,
   System._browser.translation.get('XR_Animator.UI.UI_options.scene.3D_scene_builder.explorer_mode.tooltip')
 );
       }
-    },
-    { key:5, is_closing_event:true, func:()=>{MMD_SA_options.Dungeon._3D_scene_builder_mode_ = false}, branch_index:done_branch }
+    }]),
+    { key:5, is_closing_event:true, func:()=>{XRA_dungeon()._3D_scene_builder_mode_ = false}, branch_index:done_branch }
   ]; }
 //  ].concat((F.explorer_mode) ? [] : [{ key:5, branch_index:done_branch }]); }
           }
@@ -477,15 +491,15 @@ DEBUG_show((F.object3d_list.length) ? (F.object3d_index+1) + ': ' + F.object3d_l
 if (System._browser.camera.initialized) {
   if (!System._browser.camera.ML_warmed_up) {
     System._browser.on_animation_update.add(()=>{ MMD_SA.SpeechBubble.message(0, System._browser.translation.get('XR_Animator.UI.motion_capture.ML_on.record_motion.model_warming_up'), 4*1000); }, 0,0);
-    MMD_SA_options.Dungeon.run_event(null,done_branch,0);
+    XRA_runEvent(null,done_branch,0);
   }
   else {
-    MMD_SA_options.Dungeon.run_event()
+    XRA_runEvent()
   }
 }
 else {
   System._browser.on_animation_update.add(()=>{ MMD_SA.SpeechBubble.message(0, System._browser.translation.get('XR_Animator.UI.motion_capture.ML_on.record_motion.choose_input'), 4*1000); }, 0,0);
-  MMD_SA_options.Dungeon.run_event(null,done_branch,0);
+  XRA_runEvent(null,done_branch,0);
 }
           }
         },

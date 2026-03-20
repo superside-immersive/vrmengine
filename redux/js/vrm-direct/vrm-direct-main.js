@@ -93,9 +93,6 @@
       }
     } catch (e) { /* cross-origin or not loaded – ignore */ }
 
-    /* Also sync the toolbar button glow */
-    var tbBtn = document.getElementById('btn_vrm_direct');
-    if (tbBtn) tbBtn.classList.toggle('xra-toolbar-btn--active', _enabled);
   }
 
   /** Persist current state so settings page can restore it. */

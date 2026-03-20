@@ -19,6 +19,81 @@ var tabberOptions = {manualStartup:true};
 </script>
 <script type="text/javascript" language="javascript" src="js/tabber-minimized.js"></script>
 
+<style>
+body.xra_embed_shell {
+  background: #10141c;
+  color: #eef2f6;
+  margin: 0;
+  overflow-x: hidden;
+}
+
+body.xra_embed_shell #Lsettings_main {
+  position: relative !important;
+  top: 0 !important;
+  left: 0 !important;
+  width: 100%;
+  box-sizing: border-box;
+  padding: 12px 12px 36px;
+}
+
+body.xra_embed_shell table.normal,
+body.xra_embed_shell .tabbertab,
+body.xra_embed_shell .tabberlive .tabbertab {
+  color: #eef2f6;
+}
+
+body.xra_embed_shell .tabber {
+  background: transparent;
+}
+
+body.xra_embed_shell .tabbernav {
+  border-bottom: 1px solid rgba(255,255,255,0.08);
+}
+
+body.xra_embed_shell .tabbernav li a {
+  background: rgba(255,255,255,0.06);
+  border: 1px solid rgba(255,255,255,0.08);
+  color: rgba(255,255,255,0.78);
+  border-radius: 999px;
+}
+
+body.xra_embed_shell .tabbernav li.tabberactive a {
+  background: #ff5a14;
+  color: #fff;
+  border-color: transparent;
+}
+
+body.xra_embed_shell input,
+body.xra_embed_shell select,
+body.xra_embed_shell textarea,
+body.xra_embed_shell .textBox {
+  background: rgba(255,255,255,0.08);
+  color: #fff;
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 10px;
+}
+
+body.xra_embed_shell input[type="button"],
+body.xra_embed_shell button {
+  background: #ff5a14;
+  color: #fff;
+  border: 0;
+  border-radius: 999px;
+}
+
+body.xra_embed_shell a {
+  color: #ffd2c0;
+}
+
+body.xra_embed_shell hr {
+  border-color: rgba(255,255,255,0.08);
+}
+
+body.xra_embed_shell table:first-of-type {
+  display: none;
+}
+</style>
+
 <script type="text/javascript">
 
 if (!oShell)
@@ -76,6 +151,14 @@ function writeCPUOptions() {
   for (var i = 0; i < max; i++)
     html += '<option value="CPU' + i + '">CPU usage (core' + ((i > 3) ? '' : '/meter') + ' ' + (i+1) + ')</option>\n'
   document.write(html)
+}
+
+function applyXraEmbedMode() {
+  if (location.search.indexOf('xra_embed=1') == -1)
+    return
+
+  document.body.className += ((document.body.className) ? ' ' : '') + 'xra_embed_shell'
+  document.title = 'XR Animator Settings'
 }
 
 function stripAudioOptions(selectEl) {
@@ -289,7 +372,7 @@ System.Gadget.onSettingsClosing = SettingsClosing;
   }
 
   ReverseAnimation.checked = returnBoolean("ReverseAnimation")
-  UseFilters.checked = returnBoolean("UseFilters")
+  UseFilters.checked = false
   UseMarkers.checked = returnBoolean("UseMarkers")
   UseImgCache.checked = returnBoolean("UseImgCache")
   UseFullFrameRate.checked = parent_window.use_full_fps_registered || returnBoolean("UseFullFrameRate")
@@ -346,7 +429,7 @@ System.Gadget.onSettingsClosing = SettingsClosing;
 
   CSSTransform3DBillboard.checked = System.Gadget.Settings.readString("CSSTransform3DBillboard")
   CSSTransform3DDisabledForContent.checked = System.Gadget.Settings.readString("CSSTransform3DDisabledForContent")
-  CSSTransform3DBoxAnimate.checked = System.Gadget.Settings.readString("CSSTransform3DBoxAnimate")
+  CSSTransform3DBoxAnimate.checked = false
 //  UseWebcamHeadtracking.checked = System.Gadget.Settings.readString("UseWebcamHeadtracking")
 
   UseHTML5Canvas.checked = returnBoolean("UseHTML5Canvas")
@@ -377,7 +460,7 @@ System.Gadget.onSettingsClosing = SettingsClosing;
   UseCanvasPPEContrast.value = UseCanvasPPEContrast_VALUE.innerText = System.Gadget.Settings.readString("UseCanvasPPEContrast") || Settings_default.UseCanvasPPEContrast
   UseCanvasPPEBrightness.value = UseCanvasPPEBrightness_VALUE.innerText = System.Gadget.Settings.readString("UseCanvasPPEBrightness") || Settings_default.UseCanvasPPEBrightness
 
-  UseSVGClock.checked = returnBoolean("UseSVGClock")
+  UseSVGClock.checked = false
 
   AutoItRunAsAU3.checked = returnBoolean("AutoItRunAsAU3")
   AutoItAlwaysOnTop.checked = returnBoolean("AutoItAlwaysOnTop")
@@ -639,7 +722,7 @@ if (use_SA_system_emulation && (!v || /^demo/.test(v))) {
 //System.Gadget.Settings.writeString("HandleOversize", v)
 
   System.Gadget.Settings.writeString("ReverseAnimation", returnYesNo("ReverseAnimation", ReverseAnimation.checked))
-  System.Gadget.Settings.writeString("UseFilters", returnYesNo("UseFilters", UseFilters.checked))
+  System.Gadget.Settings.writeString("UseFilters", "")
   System.Gadget.Settings.writeString("UseMarkers", returnYesNo("UseMarkers", UseMarkers.checked))
   System.Gadget.Settings.writeString("UseImgCache", returnYesNo("UseImgCache", UseImgCache.checked))
   System.Gadget.Settings.writeString("UseFullFrameRate", returnYesNo("UseFullFrameRate", UseFullFrameRate.checked))
@@ -663,9 +746,7 @@ if (use_SA_system_emulation && (!v || /^demo/.test(v))) {
 //  System.Gadget.Settings.writeString("XULTransparentBG", returnYesNo("XULTransparentBG", XULTransparentBG.checked))
   System.Gadget.Settings.writeString("ChildDragDisabled", returnYesNo("ChildDragDisabled", ChildDragDisabled.checked))
 
-  Box3D()
-  if (!CSSTransform3DBoxAnimate.checked)
-    System.Gadget.Settings.writeString("CSSTransform3DBoxAnimate", "")
+  System.Gadget.Settings.writeString("CSSTransform3DBoxAnimate", "")
 
   System.Gadget.Settings.writeString("CSSTransformFullscreen", returnYesNo("CSSTransformFullscreen", CSSTransformFullscreen.checked))
   if (CSSTransformFullscreen.checked)
@@ -744,7 +825,7 @@ if (use_SA_system_emulation && (!v || /^demo/.test(v))) {
     v = ""
   System.Gadget.Settings.writeString("UseCanvasPPEBrightness", v)
 
-  System.Gadget.Settings.writeString("UseSVGClock", returnYesNo("UseSVGClock", UseSVGClock.checked))
+  System.Gadget.Settings.writeString("UseSVGClock", "")
 
   System.Gadget.Settings.writeString("AutoItRunAsAU3", returnYesNo("AutoItRunAsAU3", AutoItRunAsAU3.checked))
   System.Gadget.Settings.writeString("AutoItAlwaysOnTop", returnYesNo("AutoItAlwaysOnTop", AutoItAlwaysOnTop.checked))
@@ -1164,6 +1245,10 @@ function createXULHostShortcut(path, remove_file) {
 }
 
 function Box3D(check_mode) {
+  if (check_mode)
+    DEBUG_show('3D box feature has been removed in this build.', 10)
+  return
+
   if (!(w3c_mode)) {
     if (check_mode)
       DEBUG_show('ERROR: This function works only on XUL or Chromium mode.', 10)
@@ -1315,8 +1400,7 @@ function Box3D(check_mode) {
   if (!CSSTransform3D.value)
     CSSTransform3D.value = 'perspective(800px) translateZ(-'+depth+'px)'
 
-  if (CSSTransform3DBoxAnimate.checked)
-    System.Gadget.Settings.writeString("CSSTransform3DBoxAnimate", depth)
+  System.Gadget.Settings.writeString("CSSTransform3DBoxAnimate", "")
 
   for (var name in face) {
     var obj = face[name]
@@ -1437,6 +1521,12 @@ saveSettings()
     event.cancel = false;
 
   if (use_inline_dialog) {
+    if (parent && parent.XRA_MobileShell && location.search.indexOf('xra_embed=1') != -1) {
+      parent.XRA_MobileShell.closeSettingsPanel()
+      parent.System._browser.onSettingsClosed(self.returnValue)
+      return
+    }
+
     SA_dialog_restore_parent_size()
 
     parent.document.getElementById("Idialog").style.visibility = "hidden"
@@ -1447,7 +1537,7 @@ saveSettings()
 </script>
 
 </head>
-<body onload="loadSettings()">
+<body onload="loadSettings(); applyXraEmbedMode();">
 <div id="Lsettings_main" style="position:absolute; top:0px; left:0px;">
 	<table border="0" width="300" cellpadding="0" cellspacing="0" class="normal">
 		<tr>
@@ -1909,8 +1999,7 @@ Number of meters for CPU monitor <a href="#" onclick="return false" title="This 
 		<tr>
 			<td>&nbsp;</td>
 			<td style="padding-top:4px;">
-				<input name="UseFilters" type="checkbox" id="UseFilters" value="checkbox" />
-				<label id="L_UseFilters_TEXT" for="UseFilters">Use visual filters <a href="#" onclick="return false" title="Enable the options of visual filters such as Spotlight, Motionblur and Matrix for some animation types.">(?)</a></label>
+        <span id="L_UseFilters" style="color:#777;">Visual filters feature removed in this build.</span>
 
 				<input name="UseImgCache" type="checkbox" id="UseImgCache" value="checkbox" />
 				<label id="L_UseImgCache_TEXT" for="UseImgCache">Image caching <a href="#" onclick="return false" title="Enable this option for frame-based animation (.SEQ) to reduce HDD access. This option requires more memory at startup and the gadget display may flash while caching.">(?)</a></label>
@@ -1952,10 +2041,7 @@ Number of meters for CPU monitor <a href="#" onclick="return false" title="This 
 		<tr>
 			<td>&nbsp;</td>
 			<td style="padding-top:4px;">
-<span id="L_UseSVGClock">
-	<input name="UseSVGClock" type="checkbox" id="UseSVGClock" value="checkbox" />
-	<label id="L_UseSVGClock_TEXT" for="UseSVGClock">Enable SVG Clock <a href="#" onclick="return false" title="Enable this option to display a SVG (Scalable Vector Graphics) clock on the current animation.">(?)</a></label>
-</span>
+<span id="L_UseSVGClock" style="color:#777;">SVG Clock feature removed in this build.</span>
 			</td>
 		</tr>
 
@@ -2197,13 +2283,9 @@ Brightness:
 
 		<tr>
 			<td>&nbsp;</td>
-			<td style="padding-top:4px;">
-3D box
-<a href="http://www.youtube.com/watch?v=oJp3bMkO34g" onclick="return false" title="This option turns one or more child animations into a 3D box animation automatically. Click to watch the video tutorial for details.">(?)</a>
-<a href="#" onclick="Box3D(true); return false" title="Click to check whether all the conditions are fulfilled to generate a 3D box.">(check)</a>:
-<input name="CSSTransform3DBoxDepth" type="text" id="CSSTransform3DBoxDepth" value="0" style="font-size:10px; width:30px" /> Depth / <input name="CSSTransform3DBoxAnimate" type="checkbox" id="CSSTransform3DBoxAnimate" value="checkbox" />
-<label id="L_CSSTransform3DBoxAnimate_TEXT" for="CSSTransform3DBoxAnimate">Animate</label>
-			</td>
+      <td style="padding-top:4px; color:#777;">
+3D box feature removed in this build.
+      </td>
 		</tr>
 <!--
 		<tr>

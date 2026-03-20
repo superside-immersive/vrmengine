@@ -1,6 +1,38 @@
 // facemesh-options-core.js
 // All helper functions, closure variables, and event listeners for _FACEMESH_OPTIONS_
 (function () {
+function XRA_dungeon() {
+  return XRA_DungeonCompat();
+}
+
+function XRA_dungeonOptions() {
+  return XRA_DungeonOptionsCompat();
+}
+
+function XRA_dungeonGroundY(value) {
+  const para_by_grid_id = XRA_dungeon().para_by_grid_id;
+  if (!para_by_grid_id?.[2]) return;
+
+  if (arguments.length) {
+    para_by_grid_id[2].ground_y = value;
+  }
+
+  return para_by_grid_id[2].ground_y;
+}
+
+function XRA_addAccessory(object3d) {
+  const dungeon = XRA_dungeon();
+  dungeon.accessory_list = dungeon.accessory_list || [];
+  dungeon.accessory_list.push(object3d);
+}
+
+function XRA_removeAccessory(object3d) {
+  const dungeon = XRA_dungeon();
+  if (dungeon.accessory_list) {
+    dungeon.accessory_list = dungeon.accessory_list.filter(a => a !== object3d);
+  }
+}
+
 function speech_bubble2(msg, duration, para={}) {
   MMD_SA.SpeechBubble.list[1].message(3, msg, duration*1000, Object.assign({scale:0.75}, para));
 }
@@ -10,6 +42,11 @@ let wallpaper_dialog_enabled, wallpaper_generator_dialog_enabled;
 async function onDrop_change_wallpaper(e) {
   let resolve_to_return, return_value;
   e.detail.promises_to_return.push(new Promise((resolve)=>{ resolve_to_return=resolve; }));
+
+  if (MMD_SA_options.interaction_animation_disabled) {
+    resolve_to_return(false);
+    return;
+  }
 
   const item = e.detail.item;
   const src = item.path
@@ -118,7 +155,7 @@ function onDrop_JSON_change_facemesh_calibration(e) {
     speech_bubble2('✅Facemesh calibration', 3, { no_word_break:true });
     System._browser.camera.facemesh.import_calibration(json);
   }
-  MMD_SA_options.Dungeon?.run_event?.(null,done_branch,0);
+  XRA_runEvent(null,done_branch,0);
 }
 
 var object3d_list = [];
@@ -379,7 +416,7 @@ switch (keyCode) {
       pos.y += pos_inc * sign_center;
     }
     else if (ev.altKey) {
-      if (MMD_SA_options.Dungeon.para_by_grid_id)         MMD_SA_options.Dungeon.para_by_grid_id[2].ground_y += pos_inc;
+      if (XRA_dungeon().para_by_grid_id) XRA_dungeonGroundY(XRA_dungeonGroundY() + pos_inc);
     }
     else {
       pos.z -= pos_inc * sign_center;
@@ -406,7 +443,7 @@ switch (keyCode) {
       pos.y -= pos_inc * sign_center;
     }
     else if (ev.altKey) {
-      if (MMD_SA_options.Dungeon.para_by_grid_id)         MMD_SA_options.Dungeon.para_by_grid_id[2].ground_y -= pos_inc;
+      if (XRA_dungeon().para_by_grid_id) XRA_dungeonGroundY(XRA_dungeonGroundY() - pos_inc);
     }
     else {
       pos.z += pos_inc * sign_center;
@@ -444,14 +481,14 @@ switch (keyCode) {
       const parent_bone_name = parent_bone_list[parent_bone_index+1];
       obj.parent_bone = { model_index:0, name:parent_bone_name, position:{x:0,y:0,z:-1}, rotation:{x:0,y:0,z:0} };
       if (parent_bone_index == -1) {
-        MMD_SA_options.Dungeon?.accessory_list.push(obj);
+        XRA_addAccessory(obj);
       }
       p = obj.parent_bone;
     }
     else {
       delete obj.parent_bone;
       use_avatar_as_center = explorer_mode;
-      if (MMD_SA_options.Dungeon.accessory_list) MMD_SA_options.Dungeon.accessory_list = MMD_SA_options.Dungeon.accessory_list.filter(a => a !== obj);
+      XRA_removeAccessory(obj);
       p = mesh;
       mesh.position.copy(c_pos);
 // re-enable .matrixAutoUpdate as accessory disabled it
@@ -488,7 +525,7 @@ switch (keyCode) {
 // R
   case 82:
     if (!e.detail.reset_confirmed) {
-      MMD_SA_options.Dungeon?.run_event?.({
+      XRA_runEvent({
 message: {
   index: 1,
   get content() { return System._browser.translation.get('XR_Animator.UI.UI_options.scene.3D_scene_builder.reset'); },
@@ -505,7 +542,7 @@ message: {
       if (ds.parent_bone_name) {
         if (!obj.parent_bone) {
           obj.parent_bone = { model_index:0, name:ds.parent_bone_name, position:{x:0,y:0,z:-1}, rotation:{x:0,y:0,z:0} };
-          MMD_SA_options.Dungeon?.accessory_list.push(obj);
+          XRA_addAccessory(obj);
         }
         p = obj.parent_bone;
         p_rot = p.rotation;
@@ -513,7 +550,7 @@ message: {
       else {
         if (obj.parent_bone) {
           delete obj.parent_bone;
-          if (MMD_SA_options.Dungeon.accessory_list) MMD_SA_options.Dungeon.accessory_list = MMD_SA_options.Dungeon.accessory_list.filter(a => a !== obj);
+          XRA_removeAccessory(obj);
         }
         p = mesh;
         p_rot = obj.user_data._rotation_;
@@ -535,7 +572,7 @@ message: {
 // X
   case 88:
     if (!e.detail.remove_confirmed) {
-      MMD_SA_options.Dungeon?.run_event?.({
+      XRA_runEvent({
 message: {
   index: 1,
   get content() { return System._browser.translation.get('XR_Animator.UI.UI_options.scene.3D_scene_builder.remove'); },
@@ -569,7 +606,7 @@ message: {
     return;
 }
 
-explorer_ground_y = MMD_SA_options.Dungeon?.para_by_grid_id[2].ground_y;
+explorer_ground_y = XRA_dungeonGroundY();
 
 if (use_avatar_as_center && !obj.parent_bone) {
   pos.add(v3b.copy(p.position).sub(c_pos).multiplyScalar(scale)).applyEuler(rot).add(c_pos);
@@ -601,7 +638,7 @@ System._browser.DEBUG_show([
   'Rotation(±' + (2) + '°): ' + ((obj.parent_bone) ? e1.copy(p.rotation).toArray().slice(0,3) : e1.copy(obj.user_data._rotation_).toArray().slice(0,3).map(v=>Math.round(v*180/Math.PI))),
   'Scale: ' + Math.round(mesh.scale.x*10)/10,
   '',
-  'Ground Y(±' + (Math.round(pos_inc*1000)/1000) + '): ' + Math.round(MMD_SA_options.Dungeon?.para_by_grid_id[2].ground_y*10)/10,
+  'Ground Y(±' + (Math.round(pos_inc*1000)/1000) + '): ' + Math.round((XRA_dungeonGroundY()||0)*10)/10,
   '',
   ((obj.parent_bone) ? 'Attach to: ' + (MMD_SA.THREEX.VRM.bone_map_MMD_to_VRM[obj.parent_bone.name] || obj.parent_bone.name) : 'Center: ' + ((use_avatar_as_center) ? 'Avatar' : 'Object')),
 ].join('\n'));
@@ -696,7 +733,7 @@ function remove_object3D(index) {
     MMD_SA.THREEX.scene.remove(object3d._obj);
 
     if (object3d.parent_bone)
-      if (MMD_SA_options.Dungeon.accessory_list) MMD_SA_options.Dungeon.accessory_list = MMD_SA_options.Dungeon.accessory_list.filter(a => a !== object3d);
+      XRA_removeAccessory(object3d);
 
     const d = object3d.user_data;
     if (d.animation_mixer) {
@@ -820,7 +857,7 @@ function update_panorama_depth(image, mesh, para={}) {
   ctx.filter = 'none';
 
   const canvas_disp = canvas_dummy2 = canvas_dummy2 || document.createElement('canvas');
-  const sd = MMD_SA_options.Dungeon_options?.skydome;
+  const sd = XRA_dungeonOptions()?.skydome;
   let dw = canvas_disp.width  = para.width_segments  || sd?.width_segments || 64;
   let dh = canvas_disp.height = para.height_segments || sd?.height_segments || 64;
   const ctx_disp = canvas_disp.getContext('2d');
@@ -911,7 +948,7 @@ async function change_panorama(index, src, para={}) {
     panorama_src = para.full_path || src;
   }
 
-  var sd = MMD_SA_options.Dungeon_options?.skydome
+  var sd = XRA_dungeonOptions()?.skydome
   if (panorama_loading) {
     DEBUG_show('(panorama still loading)', 2)
     return
@@ -1140,7 +1177,7 @@ p_bone.is_T_pose = is_T_pose;
         if (motion_index != -1) {
           p = Promise.resolve(true);//new Promise((resolve)=>{ System._browser.on_animation_update.add(resolve, 1,0); });
           if (motion.play_on_ready) {
-            p.then(()=>{ MMD_SA_options.Dungeon_options?.item_base?.pose?._change_motion_(motion_index, true); });
+            p.then(()=>{ XRA_dungeonOptions()?.item_base?.pose?._change_motion_(motion_index, true); });
           }
           else {
             const index = MMD_SA_options.motion_index_by_name[filename];
@@ -1254,7 +1291,7 @@ MMD_SA._force_motion_shuffle = true;
 
     await parse_event(json.XR_Animator_scene.on, 'init');
 
-    const wallpaper = json.XR_Animator_scene.wallpaper;
+    const wallpaper = (!MMD_SA_options.interaction_animation_disabled) && json.XR_Animator_scene.wallpaper;
     if (wallpaper) {
       const v_bg = document.getElementById("VdesktopBG");
       if (v_bg) {
@@ -1262,7 +1299,7 @@ MMD_SA._force_motion_shuffle = true;
         v_bg.style.visibility = 'hidden';
       }
 
-      if (wallpaper.path) {
+      if (wallpaper.path && !MMD_SA_options.interaction_animation_disabled) {
         if (await locate_file(zip, wallpaper)) {
           if (wallpaper.settings_3d) {
             loaded_count_max++;
@@ -1296,7 +1333,7 @@ MMD_SA._force_motion_shuffle = true;
       loaded_count_max++;
     }
 
-    const HDRI = MMD_SA.THREEX.enabled && json.XR_Animator_scene.HDRI;
+    const HDRI = (!MMD_SA_options.interaction_animation_disabled) && MMD_SA.THREEX.enabled && json.XR_Animator_scene.HDRI;
     if (HDRI) {
       if (HDRI.path) {
         if (!await locate_file(zip, HDRI)) {
@@ -1328,7 +1365,7 @@ MMD_SA._force_motion_shuffle = true;
       }
     }
 
-    const panorama = !HDRI?.mode && json.XR_Animator_scene.panorama;
+    const panorama = (!MMD_SA_options.interaction_animation_disabled) && !HDRI?.mode && json.XR_Animator_scene.panorama;
     if (panorama) {
       if (panorama.path) {
         if (!await locate_file(zip, panorama))
@@ -1430,7 +1467,7 @@ MMD_SA._force_motion_shuffle = true;
     if (settings) {
       if (settings.explorer_mode?.ground_y != null) {
         explorer_ground_y = settings.explorer_mode.ground_y;
-        if (MMD_SA_options.Dungeon.para_by_grid_id)           MMD_SA_options.Dungeon.para_by_grid_id[2].ground_y = explorer_ground_y;
+        if (XRA_dungeon().para_by_grid_id) XRA_dungeonGroundY(explorer_ground_y);
       }
 
       if (settings.camera) {
@@ -1515,7 +1552,7 @@ window.dispatchEvent(new CustomEvent("SA_XR_Animator_scene_onload"));
 
   return async function (e) {
     function reset_UI() {
-      if (MMD_SA_options.Dungeon?.event_mode)
+      if (XRA_dungeon().event_mode)
         document.dispatchEvent(new KeyboardEvent('keydown', { code:'Escape' }));
 //      reset_scene_UI();
     }
@@ -1648,18 +1685,18 @@ function export_scene_JSON(para) {
     object3D_list_json.push(obj_json);
   });
 
-  if ((!para?.includes || para.includes.wallpaper) && wallpaper_src) {
+  if (!MMD_SA_options.interaction_animation_disabled && (!para?.includes || para.includes.wallpaper) && wallpaper_src) {
     scene_json.wallpaper = { path:wallpaper_src, color:document.body.style.backgroundColor };
     if (para?.includes?.wallpaper)
       scene_json.wallpaper.wallpaper_only = true;
     if (MMD_SA.Wallpaper3D.visible)
       scene_json.wallpaper.settings_3d = Object.assign({}, MMD_SA.Wallpaper3D.options_by_filename[wallpaper_src.replace(/^.+[\/\\]/, '')]);
   }
-  else if (LdesktopBG_host.style.display == 'none') {
+  else if (!MMD_SA_options.interaction_animation_disabled && (LdesktopBG_host.style.display == 'none')) {
     scene_json.wallpaper = { color:document.body.style.backgroundColor };
   }
 
-  if ((!para?.includes || para.includes.panorama) && (panorama_index != null)) {
+  if (!MMD_SA_options.interaction_animation_disabled && (!para?.includes || para.includes.panorama) && (panorama_index != null)) {
     scene_json.panorama = {
       index: panorama_index,
       axis_angle: dome_axis_angle,
@@ -1670,7 +1707,7 @@ function export_scene_JSON(para) {
   }
 
   const HDRI_path = MMD_SA.THREEX.utils.HDRI.path;
-  if ((!para?.includes || para.includes.HDRI) && HDRI_path) {
+  if (!MMD_SA_options.interaction_animation_disabled && (!para?.includes || para.includes.HDRI) && HDRI_path) {
     let HDRI_filename = HDRI_path.replace(/^.+[\/\\]/, '');
     let HDRI_index = ((HDRI_path != HDRI_filename) && (HDRI_list.indexOf(HDRI_filename)+1)) || null;
     scene_json.HDRI = {
@@ -1716,7 +1753,7 @@ window.addEventListener('jThree_ready', ()=>{
 // use .condition instead of .enabled to save some headaches when .camera_face_locking can change at any time
 //    enabled: MMD_SA_options.camera_face_locking,
     condition: ()=>{
-return MMD_SA_options.camera_face_locking || ((MMD_SA_options.camera_face_locking !== false) && !explorer_mode && !MMD_SA_options.Dungeon_options?.item_base?.hand_camera?._hand_camera_active && MMD_SA_options.Dungeon?.started && (MMD_SA.Wallpaper3D?.visible || MMD_SA_options.mesh_obj_by_id["DomeMESH"]?._obj?.visible || (MMD_SA.THREEX.enabled && MMD_SA.THREEX.scene.background) || object3d_list.some(obj=>!obj.parent_bone)) && !MMD_SA.THREEX._THREE.MMD.getCameraMotion().length);
+return MMD_SA_options.camera_face_locking || ((MMD_SA_options.camera_face_locking !== false) && !explorer_mode && !XRA_dungeonOptions()?.item_base?.hand_camera?._hand_camera_active && XRA_dungeon().started && (MMD_SA.Wallpaper3D?.visible || MMD_SA_options.mesh_obj_by_id["DomeMESH"]?._obj?.visible || (MMD_SA.THREEX.enabled && MMD_SA.THREEX.scene.background) || object3d_list.some(obj=>!obj.parent_bone)) && !MMD_SA.THREEX._THREE.MMD.getCameraMotion().length);
     },
   });
 
@@ -1763,14 +1800,14 @@ function reset_scene_explorer(enforced) {
   explorer_mode = false;
   MMD_SA_options.user_camera.ML_models.look_at_screen = null;
 
-  if (MMD_SA_options.Dungeon._states)   MMD_SA_options.Dungeon._states.action_allowed_in_event_mode = false;
-  if (MMD_SA_options.Dungeon_options)   MMD_SA_options.Dungeon_options.character_movement_disabled = true;
+  if (XRA_dungeon()._states) XRA_dungeon()._states.action_allowed_in_event_mode = false;
+  if (XRA_dungeonOptions()) XRA_dungeonOptions().character_movement_disabled = true;
 
-  if (MMD_SA_options.Dungeon_options?.camera_position_z_sign != 1) {
-    if (MMD_SA_options.Dungeon_options)     MMD_SA_options.Dungeon_options.camera_position_z_sign = 1;
-    MMD_SA_options.Dungeon?.update_camera_position_base();
+  if (XRA_dungeonOptions()?.camera_position_z_sign != 1) {
+    if (XRA_dungeonOptions()) XRA_dungeonOptions().camera_position_z_sign = 1;
+    XRA_dungeon().update_camera_position_base?.();
 
-    const c = MMD_SA_options.Dungeon?.character;
+    const c = XRA_dungeon().character;
     if (c && c.about_turn) {
       c.about_turn = false;
       c.rot.y += Math.PI;
@@ -1778,7 +1815,7 @@ function reset_scene_explorer(enforced) {
     if (c) c.pos_update();
   }
 
-  if (MMD_SA_options.Dungeon.para_by_grid_id)   MMD_SA_options.Dungeon.para_by_grid_id[2].ground_y = THREE.MMD.getModels()[0].mesh.position.y;//.ground_y_visible
+  if (XRA_dungeon().para_by_grid_id) XRA_dungeonGroundY(THREE.MMD.getModels()[0].mesh.position.y);//.ground_y_visible
 
   object3d_list.forEach(object3d=>{
     object3d.no_collision = true;

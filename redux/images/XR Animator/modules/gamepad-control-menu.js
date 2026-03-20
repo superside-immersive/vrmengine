@@ -77,7 +77,7 @@ else {
   }
 }
 
-MMD_SA_options.Dungeon.run_event(null,null,page_index);
+XRA_runEvent(null,null,page_index);
 
 return true;
 } },
@@ -126,8 +126,8 @@ default_control_option_active = 'joystick_left';
   }, goto_event:{event_index:10} },
   sb_index: 1,
   onmouseover: function (e) {
-MMD_SA_options.Dungeon.run_event(this.event_id);
-MMD_SA_options.Dungeon.utils.tooltip(
+XRA_runEvent(this.event_id);
+XRA_tooltip(
   e.clientX, e.clientY,
   System._browser.translation.get('XR_Animator.UI.UI_options.miscellaneous_options.gamepad_control.adjust_default_controls.joystick_left.tooltip').replace(/\<press_to_adjust\>/, (default_control_option_active == 'joystick_left') ? ' ('+System._browser.translation.get('XR_Animator.UI.UI_options.miscellaneous_options.gamepad_control.adjust_default_controls.press_to_adjust')+')' : '')
 );
@@ -139,8 +139,8 @@ default_control_option_active = 'joystick_right';
 }, goto_event:{event_index:10} },
   sb_index: 1,
   onmouseover: function (e) {
-MMD_SA_options.Dungeon.run_event(this.event_id);
-MMD_SA_options.Dungeon.utils.tooltip(
+XRA_runEvent(this.event_id);
+XRA_tooltip(
   e.clientX, e.clientY,
   System._browser.translation.get('XR_Animator.UI.UI_options.miscellaneous_options.gamepad_control.adjust_default_controls.joystick_right.tooltip').replace(/\<press_to_adjust\>/, (default_control_option_active == 'joystick_right') ? ' ('+System._browser.translation.get('XR_Animator.UI.UI_options.miscellaneous_options.gamepad_control.adjust_default_controls.press_to_adjust')+')' : '')
 );
@@ -152,8 +152,8 @@ default_control_option_active = 'L2/R2';
 }, goto_event:{event_index:10} },
   sb_index: 1,
   onmouseover: function (e) {
-MMD_SA_options.Dungeon.run_event(this.event_id);
-MMD_SA_options.Dungeon.utils.tooltip(
+XRA_runEvent(this.event_id);
+XRA_tooltip(
   e.clientX, e.clientY,
   System._browser.translation.get('XR_Animator.UI.UI_options.miscellaneous_options.gamepad_control.adjust_default_controls.L2_R2.tooltip').replace(/\<press_to_adjust\>/, (default_control_option_active == 'L2/R2') ? ' ('+System._browser.translation.get('XR_Animator.UI.UI_options.miscellaneous_options.gamepad_control.adjust_default_controls.press_to_adjust')+')' : '')
 );
@@ -176,7 +176,7 @@ button_append = null;
 MMD_SA.Gamepad.enabled = !MMD_SA.Gamepad.enabled;
   }, goto_event:{event_index:9} },
   onmouseover: function (e) {
-MMD_SA_options.Dungeon.utils.tooltip(
+XRA_tooltip(
   e.clientX, e.clientY,
   System._browser.translation.get('XR_Animator.UI.UI_options.miscellaneous_options.gamepad_control.tooltip')
 );
@@ -187,7 +187,7 @@ MMD_SA_options.Dungeon.utils.tooltip(
 page2_type = 'default_control';
   }, goto_event:{event_index:10} },
   onmouseover: function (e) {
-MMD_SA_options.Dungeon.utils.tooltip(
+XRA_tooltip(
   e.clientX, e.clientY,
   System._browser.translation.get('XR_Animator.UI.UI_options.miscellaneous_options.gamepad_control.adjust_default_controls.tooltip')
 );
@@ -198,7 +198,7 @@ MMD_SA_options.Dungeon.utils.tooltip(
 page2_type = 'custom_control';
   }, goto_event:{event_index:10} },
   onmouseover: function (e) {
-MMD_SA_options.Dungeon.utils.tooltip(
+XRA_tooltip(
   e.clientX, e.clientY,
   System._browser.translation.get('XR_Animator.UI.UI_options.miscellaneous_options.gamepad_control.change_custom_controls.tooltip')
 );
@@ -218,7 +218,7 @@ page2_type = null;
         {
           func: ()=>{
 if (page2_type) {
-  MMD_SA_options.Dungeon.run_event();
+  XRA_runEvent();
 }
 else {
   MMD_SA.SpeechBubble.list[1].hide();
