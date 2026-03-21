@@ -581,7 +581,7 @@ function SA_load_body() {
 + '</div>\n'
 
 + '<div id="Lmenu_host" style="position:absolute; top:0px; left:0px;">\n'
-+ '<link rel="stylesheet" href="css/panels.css" />'+'\n'
++ '<link rel="stylesheet" href="css/panels.css' + ((self.SA_CACHE_BUST) ? ('?v=' + encodeURIComponent(self.SA_CACHE_BUST)) : '') + '" />'+'\n'
 + '<div id="Lxra_panels" style="position:fixed;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:1200;"></div>'+'\n'
 + '<div id="C_media_control" style="display:none"></div>\n'
 

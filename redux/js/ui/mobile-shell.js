@@ -8,7 +8,8 @@
     bootFinished: false,
     autoStartAttempted: false,
     cameras: [],
-    activeTab: 'capture'
+    activeTab: 'capture',
+    previewTimer: null
   };
 
   var DEFAULT_HIP_Y_OFFSET_PERCENT = -12;
@@ -125,6 +126,10 @@
       '        <div class="xra-settings-card">',
       '          <div class="xra-settings-card__title-row"><h3>Camera</h3><button id="xra_refresh_cameras" class="xra-chip-button" type="button">Refresh</button></div>',
       '          <label class="xra-field"><span>Webcam</span><select id="xra_camera_select" class="xra-select"><option>Detecting cameras…</option></select></label>',
+      '          <div class="xra-camera-preview">',
+      '            <video id="xra_camera_preview" class="xra-camera-preview__video" autoplay muted playsinline></video>',
+      '            <div id="xra_camera_preview_label" class="xra-camera-preview__label">Preview appears once webcam starts.</div>',
+      '          </div>',
       '          <div class="xra-grid-2">',
       '            <label class="xra-field"><span>Resolution</span><select id="xra_resolution_select" class="xra-select"><option value="default">Default</option><option value="640x480">640×480</option><option value="1280x960">1280×960</option><option value="1920x1080">1920×1080</option><option value="3840x2160">3840×2160</option><option value="nolimit">No limit</option></select></label>',
       '            <label class="xra-field"><span>Frame rate</span><select id="xra_fps_select" class="xra-select"><option value="default">Default</option><option value="24">24 fps</option><option value="30">30 fps</option><option value="60">60 fps</option></select></label>',
@@ -162,6 +167,8 @@
     refreshCameraList(false);
     updateLoadingMessage(window.XRA_BOOT_STATUS && window.XRA_BOOT_STATUS.lastMessage);
     scheduleTrackingDefaults();
+    syncCameraPreview();
+    ensurePreviewTimer();
 
     try {
       navigator.mediaDevices && navigator.mediaDevices.addEventListener && navigator.mediaDevices.addEventListener('devicechange', function () {
@@ -193,12 +200,14 @@
     window.addEventListener('MMDStarted', function () {
       updateLoadingMessage('Final touches…');
       scheduleTrackingDefaults();
+      syncCameraPreview();
       setTimeout(finishLoadingShell, 900);
     });
 
     window.addEventListener('SA_XR_Animator_scene_onload', function () {
       updateLoadingMessage('Scene ready. Starting webcam…');
       scheduleTrackingDefaults();
+      syncCameraPreview();
     });
 
     window.addEventListener('keydown', function (e) {
@@ -234,6 +243,7 @@
     sheet.setAttribute('aria-hidden', 'false');
     syncControls();
     refreshCameraList(false);
+    syncCameraPreview();
     switchTab(tab || 'capture');
     return true;
   }
@@ -265,6 +275,83 @@
     if (!node) return;
     node.textContent = text;
     node.classList.toggle('is-error', !!isError);
+  }
+
+  function cameraLabel(device, index) {
+    if (!device) return 'Camera';
+    return device.label || ('Camera ' + ((index || 0) + 1));
+  }
+
+  function cameraLabelScore(device) {
+    var label = String((device && device.label) || '').toLowerCase();
+    var score = 0;
+
+    if (!label) return score;
+
+    if (/(ultra\s*wide\s*front|front\s*ultra\s*wide)/.test(label)) score += 300;
+    if (/(front|facetime|user|selfie|true.?depth)/.test(label)) score += 180;
+    if (/(center\s*stage)/.test(label)) score += 120;
+    if (/(back|rear|environment|world|desk\s*view|continuity)/.test(label)) score -= 260;
+    if (/(telephoto|macro|external|virtual)/.test(label)) score -= 80;
+    if (/(ultra\s*wide|wide)/.test(label) && !/(front|facetime|user|selfie)/.test(label)) score -= 40;
+
+    return score;
+  }
+
+  function getPreferredCamera(cameras) {
+    if (!cameras || !cameras.length) return null;
+    return cameras.slice().sort(function (a, b) {
+      return cameraLabelScore(b) - cameraLabelScore(a);
+    })[0] || null;
+  }
+
+  function shouldAutoChoosePreferredCamera(options) {
+    var preference = options && options.streamer_mode && options.streamer_mode.camera_preference;
+    if (!preference) return true;
+    if (preference.selection_source === 'manual') return false;
+    return true;
+  }
+
+  function storeCameraPreference(device, source) {
+    var options = ensureCameraOptions();
+    if (!options || !device) return;
+    options.streamer_mode.camera_preference = Object.assign(options.streamer_mode.camera_preference || {}, {
+      label: device.label || '',
+      selection_source: source || 'auto'
+    });
+  }
+
+  function getCameraPreviewStream() {
+    var camera = window.System && System._browser && System._browser.camera;
+    if (!camera) return null;
+    if (camera.stream) return camera.stream;
+    if (camera.video && camera.video.srcObject) return camera.video.srcObject;
+    return null;
+  }
+
+  function syncCameraPreview() {
+    var preview = byId('xra_camera_preview');
+    var label = byId('xra_camera_preview_label');
+    var options = ensureCameraOptions();
+    if (!preview || !label) return;
+
+    var stream = getCameraPreviewStream();
+    if (preview.srcObject !== stream) preview.srcObject = stream || null;
+
+    if (stream) {
+      preview.classList.add('is-live');
+      preview.play && preview.play().catch(function () {});
+      label.textContent = (options && options.streamer_mode && options.streamer_mode.camera_preference && options.streamer_mode.camera_preference.label) || 'Live webcam preview';
+    }
+    else {
+      preview.classList.remove('is-live');
+      label.textContent = 'Preview appears once webcam starts.';
+    }
+  }
+
+  function ensurePreviewTimer() {
+    if (state.previewTimer) return;
+    state.previewTimer = setInterval(syncCameraPreview, 700);
   }
 
   function syncControls() {
@@ -299,6 +386,15 @@
       }
       var devices = await navigator.mediaDevices.enumerateDevices();
       state.cameras = devices.filter(function (device) { return device.kind === 'videoinput'; });
+      var options = ensureCameraOptions();
+      var preferred = getPreferredCamera(state.cameras);
+      if (preferred && shouldAutoChoosePreferredCamera(options)) {
+        storeCameraPreference(preferred, 'auto');
+      }
+
+      state.cameras = state.cameras.slice().sort(function (a, b) {
+        return cameraLabelScore(b) - cameraLabelScore(a);
+      });
       select.innerHTML = '';
       if (!state.cameras.length) {
         select.innerHTML = '<option value="">No webcam detected</option>';
@@ -307,17 +403,18 @@
       state.cameras.forEach(function (device, index) {
         var option = document.createElement('option');
         option.value = device.deviceId || ('camera-' + index);
-        option.textContent = device.label || ('Camera ' + (index + 1));
+        option.textContent = cameraLabel(device, index);
         option.dataset.label = device.label || '';
         select.appendChild(option);
       });
-      var options = ensureCameraOptions();
       var wanted = options && options.streamer_mode.camera_preference.label;
       if (wanted) {
         var match = state.cameras.find(function (device) { return device.label === wanted; });
         if (match) select.value = match.deviceId;
       }
+      if (!select.value && preferred) select.value = preferred.deviceId;
       if (!select.value && state.cameras[0]) select.value = state.cameras[0].deviceId;
+      syncCameraPreview();
     } catch (e) {
       setStatus('Camera list unavailable until permission is granted.', true);
     }
@@ -337,7 +434,8 @@
     if (select && select.selectedOptions && select.selectedOptions[0]) {
       options.streamer_mode.camera_preference = Object.assign(options.streamer_mode.camera_preference || {}, {
         label: select.selectedOptions[0].dataset.label || select.selectedOptions[0].textContent,
-        video_flipped: !!(flip && flip.checked)
+        video_flipped: !!(flip && flip.checked),
+        selection_source: 'manual'
       });
     }
 
@@ -364,6 +462,7 @@
     if (camera && camera.video_track && typeof camera.set_constraints === 'function') {
       camera.video_track.applyConstraints(camera.set_constraints()).then(function () {
         setStatus('Camera settings applied.', false);
+        syncCameraPreview();
       }).catch(function () {
         setStatus('Saved. Some changes apply the next time webcam restarts.', false);
       });
@@ -375,7 +474,7 @@
 
   async function primePreferredCamera() {
     var options = ensureCameraOptions();
-    if (!options || options.streamer_mode.camera_preference.label) return;
+    if (!options) return;
     if (!navigator.mediaDevices || !navigator.mediaDevices.enumerateDevices) return;
 
     var probe = null;
@@ -383,9 +482,12 @@
       if (navigator.mediaDevices.getUserMedia) probe = await navigator.mediaDevices.getUserMedia({ video: true, audio: false });
       var devices = await navigator.mediaDevices.enumerateDevices();
       var cameras = devices.filter(function (device) { return device.kind === 'videoinput'; });
-      if (cameras.length) options.streamer_mode.camera_preference.label = cameras[0].label || '';
+      var preferred = getPreferredCamera(cameras);
+      if (preferred && shouldAutoChoosePreferredCamera(options)) {
+        storeCameraPreference(preferred, 'auto');
+      }
       state.cameras = cameras;
-      refreshCameraList(false);
+      await refreshCameraList(false);
     } finally {
       if (probe) probe.getTracks().forEach(function (track) { track.stop(); });
     }
@@ -410,6 +512,7 @@
       if (!startStreamerMode()) {
         setStatus('Webcam could not start automatically. Open the menu to retry.', true);
       }
+      syncCameraPreview();
     } catch (e) {
       setStatus('Webcam needs permission. Open the menu to retry.', true);
     }
