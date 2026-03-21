@@ -1,6 +1,6 @@
 // (2023-08-23)
 
-var TRACKING_LIB_CACHE_BUST = '20260321-6';
+var TRACKING_LIB_CACHE_BUST = '20260321-7';
 
 function getTrackingLibCacheBust() {
   try {

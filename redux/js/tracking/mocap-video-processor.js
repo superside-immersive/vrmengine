@@ -2,7 +2,7 @@
 // Extracted from mocap_lib_module.js (Step 2B)
 
 import { get_pose_index } from './mocap-constants.js';
-import { pose_adjust, process_facemesh } from './mocap-pose-processor.js?v=20260321-6';
+import { pose_adjust, process_facemesh } from './mocap-pose-processor.js?v=20260321-7';
 import { hands_adjust, is_hand_visible, get_hand_canvas } from './mocap-hands-processor.js';
 
 /**
@@ -125,18 +125,15 @@ S.hands_worker_ready = false;
       result = await ((S.use_human_pose) ? S.human.detect(rgba) : ((S.use_movenet) ? S.posenet.estimatePoses(rgba, {}, S.vt) : S.posenet_model.estimateSinglePose(rgba, {})));
       pose = pose_adjust(S, (S.use_human_pose) ? result.body[0] : result, w, h, options);
     }
-    if (!window._vp_diag) {
-      window._vp_diag = true;
-      console.warn('[video-proc] DIAG:', JSON.stringify({
-        pose_enabled: !!options.pose_enabled,
-        use_movenet: !!S.use_movenet,
-        use_human_pose: !!S.use_human_pose,
-        pose_truthy: !!pose,
-        pose_is_array: Array.isArray(pose),
-        pose_len: Array.isArray(pose) ? pose.length : (pose?.keypoints ? 1 : 0),
-        has_kp3d: !!(pose && (Array.isArray(pose) ? pose[0] : pose)?.keypoints3D),
-        kp3d_len: (pose && (Array.isArray(pose) ? pose[0] : pose)?.keypoints3D?.length) || 0
-      }));
+    if (!window._vp_kp3d_found) {
+      window._vp_frames = (window._vp_frames || 0) + 1;
+      var _kp3d = pose?.keypoints3D;
+      if (_kp3d?.length) {
+        window._vp_kp3d_found = true;
+        console.warn('[video-proc] FIRST keypoints3D at frame ' + window._vp_frames + ', len=' + _kp3d.length);
+      } else if (window._vp_frames === 60) {
+        console.error('[video-proc] NO keypoints3D after 60 frames. pose type=' + typeof pose + ', keys=' + (pose ? Object.keys(pose) : 'null'));
+      }
     }
 
     if (S.use_hands_worker_parallel) S.pose_last = pose;
@@ -321,6 +318,12 @@ else {
           ? pose.keypoints3D_raw : pose.keypoints3D,
         scores: pose.keypoints3D.map(function(l){ return l.score != null ? l.score : 1; })
       };
+
+      if (!window._push_logged) {
+        window._push_logged = true;
+        console.warn('[video-proc] pushPoseData FIRST CALL, lms=' + _posePacket.lms.length +
+          ', solver=' + !!(window.VRMDirectPoseSolver?.pushPoseData));
+      }
 
       if (typeof window === 'object' && window.VRMDirectPoseSolver && typeof window.VRMDirectPoseSolver.pushPoseData === 'function') {
         window.VRMDirectPoseSolver.pushPoseData(_posePacket);

@@ -441,22 +441,23 @@ estimatePoses: function (video, dummy, nowInMs) {
 
 //console.log(Object.assign(result, { poseLandmarks:result[pose_names[0]][0], za:result[pose_names[1]][0] }, result_face, result_hands))
 
-  if (!S._ep_diag) {
-    S._ep_diag = true;
+  if (!S._ep_found) {
+    S._ep_frames = (S._ep_frames || 0) + 1;
     var _lm0 = result[pose_names[0]];
     var _wl0 = result[pose_names[1]];
-    console.warn('[estimatePoses] DIAG raw result:', JSON.stringify({
-      result_keys: Object.keys(result),
-      pose_names: pose_names,
-      landmarks_exists: !!_lm0,
-      landmarks_len: _lm0?.length || 0,
-      landmarks0_len: _lm0?.[0]?.length || 0,
-      worldLandmarks_exists: !!_wl0,
-      worldLandmarks_len: _wl0?.length || 0,
-      worldLandmarks0_len: _wl0?.[0]?.length || 0,
-      poseLandmarks_final: !!(_lm0?.[0]),
-      za_final: !!(_wl0?.[0])
-    }));
+    if (_lm0?.length > 0) {
+      S._ep_found = true;
+      console.warn('[estimatePoses] FIRST DETECTION at frame ' + S._ep_frames + ':', JSON.stringify({
+        landmarks_len: _lm0.length,
+        landmarks0_len: _lm0[0]?.length || 0,
+        worldLandmarks_len: _wl0?.length || 0,
+        worldLandmarks0_len: _wl0?.[0]?.length || 0,
+        poseLandmarks_final: !!(_lm0[0]),
+        za_final: !!(_wl0?.[0])
+      }));
+    } else if (S._ep_frames === 60) {
+      console.error('[estimatePoses] NO PERSON DETECTED after 60 frames! PoseLandmarker returning empty landmarks every frame.');
+    }
   }
 
   return Promise.resolve(Object.assign(result, { poseLandmarks:result[pose_names[0]][0], za:result[pose_names[1]][0] }, result_face, result_hands));

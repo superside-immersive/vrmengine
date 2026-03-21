@@ -2,7 +2,7 @@
 // Extracted from mocap_lib_module.js (Step 2B)
 
 import { BLAZEPOSE_KEYPOINTS, get_pose_index } from './mocap-constants.js';
-console.log('[mocap-pose-processor] v20260321-6 loaded');
+console.log('[mocap-pose-processor] v20260321-7 loaded');
 
 /**
  * Adjust raw pose data into normalized format.
@@ -35,22 +35,26 @@ export function pose_adjust(S, pose, w, h, options) {
       }));
     }
 
-    if (!window._pa_diag) {
-      window._pa_diag = true;
-      console.warn('[pose_adjust] DIAG flags:', JSON.stringify({
-        pose_truthy: !!pose,
-        use_movenet: !!S.use_movenet,
-        use_holistic: !!options.use_holistic,
-        use_mediapipe_pose_landmarker: !!S.use_mediapipe_pose_landmarker,
-        use_human_pose: !!S.use_human_pose,
-        poseLandmarks: !!(pose && pose.poseLandmarks),
-        poseLandmarks_len: pose?.poseLandmarks?.length || 0,
-        za: !!(pose && pose.za),
-        ea: !!(pose && pose.ea),
-        landmarks_arr: !!(pose && pose.landmarks),
-        landmarks_len: pose?.landmarks?.length || 0,
-        result_keys: pose ? Object.keys(pose).slice(0,15) : []
-      }));
+    if (!window._pa_found) {
+      window._pa_frames = (window._pa_frames || 0) + 1;
+      var _hasPL = !!(pose && pose.poseLandmarks?.length);
+      if (_hasPL) {
+        window._pa_found = true;
+        console.warn('[pose_adjust] FIRST LANDMARKS at frame ' + window._pa_frames + ':', JSON.stringify({
+          use_movenet: !!S.use_movenet,
+          use_mediapipe_pose_landmarker: !!S.use_mediapipe_pose_landmarker,
+          poseLandmarks_len: pose.poseLandmarks.length,
+          za: !!(pose.za),
+          ea: !!(pose.ea),
+          result_keys: Object.keys(pose).slice(0,15)
+        }));
+      } else if (window._pa_frames === 60) {
+        console.error('[pose_adjust] NO poseLandmarks after 60 frames. Last flags:', JSON.stringify({
+          pose_truthy: !!pose, use_movenet: !!S.use_movenet,
+          use_mediapipe_pose_landmarker: !!S.use_mediapipe_pose_landmarker,
+          result_keys: pose ? Object.keys(pose).slice(0,15) : []
+        }));
+      }
     }
 
     if (!pose || !S.use_movenet) return pose
