@@ -2,6 +2,7 @@
 // Extracted from mocap_lib_module.js (Step 2B)
 
 import { BLAZEPOSE_KEYPOINTS, get_pose_index } from './mocap-constants.js';
+console.log('[mocap-pose-processor] v20260321-5 loaded');
 
 /**
  * Adjust raw pose data into normalized format.
@@ -69,6 +70,10 @@ name: BLAZEPOSE_KEYPOINTS[i]
 
         if (!_keypoints3D?.length) {
           _keypoints3D = synthesize_keypoints3D_from_pose_landmarks(_result.poseLandmarks);
+          if (_keypoints3D && !window._synth3d_logged) {
+            window._synth3d_logged = true;
+            console.warn('[mocap-pose-processor] worldLandmarks missing — using synthesized keypoints3D fallback (' + _keypoints3D.length + ' pts)');
+          }
         }
       }
       else {
