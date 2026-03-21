@@ -949,3 +949,111 @@
     width: min(540px, calc(100vw - 36px));
   }
 }
+
+/* ============================================================
+   Performance Overlay — always-visible on-screen HUD
+   ============================================================ */
+#xra_perf_overlay {
+  position: fixed;
+  top: 8px;
+  right: 8px;
+  z-index: 10000;
+  min-width: 180px;
+  max-width: 240px;
+  background: rgba(6, 8, 14, 0.92);
+  color: #b8cce0;
+  border: 1px solid rgba(81, 198, 226, 0.18);
+  border-radius: 10px;
+  font-family: "SF Mono", "Cascadia Code", "Consolas", monospace;
+  font-size: 10px;
+  line-height: 1.55;
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  box-shadow: 0 4px 20px rgba(0,0,0,0.55);
+  overflow: hidden;
+  pointer-events: auto;
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+#xra_perf_overlay_title {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  padding: 4px 10px;
+  background: rgba(81, 198, 226, 0.10);
+  color: #6ec9e8;
+  font-weight: 700;
+  font-size: 10px;
+  letter-spacing: 1.5px;
+  cursor: pointer;
+  border-bottom: 1px solid rgba(81, 198, 226, 0.10);
+}
+#xra_perf_overlay_title:hover {
+  background: rgba(81, 198, 226, 0.18);
+}
+#xra_perf_overlay_title .perf-icon {
+  font-size: 12px;
+}
+
+#xra_perf_overlay_body {
+  padding: 4px 0;
+}
+
+#xra_perf_graph {
+  display: block;
+  width: 100%;
+  height: 32px;
+  margin-bottom: 2px;
+  border-bottom: 1px solid rgba(81, 198, 226, 0.08);
+}
+
+.perf-row {
+  display: flex;
+  justify-content: space-between;
+  padding: 1px 10px;
+}
+.perf-row:hover {
+  background: rgba(81, 198, 226, 0.06);
+}
+.perf-sep {
+  display: block;
+  text-align: center;
+  color: rgba(110, 201, 232, 0.4);
+  font-size: 9px;
+  padding: 3px 10px 1px;
+  letter-spacing: 0.5px;
+}
+.perf-label {
+  color: rgba(200, 212, 224, 0.55);
+  min-width: 52px;
+}
+.perf-value {
+  color: #d0e0f0;
+  text-align: right;
+  flex: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* Status badges */
+.perf-on   { color: #5eff7e; font-weight: 600; }
+.perf-off  { color: rgba(255,255,255,0.25); }
+.perf-warm { color: #ffe65e; }
+.perf-loaded { color: #6ec9e8; }
+
+/* Mobile: slightly smaller */
+@media (max-width: 600px) {
+  #xra_perf_overlay {
+    top: 4px;
+    right: 4px;
+    min-width: 150px;
+    max-width: 190px;
+    font-size: 9px;
+    border-radius: 8px;
+  }
+  #xra_perf_graph {
+    height: 24px;
+  }
+}
