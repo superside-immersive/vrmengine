@@ -82,6 +82,52 @@
     '左腕捩': true, '右腕捩': true, '左手捩': true, '右手捩': true
   };
 
+  // ─── Finger bone VRM names — need extra quaternion smoothing ───
+  // The original jThree path applies per-bone OneEuroFilter(30,1,1,1,4) to rotation
+  // references. The VRM Direct path bypasses jThree entirely, so finger bones read
+  // from bones_by_name have NO additional quaternion-level filtering — only the
+  // worker-layer landmark filter (beta=0.001). This causes visible jitter.
+  var FINGER_BONES = {
+    'rightThumbMetacarpal':1, 'rightThumbProximal':1, 'rightThumbDistal':1,
+    'rightLittleProximal':1, 'rightLittleIntermediate':1, 'rightLittleDistal':1,
+    'rightRingProximal':1, 'rightRingIntermediate':1, 'rightRingDistal':1,
+    'rightMiddleProximal':1, 'rightMiddleIntermediate':1, 'rightMiddleDistal':1,
+    'rightIndexProximal':1, 'rightIndexIntermediate':1, 'rightIndexDistal':1,
+    'leftThumbMetacarpal':1, 'leftThumbProximal':1, 'leftThumbDistal':1,
+    'leftLittleProximal':1, 'leftLittleIntermediate':1, 'leftLittleDistal':1,
+    'leftRingProximal':1, 'leftRingIntermediate':1, 'leftRingDistal':1,
+    'leftMiddleProximal':1, 'leftMiddleIntermediate':1, 'leftMiddleDistal':1,
+    'leftIndexProximal':1, 'leftIndexIntermediate':1, 'leftIndexDistal':1
+  };
+
+  // OneEuroFilter config for finger bone quaternions.
+  // minCutOff=1: moderate smoothing floor (matches hand landmark filters)
+  // beta=0.5: moderate speed-adaptation (less than arms@0.7, more than body@0.3)
+  // Matches the dual-layer original: worker filters landmarks, then jThree filters quats.
+  var FILTER_FINGERS = { freq: 30, minCutOff: 1.0, beta: 0.5, dCutOff: 1.0 };
+  var _fingerFilters = {};  // vrmName → OneEuroFilter (type=4, quaternion)
+
+  function _getFingerFilter(vrmName) {
+    if (!_fingerFilters[vrmName] && typeof OneEuroFilter === 'function') {
+      _fingerFilters[vrmName] = new OneEuroFilter(
+        FILTER_FINGERS.freq, FILTER_FINGERS.minCutOff,
+        FILTER_FINGERS.beta, FILTER_FINGERS.dCutOff, 4
+      );
+    }
+    return _fingerFilters[vrmName];
+  }
+
+  /** Apply OneEuroFilter to a finger bone quaternion (reduces jitter from raw bones_by_name). */
+  function _filterFingerQuat(T, vrmName, q) {
+    var filter = _getFingerFilter(vrmName);
+    if (!filter) return q;
+    var ts = performance.now();
+    var out = filter.filter([q.x, q.y, q.z, q.w], ts);
+    var result = new T.Quaternion(out[0], out[1], out[2], out[3]).normalize();
+    if (isNaN(result.x) || isNaN(result.y) || isNaN(result.z) || isNaN(result.w)) return q;
+    return result;
+  }
+
   // Lazy-init temp quaternion (THREE only available after jThree_ready)
   var _q1 = null;
 
@@ -215,6 +261,14 @@
 
         var q = mmdBone.quaternion.clone();
         flipForMeshRotation(q);
+
+        // Apply OneEuroFilter smoothing to finger bone quaternions.
+        // Replaces the per-bone quaternion filter that jThree/index.js provides
+        // in the original render path but is absent in VRM Direct.
+        if (FINGER_BONES[vrmName]) {
+          q = _filterFingerQuat(T, vrmName, q);
+        }
+
         result[vrmName] = q;
       }
 

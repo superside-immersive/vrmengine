@@ -603,6 +603,18 @@ System.Gadget.onSettingsClosing = SettingsClosing;
     } else {
       VRMDirectEnabled.checked = (System.Gadget.Settings.readString("VRMDirectEnabled") === "1");
     }
+
+    // VRM Direct smoothness sliders
+    var _lerpBodyVal = System.Gadget.Settings.readString("VRMDirectLerpBody");
+    if (_lerpBodyVal) {
+      VRMDirectLerpBody.value = VRMDirectLerpBody_VALUE.innerText = _lerpBodyVal;
+      if (parent_window.VRMDirect && parent_window.VRMDirect.setLerp) parent_window.VRMDirect.setLerp(parseInt(_lerpBodyVal)/100);
+    }
+    var _lerpFingersVal = System.Gadget.Settings.readString("VRMDirectLerpFingers");
+    if (_lerpFingersVal) {
+      VRMDirectLerpFingers.value = VRMDirectLerpFingers_VALUE.innerText = _lerpFingersVal;
+      if (parent_window.VRMDirect && parent_window.VRMDirect.setLerpFingers) parent_window.VRMDirect.setLerpFingers(parseInt(_lerpFingersVal)/100);
+    }
   }
 
 
@@ -2373,6 +2385,32 @@ Brightness:
 			<td style="padding-top:4px;">
 <label for="VRMDirectEnabled"><input type="checkbox" id="VRMDirectEnabled" onclick="if(this.checked){parent_window.VRMDirect&&parent_window.VRMDirect.enable();}else{parent_window.VRMDirect&&parent_window.VRMDirect.disable();} System.Gadget.Settings.writeString('VRMDirectEnabled',this.checked?'1':'0');" /> VRM Direct Tracking (second model)
 <a href="#" onclick="return false" title="Load a second VRM model (finalsnoo.vrm) that receives the same MediaPipe tracking data directly from the solver, displayed side-by-side with the main model.">(?)</a></label>
+			</td>
+		</tr>
+
+		<tr>
+			<td>&nbsp;</td>
+			<td style="padding-top:4px;">
+<table border="0" width="300" cellpadding="0" cellspacing="0" class="normal">
+<tr>
+<td width="25%">
+Body smoothness <a href="#" onclick="return false" title="Frame-to-frame interpolation factor for body bones in VRM Direct Tracking. Lower = smoother but laggier. Default is 60%.">(?)</a>:
+</td>
+<td width="75%">
+<input type="range" id="VRMDirectLerpBody" min="10" max="100" step="5" value="60" onchange="var v=this.value/100; if(parent_window.VRMDirect&&parent_window.VRMDirect.setLerp) parent_window.VRMDirect.setLerp(v); System.Gadget.Settings.writeString('VRMDirectLerpBody',this.value); VRMDirectLerpBody_VALUE.innerText=this.value;">
+<span id="VRMDirectLerpBody_VALUE">60</span>%
+</td>
+</tr>
+<tr>
+<td width="25%">
+Finger smoothness <a href="#" onclick="return false" title="Frame-to-frame interpolation factor for finger bones in VRM Direct Tracking. Lower = smoother. Default is 40%.">(?)</a>:
+</td>
+<td width="75%">
+<input type="range" id="VRMDirectLerpFingers" min="5" max="100" step="5" value="40" onchange="var v=this.value/100; if(parent_window.VRMDirect&&parent_window.VRMDirect.setLerpFingers) parent_window.VRMDirect.setLerpFingers(v); System.Gadget.Settings.writeString('VRMDirectLerpFingers',this.value); VRMDirectLerpFingers_VALUE.innerText=this.value;">
+<span id="VRMDirectLerpFingers_VALUE">40</span>%
+</td>
+</tr>
+</table>
 			</td>
 		</tr>
 

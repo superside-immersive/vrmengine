@@ -19,12 +19,28 @@
 
   var _active          = false;
   var _handle          = null;   // VRM handle from VRMDirectLoader
-  var _lerpFactor      = 0.5;    // Interpolation factor (0=frozen, 1=instant)
+  var _lerpFactor      = 0.6;    // Body interpolation (0=frozen, 1=instant)
+  var _lerpFactorFingers = 0.4;  // Finger interpolation (lower = smoother, less jitter)
   var _prevTimestamp   = 0;
   var _useSAScheduler  = false;  // true si se registró en on_animation_update
   var _bodyDiagDone    = false;  // one-time body diagnostic flag
   var _tickCount       = 0;      // frame counter for delayed diagnostics
   var _collisionErrorLogged = false;  // one-time collision error flag
+  var _prevQuats       = {};    // vrmName → Quaternion (prev frame, for slerp)
+
+  // Finger bone VRM names (same set as vrm-direct-solver.js FINGER_BONES)
+  var _FINGER_SET = {
+    'rightThumbMetacarpal':1, 'rightThumbProximal':1, 'rightThumbDistal':1,
+    'rightLittleProximal':1, 'rightLittleIntermediate':1, 'rightLittleDistal':1,
+    'rightRingProximal':1, 'rightRingIntermediate':1, 'rightRingDistal':1,
+    'rightMiddleProximal':1, 'rightMiddleIntermediate':1, 'rightMiddleDistal':1,
+    'rightIndexProximal':1, 'rightIndexIntermediate':1, 'rightIndexDistal':1,
+    'leftThumbMetacarpal':1, 'leftThumbProximal':1, 'leftThumbDistal':1,
+    'leftLittleProximal':1, 'leftLittleIntermediate':1, 'leftLittleDistal':1,
+    'leftRingProximal':1, 'leftRingIntermediate':1, 'leftRingDistal':1,
+    'leftMiddleProximal':1, 'leftMiddleIntermediate':1, 'leftMiddleDistal':1,
+    'leftIndexProximal':1, 'leftIndexIntermediate':1, 'leftIndexDistal':1
+  };
 
   // ──────────────────────────────────────────────
   //  Bone & face application
@@ -32,7 +48,10 @@
 
   /**
    * Apply solved bone rotations to the VRM model.
-   * Uses direct quaternion copy (same as threex-vrm.js) — NOT slerp.
+   * Uses temporal slerp interpolation — each bone is smoothly blended from
+   * its previous frame value to the new target, reducing frame-to-frame jitter.
+   * Fingers use a lower lerp factor (more smoothing) because hand landmarks
+   * are inherently noisier than body landmarks.
    */
   function applyBody(handle, boneData) {
     if (!boneData) return;
@@ -51,8 +70,18 @@
       var targetQ = boneData[vrmName];
       if (!targetQ) continue;
 
-      // Direct copy — same as threex-vrm.js bone.quaternion.copy(q)
-      boneNode.quaternion.copy(targetQ);
+      // Temporal slerp: blend from previous frame quaternion to new target.
+      // This adds frame-to-frame smoothing that the original jThree render path
+      // provides via its per-bone OneEuroFilter + temporal interpolation.
+      var prevQ = _prevQuats[vrmName];
+      if (prevQ) {
+        var factor = (_FINGER_SET[vrmName]) ? _lerpFactorFingers : _lerpFactor;
+        boneNode.quaternion.copy(prevQ).slerp(targetQ, factor);
+        _prevQuats[vrmName].copy(boneNode.quaternion);
+      } else {
+        boneNode.quaternion.copy(targetQ);
+        _prevQuats[vrmName] = targetQ.clone();
+      }
     }
 
     // Apply hips position from center/hip bones
@@ -314,20 +343,30 @@
   }
 
   /**
-   * Set interpolation smoothness.
+   * Set interpolation smoothness for body bones.
    * @param {number} value - 0.01 (very smooth / laggy) to 1 (instant)
    */
   function setLerp(value) {
     _lerpFactor = Math.max(0.01, Math.min(1, value));
   }
 
+  /**
+   * Set interpolation smoothness for finger bones separately.
+   * @param {number} value - 0.01 (very smooth / laggy) to 1 (instant)
+   */
+  function setLerpFingers(value) {
+    _lerpFactorFingers = Math.max(0.01, Math.min(1, value));
+  }
+
   // ─── Public API ───
   window.VRMDirectAnimator = {
-    start:    start,
-    stop:     stop,
-    setLerp:  setLerp,
-    getLerp:  function() { return _lerpFactor; },
-    isActive: function() { return _active; }
+    start:          start,
+    stop:           stop,
+    setLerp:        setLerp,
+    setLerpFingers: setLerpFingers,
+    getLerp:        function() { return _lerpFactor; },
+    getLerpFingers: function() { return _lerpFactorFingers; },
+    isActive:       function() { return _active; }
   };
 
 })();
