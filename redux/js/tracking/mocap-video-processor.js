@@ -2,7 +2,7 @@
 // Extracted from mocap_lib_module.js (Step 2B)
 
 import { get_pose_index } from './mocap-constants.js';
-import { pose_adjust, process_facemesh } from './mocap-pose-processor.js?v=20260321-7';
+import { pose_adjust, process_facemesh } from './mocap-pose-processor.js?v=20260321-8';
 import { hands_adjust, is_hand_visible, get_hand_canvas } from './mocap-hands-processor.js';
 
 /**

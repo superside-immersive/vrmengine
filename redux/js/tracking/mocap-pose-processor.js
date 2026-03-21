@@ -2,7 +2,7 @@
 // Extracted from mocap_lib_module.js (Step 2B)
 
 import { BLAZEPOSE_KEYPOINTS, get_pose_index } from './mocap-constants.js';
-console.log('[mocap-pose-processor] v20260321-7 loaded');
+console.log('[mocap-pose-processor] v20260321-8 loaded');
 
 /**
  * Adjust raw pose data into normalized format.

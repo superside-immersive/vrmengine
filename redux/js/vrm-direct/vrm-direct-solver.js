@@ -290,17 +290,23 @@
 
     } // end if (bones)
 
-    // ─── Fase 2 supplement ───
-    // _poseFrames (Fase 2) only fills bones that Fase 1 did NOT already provide.
-    // When frames.skin (SA IK) is running it owns all body bones, so the VRM tracks
-    // identically to the MMD model — stable fallback positions, consistent hands.
-    // Fase 2 only takes over a bone when Fase 1 has no data for it (e.g. standalone mode).
+    // ─── Fase 2 override ───
+    // When VRMDirectPoseSolver is enabled (auto-enabled on first pose data or manual),
+    // its computed body bones ALWAYS override Fase 1 (bones_by_name / MMD idle).
+    // Fase 1 still provides bones that Fase 2 doesn't compute (fingers, neck, head, etc.).
+    // On desktop with working SA IK, Fase 2 is never auto-enabled because pushPoseData
+    // is only called from the main-thread video processor path (iPad/mobile).
     if (window.VRMDirectSolver && VRMDirectSolver._poseFrames) {
       var pf = VRMDirectSolver._poseFrames;
       var preferPoseFrames = false;
       try {
-        preferPoseFrames = !!(window.VRMDirectPoseSolver && VRMDirectPoseSolver.isEnabled && VRMDirectPoseSolver.isEnabled() && !hasLiveSkinFrames());
+        preferPoseFrames = !!(window.VRMDirectPoseSolver && VRMDirectPoseSolver.isEnabled && VRMDirectPoseSolver.isEnabled());
       } catch (e) {}
+
+      if (!window._ppf_logged && preferPoseFrames) {
+        window._ppf_logged = true;
+        console.log('[solveBody] Fase 2 ACTIVE — overriding ' + Object.keys(pf).length + ' bones from PoseSolver');
+      }
 
       for (var pfKey in pf) {
         if (pfKey === '_hipsPosition') continue; // never take hips position from Fase 2
