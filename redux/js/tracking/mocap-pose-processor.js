@@ -2,7 +2,7 @@
 // Extracted from mocap_lib_module.js (Step 2B)
 
 import { BLAZEPOSE_KEYPOINTS, get_pose_index } from './mocap-constants.js';
-console.log('[mocap-pose-processor] v20260321-5 loaded');
+console.log('[mocap-pose-processor] v20260321-6 loaded');
 
 /**
  * Adjust raw pose data into normalized format.
@@ -32,6 +32,24 @@ export function pose_adjust(S, pose, w, h, options) {
         y: hipCenter.y - landmark.y,
         z: landmark.z - hipCenter.z,
         name: BLAZEPOSE_KEYPOINTS[i]
+      }));
+    }
+
+    if (!window._pa_diag) {
+      window._pa_diag = true;
+      console.warn('[pose_adjust] DIAG flags:', JSON.stringify({
+        pose_truthy: !!pose,
+        use_movenet: !!S.use_movenet,
+        use_holistic: !!options.use_holistic,
+        use_mediapipe_pose_landmarker: !!S.use_mediapipe_pose_landmarker,
+        use_human_pose: !!S.use_human_pose,
+        poseLandmarks: !!(pose && pose.poseLandmarks),
+        poseLandmarks_len: pose?.poseLandmarks?.length || 0,
+        za: !!(pose && pose.za),
+        ea: !!(pose && pose.ea),
+        landmarks_arr: !!(pose && pose.landmarks),
+        landmarks_len: pose?.landmarks?.length || 0,
+        result_keys: pose ? Object.keys(pose).slice(0,15) : []
       }));
     }
 

@@ -2,7 +2,7 @@
 // Extracted from mocap_lib_module.js (Step 2B)
 
 import { get_pose_index } from './mocap-constants.js';
-import { pose_adjust, process_facemesh } from './mocap-pose-processor.js?v=20260321-5';
+import { pose_adjust, process_facemesh } from './mocap-pose-processor.js?v=20260321-6';
 import { hands_adjust, is_hand_visible, get_hand_canvas } from './mocap-hands-processor.js';
 
 /**
@@ -124,6 +124,19 @@ S.hands_worker_ready = false;
     if (options.pose_enabled) {
       result = await ((S.use_human_pose) ? S.human.detect(rgba) : ((S.use_movenet) ? S.posenet.estimatePoses(rgba, {}, S.vt) : S.posenet_model.estimateSinglePose(rgba, {})));
       pose = pose_adjust(S, (S.use_human_pose) ? result.body[0] : result, w, h, options);
+    }
+    if (!window._vp_diag) {
+      window._vp_diag = true;
+      console.warn('[video-proc] DIAG:', JSON.stringify({
+        pose_enabled: !!options.pose_enabled,
+        use_movenet: !!S.use_movenet,
+        use_human_pose: !!S.use_human_pose,
+        pose_truthy: !!pose,
+        pose_is_array: Array.isArray(pose),
+        pose_len: Array.isArray(pose) ? pose.length : (pose?.keypoints ? 1 : 0),
+        has_kp3d: !!(pose && (Array.isArray(pose) ? pose[0] : pose)?.keypoints3D),
+        kp3d_len: (pose && (Array.isArray(pose) ? pose[0] : pose)?.keypoints3D?.length) || 0
+      }));
     }
 
     if (S.use_hands_worker_parallel) S.pose_last = pose;

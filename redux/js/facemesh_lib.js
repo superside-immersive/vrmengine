@@ -84,7 +84,7 @@ var FacemeshAT = (function () {
     S._worker.onmessage({data:msg})
   };
 
-  var FACEMESH_LIB_CACHE_BUST = '20260321-5';
+  var FACEMESH_LIB_CACHE_BUST = '20260321-6';
 
   function getFacemeshCacheBust() {
     try {

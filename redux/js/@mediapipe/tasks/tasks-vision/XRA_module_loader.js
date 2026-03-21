@@ -1,7 +1,7 @@
 // 2024-12-10
 
 (()=>{
-  var TASKS_VISION_CACHE_BUST = '20260321-5';
+  var TASKS_VISION_CACHE_BUST = '20260321-6';
 
   function get_cache_bust() {
     try {
