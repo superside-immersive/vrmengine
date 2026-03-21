@@ -88,15 +88,16 @@ var FacemeshAT = (function () {
   // import() in importScripts-loaded code resolves relative to the importScripts
   // source URL (js/facemesh_lib.js), same as <script src> in main thread.
   var _mod_base = './tracking/';
+  var _mod_suffix = '?v=' + encodeURIComponent((self && self.SA_CACHE_BUST) || '20260320-11');
   var _modules_loaded = false;
   async function _load_modules() {
     if (_modules_loaded) return;
 
     const [core, processor, emotions, draw_mod] = await Promise.all([
-      import(_mod_base + 'facemesh-core.js'),
-      import(_mod_base + 'facemesh-processor.js'),
-      import(_mod_base + 'facemesh-emotions.js'),
-      import(_mod_base + 'facemesh-draw.js'),
+      import(_mod_base + 'facemesh-core.js' + _mod_suffix),
+      import(_mod_base + 'facemesh-processor.js' + _mod_suffix),
+      import(_mod_base + 'facemesh-emotions.js' + _mod_suffix),
+      import(_mod_base + 'facemesh-draw.js' + _mod_suffix),
     ]);
 
     // Wire cross-module function references into S
@@ -113,7 +114,7 @@ var FacemeshAT = (function () {
   async function init(_worker, param) {
     await _load_modules();
 
-    const core = await import(_mod_base + 'facemesh-core.js');
+    const core = await import(_mod_base + 'facemesh-core.js' + _mod_suffix);
     await core.fm_init(S, _worker, param);
   }
 

@@ -172,6 +172,16 @@ export async function fm_load_lib(S, options) {
   S.facemesh_initialized = true
 }
 
+function run_face_detection(detector, input, nowInMs) {
+  const isVideoLike = !!(input && (
+    input.tagName === 'VIDEO' ||
+    typeof input.currentTime === 'number' ||
+    typeof input.requestVideoFrameCallback === 'function'
+  ));
+
+  return isVideoLike ? detector.detectForVideo(input, nowInMs) : detector.detect(input);
+}
+
 async function _fm_model_init(S, options) {
   if (S.use_mediapipe_facemesh) {
     if (S.use_mediapipe_face_landmarker) {
@@ -209,7 +219,7 @@ async function _fm_model_init(S, options) {
       S.model = {
         f: f,
         detect: function (video, nowInMs) {
-          const result = f.detectForVideo(video, nowInMs);
+          const result = run_face_detection(f, video, nowInMs);
           return Object.assign({ multiFaceLandmarks: result.faceLandmarks }, result);
         }
       };

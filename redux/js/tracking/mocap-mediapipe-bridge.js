@@ -46,6 +46,16 @@ function get_tasks_vision_delegate(options) {
   return (isiPadLike || isWebKitSafari) ? 'CPU' : 'GPU';
 }
 
+function run_tasks_vision_detection(detector, input, nowInMs) {
+  const isVideoLike = !!(input && (
+    input.tagName === 'VIDEO' ||
+    typeof input.currentTime === 'number' ||
+    typeof input.requestVideoFrameCallback === 'function'
+  ));
+
+  return isVideoLike ? detector.detectForVideo(input, nowInMs) : detector.detect(input);
+}
+
 
 /**
  * Create MediaPipe hand landmarker adapter.
@@ -120,11 +130,11 @@ estimateHands: (()=>{
     if (!initialized) {
       initialized = true;
       f.forEach(d=>{
-        result = d.detectForVideo(video, nowInMs);
+        result = run_tasks_vision_detection(d, video, nowInMs);
       });
     }
     else {
-      result = f[f_index].detectForVideo(video, nowInMs);
+      result = run_tasks_vision_detection(f[f_index], video, nowInMs);
     }
 //console.log(result)
 
@@ -354,7 +364,7 @@ vision,
     S.posenet = {
 estimatePoses: function (video, dummy, nowInMs) {
   const landmarker = (options.use_holistic_landmarker) ? S.holistic_landmarker : S.pose_landmarker;
-  let result = landmarker.detectForVideo(video, nowInMs);
+  let result = run_tasks_vision_detection(landmarker, video, nowInMs);
 //console.log(result)
 
   let pose_names;
