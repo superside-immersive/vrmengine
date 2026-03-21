@@ -171,6 +171,14 @@
     return null;
   }
 
+  function hasLiveSkinFrames() {
+    try {
+      var skin = System._browser.camera.poseNet.frames.skin;
+      return !!(skin && Object.keys(skin).length > 0);
+    } catch (e) {}
+    return false;
+  }
+
   /**
    * Flip x and z in a quaternion.
    * Mathematically equivalent to conjugating by a 180° Y rotation:
@@ -289,9 +297,14 @@
     // Fase 2 only takes over a bone when Fase 1 has no data for it (e.g. standalone mode).
     if (window.VRMDirectSolver && VRMDirectSolver._poseFrames) {
       var pf = VRMDirectSolver._poseFrames;
+      var preferPoseFrames = false;
+      try {
+        preferPoseFrames = !!(window.VRMDirectPoseSolver && VRMDirectPoseSolver.isEnabled && VRMDirectPoseSolver.isEnabled() && !hasLiveSkinFrames());
+      } catch (e) {}
+
       for (var pfKey in pf) {
         if (pfKey === '_hipsPosition') continue; // never take hips position from Fase 2
-        if (!(pfKey in result)) {
+        if (preferPoseFrames || !(pfKey in result)) {
           result[pfKey] = pf[pfKey];
         }
       }
