@@ -21,6 +21,10 @@
     switchTab: switchTab
   };
 
+  function isIpadDesktopRuntime() {
+    return !!window._is_ipad_device;
+  }
+
   function assetBase() {
     try {
       if (window.System && System.Gadget && System.Gadget.path) return System.Gadget.path;
@@ -39,6 +43,7 @@
     MMD_SA_options.user_camera.display = MMD_SA_options.user_camera.display || {};
     MMD_SA_options.user_camera.display.wireframe = MMD_SA_options.user_camera.display.wireframe || {};
     MMD_SA_options.user_camera.ML_models = MMD_SA_options.user_camera.ML_models || {};
+    MMD_SA_options.user_camera.ML_models.facemesh = MMD_SA_options.user_camera.ML_models.facemesh || {};
     MMD_SA_options.user_camera.ML_models.pose = MMD_SA_options.user_camera.ML_models.pose || {};
     MMD_SA_options.user_camera.streamer_mode = MMD_SA_options.user_camera.streamer_mode || { camera_preference: {} };
     MMD_SA_options.user_camera.streamer_mode.camera_preference = MMD_SA_options.user_camera.streamer_mode.camera_preference || {};
@@ -52,6 +57,15 @@
       MMD_SA_options.user_camera.display.wireframe.hidden = true;
       MMD_SA_options.user_camera.ML_models.debug_hidden = true;
     }
+
+    if (isIpadDesktopRuntime()) {
+      MMD_SA_options.user_camera.ML_models.worker_disabled = true;
+      MMD_SA_options.user_camera.ML_models.facemesh.worker_disabled = true;
+      if (!MMD_SA_options.user_camera.streamer_mode.mocap_type) {
+        MMD_SA_options.user_camera.streamer_mode.mocap_type = 'Face';
+      }
+    }
+
     return MMD_SA_options.user_camera;
   }
 
@@ -508,7 +522,7 @@
     state.autoStartAttempted = true;
     try {
       await primePreferredCamera();
-      setStatus('Starting webcam automatically…', false);
+      setStatus(isIpadDesktopRuntime() ? 'Starting webcam and iPad-safe MediaPipe tracking…' : 'Starting webcam automatically…', false);
       if (!startStreamerMode()) {
         setStatus('Webcam could not start automatically. Open the menu to retry.', true);
       }
