@@ -6,6 +6,22 @@
 (function () {
   'use strict';
 
+  function withCacheBust(src) {
+    if (!src || !window.SA_CACHE_BUST) return src;
+    if (!/^https?\:/i.test(location.protocol)) return src;
+    if (/^(data|blob|javascript):/i.test(src)) return src;
+
+    var hash = '';
+    var hashIndex = src.indexOf('#');
+    if (hashIndex !== -1) {
+      hash = src.slice(hashIndex);
+      src = src.slice(0, hashIndex);
+    }
+
+    var joiner = (src.indexOf('?') === -1) ? '?' : '&';
+    return src + joiner + 'v=' + encodeURIComponent(window.SA_CACHE_BUST) + hash;
+  }
+
   /**
    * Registry of loaded modules/scripts to prevent double-loading.
    * @type {Object<string, {status: string, promise: Promise|null}>}
@@ -19,10 +35,11 @@
    * @returns {void}
    */
   function loadScriptSync(src) {
-    if (_registry[src]) return;
-    _registry[src] = { status: 'loading', promise: null };
-    document.write('<script type="text/javascript" language="javascript" src="' + src + '"></scr' + 'ipt>\n');
-    _registry[src].status = 'loaded';
+    var resolvedSrc = withCacheBust(src);
+    if (_registry[resolvedSrc]) return;
+    _registry[resolvedSrc] = { status: 'loading', promise: null };
+    document.write('<script type="text/javascript" language="javascript" src="' + resolvedSrc + '"></scr' + 'ipt>\n');
+    _registry[resolvedSrc].status = 'loaded';
   }
 
   /**
@@ -36,9 +53,10 @@
    */
   function loadScript(src, options) {
     options = options || {};
+    var resolvedSrc = withCacheBust(src);
 
-    if (_registry[src] && _registry[src].promise) {
-      return _registry[src].promise;
+    if (_registry[resolvedSrc] && _registry[resolvedSrc].promise) {
+      return _registry[resolvedSrc].promise;
     }
 
     var promise = new Promise(function (resolve, reject) {
@@ -48,23 +66,23 @@
       } else {
         script.type = 'text/javascript';
       }
-      script.src = src;
+      script.src = resolvedSrc;
       script.async = (options.async !== false);
 
       script.onload = function () {
-        _registry[src].status = 'loaded';
+        _registry[resolvedSrc].status = 'loaded';
         resolve();
       };
       script.onerror = function (err) {
-        _registry[src].status = 'error';
-        console.error('[SA.loader] Failed to load: ' + src);
-        reject(new Error('Failed to load script: ' + src));
+        _registry[resolvedSrc].status = 'error';
+        console.error('[SA.loader] Failed to load: ' + resolvedSrc);
+        reject(new Error('Failed to load script: ' + resolvedSrc));
       };
 
       document.head.appendChild(script);
     });
 
-    _registry[src] = { status: 'loading', promise: promise };
+    _registry[resolvedSrc] = { status: 'loading', promise: promise };
     return promise;
   }
 
@@ -74,20 +92,22 @@
    * @returns {Promise<*>} The module's exports
    */
   function loadModule(src) {
-    if (_registry[src] && _registry[src].promise) {
-      return _registry[src].promise;
+    var resolvedSrc = withCacheBust(src);
+
+    if (_registry[resolvedSrc] && _registry[resolvedSrc].promise) {
+      return _registry[resolvedSrc].promise;
     }
 
-    var promise = import(src).then(function (mod) {
-      _registry[src].status = 'loaded';
+    var promise = import(resolvedSrc).then(function (mod) {
+      _registry[resolvedSrc].status = 'loaded';
       return mod;
     }).catch(function (err) {
-      _registry[src].status = 'error';
-      console.error('[SA.loader] Failed to import module: ' + src, err);
+      _registry[resolvedSrc].status = 'error';
+      console.error('[SA.loader] Failed to import module: ' + resolvedSrc, err);
       throw err;
     });
 
-    _registry[src] = { status: 'loading', promise: promise };
+    _registry[resolvedSrc] = { status: 'loading', promise: promise };
     return promise;
   }
 
