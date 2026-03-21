@@ -466,6 +466,23 @@
     console.log('[VRMDirect] PoseSolver AUTO-ENABLED on first pose data (Fase 2)');
   }
 
+  function pushPoseData(data) {
+    if (!data) return;
+
+    if (data && data.lms) {
+      _onFirstData();
+      _latestLms = data.lms;
+      _latestScores = data.scores || null;
+      return;
+    }
+
+    if (Array.isArray(data)) {
+      _onFirstData();
+      _latestLms = data;
+      _latestScores = null;
+    }
+  }
+
   /**
    * Open the BroadcastChannel listener immediately so auto-enable works
    * as soon as the worker starts broadcasting — no manual enable() needed.
@@ -532,6 +549,7 @@
     update:    update,
     enable:    enable,
     disable:   disable,
+    pushPoseData: pushPoseData,
     isEnabled: function () { return _enabled; },
     /** Adjust landmark visibility threshold (default 0.35). Lower = more permissive. */
     setScoreThresh: function (v) { SCORE_THRESH = v; },

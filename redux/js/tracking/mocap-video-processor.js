@@ -303,13 +303,18 @@ else {
   // Broadcast raw 3D landmarks for VRMDirect Fase 2 (main thread reads via BroadcastChannel)
   try {
     if (pose && pose.keypoints3D && pose.keypoints3D.length) {
+      var _posePacket = {
+        lms: (pose.keypoints3D_raw && pose.keypoints3D_raw.length === pose.keypoints3D.length)
+          ? pose.keypoints3D_raw : pose.keypoints3D,
+        scores: pose.keypoints3D.map(function(l){ return l.score != null ? l.score : 1; })
+      };
+
+      if (typeof window === 'object' && window.VRMDirectPoseSolver && typeof window.VRMDirectPoseSolver.pushPoseData === 'function') {
+        window.VRMDirectPoseSolver.pushPoseData(_posePacket);
+      }
+
       if (!self._vrmd_bc) self._vrmd_bc = new BroadcastChannel('vrm_pose');
-      // Prefer keypoints3D_raw (unmodified MediaPipe world-space) for better IK accuracy.
-      // Send scores separately so the solver can gate occluded joints.
-      var _lms = (pose.keypoints3D_raw && pose.keypoints3D_raw.length === pose.keypoints3D.length)
-        ? pose.keypoints3D_raw : pose.keypoints3D;
-      var _scores = pose.keypoints3D.map(function(l){ return l.score != null ? l.score : 1; });
-      self._vrmd_bc.postMessage({ lms: _lms, scores: _scores });
+      self._vrmd_bc.postMessage(_posePacket);
     }
   } catch(e) { /* non-critical — don't break the main pose pipeline */ }
 
