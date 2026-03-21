@@ -173,13 +173,21 @@ export async function fm_load_lib(S, options) {
 }
 
 function run_face_detection(detector, input, nowInMs) {
-  const isVideoLike = !!(input && (
-    input.tagName === 'VIDEO' ||
-    typeof input.currentTime === 'number' ||
-    typeof input.requestVideoFrameCallback === 'function'
-  ));
+  if (typeof ImageData !== 'undefined' && input instanceof ImageData) {
+    let canvas = detector.__saVideoInputCanvas;
+    if (!canvas || canvas.width !== input.width || canvas.height !== input.height) {
+      canvas = (typeof OffscreenCanvas !== 'undefined')
+        ? new OffscreenCanvas(input.width, input.height)
+        : self.document.createElement('canvas');
+      canvas.width = input.width;
+      canvas.height = input.height;
+      detector.__saVideoInputCanvas = canvas;
+    }
+    detector.__saVideoInputCanvas.getContext('2d').putImageData(input, 0, 0);
+    input = detector.__saVideoInputCanvas;
+  }
 
-  return isVideoLike ? detector.detectForVideo(input, nowInMs) : detector.detect(input);
+  return detector.detectForVideo(input, nowInMs);
 }
 
 async function _fm_model_init(S, options) {

@@ -88,7 +88,7 @@ var FacemeshAT = (function () {
   // import() in importScripts-loaded code resolves relative to the importScripts
   // source URL (js/facemesh_lib.js), same as <script src> in main thread.
   var _mod_base = './tracking/';
-  var _mod_suffix = '?v=' + encodeURIComponent((self && self.SA_CACHE_BUST) || '20260320-11');
+  var _mod_suffix = '?v=' + encodeURIComponent((self && self.SA_CACHE_BUST) || '20260320-12');
   var _modules_loaded = false;
   async function _load_modules() {
     if (_modules_loaded) return;

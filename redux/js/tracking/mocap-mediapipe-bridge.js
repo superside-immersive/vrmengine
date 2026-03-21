@@ -46,14 +46,25 @@ function get_tasks_vision_delegate(options) {
   return (isiPadLike || isWebKitSafari) ? 'CPU' : 'GPU';
 }
 
-function run_tasks_vision_detection(detector, input, nowInMs) {
-  const isVideoLike = !!(input && (
-    input.tagName === 'VIDEO' ||
-    typeof input.currentTime === 'number' ||
-    typeof input.requestVideoFrameCallback === 'function'
-  ));
+function get_tasks_vision_video_input(detector, input) {
+  if (typeof ImageData !== 'undefined' && input instanceof ImageData) {
+    let canvas = detector.__saVideoInputCanvas;
+    if (!canvas || canvas.width !== input.width || canvas.height !== input.height) {
+      canvas = (typeof OffscreenCanvas !== 'undefined')
+        ? new OffscreenCanvas(input.width, input.height)
+        : self.document.createElement('canvas');
+      canvas.width = input.width;
+      canvas.height = input.height;
+      detector.__saVideoInputCanvas = canvas;
+    }
+    detector.__saVideoInputCanvas.getContext('2d').putImageData(input, 0, 0);
+    return detector.__saVideoInputCanvas;
+  }
+  return input;
+}
 
-  return isVideoLike ? detector.detectForVideo(input, nowInMs) : detector.detect(input);
+function run_tasks_vision_detection(detector, input, nowInMs) {
+  return detector.detectForVideo(get_tasks_vision_video_input(detector, input), nowInMs);
 }
 
 

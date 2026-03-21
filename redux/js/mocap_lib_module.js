@@ -2,8 +2,8 @@
 // Refactored: Step 2B — sub-modules in js/tracking/mocap-*.js
 // Original: 1970 lines → orchestrator ~280 lines + 5 sub-modules
 
-import { PoseAT_load_lib, HandsAT_load_lib, create_mediapipe_hand_landmarker } from './tracking/mocap-mediapipe-bridge.js?v=20260320-11';
-import { PoseAT_process_video_buffer, HandsAT_process_video_buffer } from './tracking/mocap-video-processor.js?v=20260320-11';
+import { PoseAT_load_lib, HandsAT_load_lib, create_mediapipe_hand_landmarker } from './tracking/mocap-mediapipe-bridge.js?v=20260320-12';
+import { PoseAT_process_video_buffer, HandsAT_process_video_buffer } from './tracking/mocap-video-processor.js?v=20260320-12';
 
 const is_worker = (typeof window !== "object");
 
