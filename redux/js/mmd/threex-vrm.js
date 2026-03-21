@@ -23,10 +23,17 @@ update_status_bar: function () {},
     var THREEX_VRM_EMPTY_DUNGEON_OPTIONS = {
 options_by_area_id: {
   start: {
-    _startup_position_: new TX.THREE.Vector3(),
+    _startup_position_: null,
   },
 },
     };
+
+    function threex_vrm_make_vector3() {
+var THREE = TX.THREE || self.THREE;
+if (!THREE || !THREE.Vector3)
+  throw new Error('THREEX VRM requires THREE.Vector3 before startup position initialization');
+return new THREE.Vector3();
+    }
 
     function threex_vrm_dungeon() {
 return MMD_SA_options.Dungeon || THREEX_VRM_EMPTY_DUNGEON;
@@ -44,9 +51,9 @@ var area_id = dungeon.area_id || 'start';
 if (!dungeon_options.options_by_area_id)
   dungeon_options.options_by_area_id = {};
 if (!dungeon_options.options_by_area_id[area_id])
-  dungeon_options.options_by_area_id[area_id] = { _startup_position_:new TX.THREE.Vector3() };
+  dungeon_options.options_by_area_id[area_id] = { _startup_position_:threex_vrm_make_vector3() };
 if (!dungeon_options.options_by_area_id[area_id]._startup_position_)
-  dungeon_options.options_by_area_id[area_id]._startup_position_ = new TX.THREE.Vector3();
+  dungeon_options.options_by_area_id[area_id]._startup_position_ = threex_vrm_make_vector3();
 
 return dungeon_options.options_by_area_id[area_id]._startup_position_;
     }
