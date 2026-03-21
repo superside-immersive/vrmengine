@@ -20,21 +20,71 @@ export async function fm_load_scripts(S, url) {
     throw new Error('External script URL blocked by privacy mode: ' + url);
   }
 
+  var cacheBust = '';
+  try {
+    cacheBust = String((self && self.SA_CACHE_BUST) || '20260321-1');
+  } catch (e) {
+    cacheBust = '20260321-1';
+  }
+
+  function withCacheBust(src) {
+    if (!src || /[?&]v=/.test(src)) return src;
+    return src + ((src.indexOf('?') === -1) ? '?' : '&') + 'v=' + encodeURIComponent(cacheBust);
+  }
+
   if (S.is_worker) {
     // Worker is at js/tracking/, resources are at js/ — prepend ../
     if (!/^\w+\:/i.test(url) && !/^\.\.\//.test(url)) {
       url = url.replace(/^(\.\/)?/, '../')
     }
-    importScripts(url)
+    url = withCacheBust(url);
+    try {
+      importScripts(url)
+    }
+    catch (err) {
+      throw new Error('Failed to import script: ' + url + ((err && err.message) ? (' (' + err.message + ')') : ''));
+    }
   }
   else {
     return new Promise((resolve, reject) => {
       let script = document.createElement('script');
       script.onload = () => { resolve() };
-      script.src = fm_path_adjusted(url);
+      let resolvedUrl = withCacheBust(fm_path_adjusted(url));
+      script.onerror = () => { reject(new Error('Failed to load script: ' + resolvedUrl)); };
+      script.src = resolvedUrl;
       document.head.appendChild(script);
     });
   }
+}
+
+function fm_wait_for_tasks_vision_loader() {
+  return new Promise((resolve, reject) => {
+    const start = Date.now();
+    const timerID = setInterval(() => {
+      if (self.__saTasksVisionLoaderError) {
+        clearInterval(timerID);
+        reject(self.__saTasksVisionLoaderError);
+        return;
+      }
+
+      if (self.__saTasksVisionLoaderPromise) {
+        clearInterval(timerID);
+        Promise.resolve(self.__saTasksVisionLoaderPromise).then(resolve).catch(reject);
+        return;
+      }
+
+      if ('FilesetResolver' in self) {
+        clearInterval(timerID);
+        resolve();
+        return;
+      }
+
+      if ((Date.now() - start) > 10000) {
+        clearInterval(timerID);
+        reject(new Error('Timed out waiting for MediaPipe Tasks loader'));
+      }
+    }, 50);
+  });
 }
 
 export async function fm_init(S, _worker, param) {
@@ -194,15 +244,7 @@ async function _fm_model_init(S, options) {
   if (S.use_mediapipe_facemesh) {
     if (S.use_mediapipe_face_landmarker) {
       await fm_load_scripts(S, '@mediapipe/tasks/tasks-vision/XRA_module_loader.js');
-
-      await new Promise((resolve) => {
-        const timerID = setInterval(() => {
-          if ('FilesetResolver' in self) {
-            clearInterval(timerID);
-            resolve();
-          }
-        }, 100);
-      });
+      await fm_wait_for_tasks_vision_loader();
 
       const vision = await FilesetResolver.forVisionTasks(
         fm_path_adjusted('@mediapipe/tasks/tasks-vision/wasm')

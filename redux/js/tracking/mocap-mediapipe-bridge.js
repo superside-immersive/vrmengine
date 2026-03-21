@@ -8,6 +8,36 @@ function _privacy_local_only_url(url) {
   return url;
 }
 
+function wait_for_tasks_vision_loader() {
+  return new Promise((resolve, reject) => {
+    const start = Date.now();
+    const timerID = setInterval(() => {
+      if (self.__saTasksVisionLoaderError) {
+        clearInterval(timerID);
+        reject(self.__saTasksVisionLoaderError);
+        return;
+      }
+
+      if (self.__saTasksVisionLoaderPromise) {
+        clearInterval(timerID);
+        Promise.resolve(self.__saTasksVisionLoaderPromise).then(resolve).catch(reject);
+        return;
+      }
+
+      if ('FilesetResolver' in self) {
+        clearInterval(timerID);
+        resolve();
+        return;
+      }
+
+      if ((Date.now() - start) > 10000) {
+        clearInterval(timerID);
+        reject(new Error('Timed out waiting for MediaPipe Tasks loader'));
+      }
+    }, 50);
+  });
+}
+
 /**
  * Load MediaPipe Vision common dependencies.
  * @param {Object} S - Shared state object
@@ -15,15 +45,7 @@ function _privacy_local_only_url(url) {
  */
 export async function load_vision_common(S) {
   await S.load_scripts('@mediapipe/tasks/tasks-vision/XRA_module_loader.js');
-
-  await new Promise((resolve)=>{
-const timerID = setInterval(()=>{
-  if ('FilesetResolver' in self) {
-    clearInterval(timerID);
-    resolve();
-  }
-}, 100);
-  });
+  await wait_for_tasks_vision_loader();
 
   const vision = await FilesetResolver.forVisionTasks(
 // path/to/wasm/root
