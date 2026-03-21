@@ -24,6 +24,12 @@ return function (name) {
 
   if (name == "fs") {
     if (!module_cache["fs"]) {
+      var isOptionalProjectJsonMiss = function (path) {
+        return /(^|[\/])animate\.css$/i.test(path)
+          || /TEMP[\/](SA_wallpaper_src|SA_wallpaper_mask_src)\.txt$/i.test(path)
+          || /(^|[\/])images[\/]XR Animator$/i.test(path)
+      }
+
       module_cache["fs"] = {
         existsSync: function (path) {
 var existed = false
@@ -54,13 +60,15 @@ if (browser_native_mode) {
         return true
       }
       else {
-        console.error(((is_SA_child_animation)?(SA_child_animation_id+1):0) + ':SA_project_JSON-' + path_relative + ',' + existed)
+        if (!isOptionalProjectJsonMiss(path_relative))
+          console.error(((is_SA_child_animation)?(SA_child_animation_id+1):0) + ':SA_project_JSON-' + path_relative + ',' + existed)
         return false
       }
     }
     else {
       if (!is_SA_relative || /TEMP[\/\\]SA_wallpaper/.test(path)) {
-        console.error(((is_SA_child_animation)?(SA_child_animation_id+1):0) + ':OFF-SA_project_JSON-' + path + ',' + existed)
+        if (!isOptionalProjectJsonMiss(path))
+          console.error(((is_SA_child_animation)?(SA_child_animation_id+1):0) + ':OFF-SA_project_JSON-' + path + ',' + existed)
 //console.error(System.Gadget.path)
         return false
       }
@@ -75,7 +83,8 @@ console.log(((is_SA_child_animation)?(SA_child_animation_id+1):0) + ':PRE-SA_pro
       return true
     }
 // probably testing the animation folder itself, simply return false for folders
-    console.error(((is_SA_child_animation)?(SA_child_animation_id+1):0) + ':PRE-SA_project_JSON-' + path + ',' + existed)
+    if (!isOptionalProjectJsonMiss(path))
+      console.error(((is_SA_child_animation)?(SA_child_animation_id+1):0) + ':PRE-SA_project_JSON-' + path + ',' + existed)
     return false
   }
 }
