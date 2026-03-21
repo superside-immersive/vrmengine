@@ -84,47 +84,20 @@ var FacemeshAT = (function () {
     S._worker.onmessage({data:msg})
   };
 
-  var FACEMESH_LIB_CACHE_BUST = '20260321-8';
-
-  function getFacemeshCacheBust() {
-    try {
-      if (self && self.SA_CACHE_BUST) return String(self.SA_CACHE_BUST);
-    } catch (e) {}
-
-    try {
-      var currentScript = (typeof document === 'object' && document.currentScript) ? document.currentScript : null;
-      if (currentScript && currentScript.src) {
-        var url = new URL(currentScript.src, self.location.href);
-        var version = url.searchParams.get('v');
-        if (version) return version;
-      }
-    } catch (e) {}
-
-    return FACEMESH_LIB_CACHE_BUST;
-  }
-
   // Sub-module imports (loaded in init)
   // import() in importScripts-loaded code resolves relative to the importScripts
   // source URL (js/facemesh_lib.js), same as <script src> in main thread.
   var _mod_base = './tracking/';
-  var _mod_suffix = '?v=' + encodeURIComponent(getFacemeshCacheBust());
   var _modules_loaded = false;
   async function _load_modules() {
     if (_modules_loaded) return;
 
-    const moduleUrls = [
-      _mod_base + 'facemesh-core.js' + _mod_suffix,
-      _mod_base + 'facemesh-processor.js' + _mod_suffix,
-      _mod_base + 'facemesh-emotions.js' + _mod_suffix,
-      _mod_base + 'facemesh-draw.js' + _mod_suffix,
-    ];
-
-    const [core, processor, emotions, draw_mod] = await Promise.all(moduleUrls.map((url) => {
-      return import(url).catch((err) => {
-        console.error('[FacemeshAT] Failed to import module: ' + url, err);
-        throw err;
-      });
-    }));
+    const [core, processor, emotions, draw_mod] = await Promise.all([
+      import(_mod_base + 'facemesh-core.js'),
+      import(_mod_base + 'facemesh-processor.js'),
+      import(_mod_base + 'facemesh-emotions.js'),
+      import(_mod_base + 'facemesh-draw.js'),
+    ]);
 
     // Wire cross-module function references into S
     S.load_lib = (options) => core.fm_load_lib(S, options);
@@ -140,11 +113,7 @@ var FacemeshAT = (function () {
   async function init(_worker, param) {
     await _load_modules();
 
-    const coreUrl = _mod_base + 'facemesh-core.js' + _mod_suffix;
-    const core = await import(coreUrl).catch((err) => {
-      console.error('[FacemeshAT] Failed to import init module: ' + coreUrl, err);
-      throw err;
-    });
+    const core = await import(_mod_base + 'facemesh-core.js');
     await core.fm_init(S, _worker, param);
   }
 

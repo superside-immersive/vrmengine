@@ -16,75 +16,21 @@ export function fm_path_adjusted(url) {
 }
 
 export async function fm_load_scripts(S, url) {
-  if (/^https?:\/\//i.test(url)) {
-    throw new Error('External script URL blocked by privacy mode: ' + url);
-  }
-
-  var cacheBust = '';
-  try {
-    cacheBust = String((self && self.SA_CACHE_BUST) || '20260321-8');
-  } catch (e) {
-    cacheBust = '20260321-8';
-  }
-
-  function withCacheBust(src) {
-    if (!src || /[?&]v=/.test(src)) return src;
-    return src + ((src.indexOf('?') === -1) ? '?' : '&') + 'v=' + encodeURIComponent(cacheBust);
-  }
-
   if (S.is_worker) {
     // Worker is at js/tracking/, resources are at js/ — prepend ../
     if (!/^\w+\:/i.test(url) && !/^\.\.\//.test(url)) {
       url = url.replace(/^(\.\/)?/, '../')
     }
-    url = withCacheBust(url);
-    try {
-      importScripts(url)
-    }
-    catch (err) {
-      throw new Error('Failed to import script: ' + url + ((err && err.message) ? (' (' + err.message + ')') : ''));
-    }
+    importScripts(url)
   }
   else {
     return new Promise((resolve, reject) => {
       let script = document.createElement('script');
       script.onload = () => { resolve() };
-      let resolvedUrl = withCacheBust(fm_path_adjusted(url));
-      script.onerror = () => { reject(new Error('Failed to load script: ' + resolvedUrl)); };
-      script.src = resolvedUrl;
+      script.src = fm_path_adjusted(url);
       document.head.appendChild(script);
     });
   }
-}
-
-function fm_wait_for_tasks_vision_loader() {
-  return new Promise((resolve, reject) => {
-    const start = Date.now();
-    const timerID = setInterval(() => {
-      if (self.__saTasksVisionLoaderError) {
-        clearInterval(timerID);
-        reject(self.__saTasksVisionLoaderError);
-        return;
-      }
-
-      if (self.__saTasksVisionLoaderPromise) {
-        clearInterval(timerID);
-        Promise.resolve(self.__saTasksVisionLoaderPromise).then(resolve).catch(reject);
-        return;
-      }
-
-      if ('FilesetResolver' in self) {
-        clearInterval(timerID);
-        resolve();
-        return;
-      }
-
-      if ((Date.now() - start) > 10000) {
-        clearInterval(timerID);
-        reject(new Error('Timed out waiting for MediaPipe Tasks loader'));
-      }
-    }, 50);
-  });
 }
 
 export async function fm_init(S, _worker, param) {
@@ -140,7 +86,9 @@ export async function fm_load_lib(S, options) {
   }
   else {
 // https://github.com/nickthedude/nicksern.es/blob/84e6aab81a32f4c3a6ab16ff18bda77746f77c33/nicksern.es/static/js/wasm-check.js
-    S.use_SIMD = false;
+    await fm_load_scripts(S, 'https://unpkg.com/wasm-feature-detect/dist/umd/index.js');
+
+    S.use_SIMD = await wasmFeatureDetect.simd();
 
     if (S.use_human_facemesh) {
       process = undefined
@@ -215,36 +163,36 @@ export async function fm_load_lib(S, options) {
 
   if (!S.use_faceLandmarksDetection) {
 // https://tehnokv.com/posts/puploc-with-trees/demo/
+    await fm_load_scripts(S, "lploc.js");
+
     S.do_puploc = function(r, c, s, nperturbs, pixels, nrows, ncols, ldim) { return [-1.0, -1.0]; };
-    S.postMessageAT('(puploc disabled - external download blocked)');
+    const puplocurl = 'https://drone.nenadmarkus.com/data/blog-stuff/puploc.bin';
+    fetch(puplocurl).then(function(response) {
+      response.arrayBuffer().then(function(buffer) {
+        var bytes = new Int8Array(buffer);
+        S.do_puploc = lploc.unpack_localizer(bytes);
+        console.log('* puploc loaded');
+        S.postMessageAT('(Use lploc.js)');
+      })
+    });
   }
 
   S.facemesh_initialized = true
-}
-
-function run_face_detection(detector, input, nowInMs) {
-  if (typeof ImageData !== 'undefined' && input instanceof ImageData) {
-    let canvas = detector.__saVideoInputCanvas;
-    if (!canvas || canvas.width !== input.width || canvas.height !== input.height) {
-      canvas = (typeof OffscreenCanvas !== 'undefined')
-        ? new OffscreenCanvas(input.width, input.height)
-        : self.document.createElement('canvas');
-      canvas.width = input.width;
-      canvas.height = input.height;
-      detector.__saVideoInputCanvas = canvas;
-    }
-    detector.__saVideoInputCanvas.getContext('2d').putImageData(input, 0, 0);
-    input = detector.__saVideoInputCanvas;
-  }
-
-  return detector.detectForVideo(input, nowInMs);
 }
 
 async function _fm_model_init(S, options) {
   if (S.use_mediapipe_facemesh) {
     if (S.use_mediapipe_face_landmarker) {
       await fm_load_scripts(S, '@mediapipe/tasks/tasks-vision/XRA_module_loader.js');
-      await fm_wait_for_tasks_vision_loader();
+
+      await new Promise((resolve) => {
+        const timerID = setInterval(() => {
+          if ('FilesetResolver' in self) {
+            clearInterval(timerID);
+            resolve();
+          }
+        }, 100);
+      });
 
       const vision = await FilesetResolver.forVisionTasks(
         fm_path_adjusted('@mediapipe/tasks/tasks-vision/wasm')
@@ -269,7 +217,7 @@ async function _fm_model_init(S, options) {
       S.model = {
         f: f,
         detect: function (video, nowInMs) {
-          const result = run_face_detection(f, video, nowInMs);
+          const result = f.detectForVideo(video, nowInMs);
           return Object.assign({ multiFaceLandmarks: result.faceLandmarks }, result);
         }
       };

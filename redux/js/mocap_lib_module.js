@@ -2,23 +2,10 @@
 // Refactored: Step 2B — sub-modules in js/tracking/mocap-*.js
 // Original: 1970 lines → orchestrator ~280 lines + 5 sub-modules
 
-import { PoseAT_load_lib, HandsAT_load_lib, create_mediapipe_hand_landmarker } from './tracking/mocap-mediapipe-bridge.js?v=20260321-8';
-import { PoseAT_process_video_buffer, HandsAT_process_video_buffer } from './tracking/mocap-video-processor.js?v=20260321-8';
+import { PoseAT_load_lib, HandsAT_load_lib, create_mediapipe_hand_landmarker } from './tracking/mocap-mediapipe-bridge.js';
+import { PoseAT_process_video_buffer, HandsAT_process_video_buffer } from './tracking/mocap-video-processor.js';
 
 const is_worker = (typeof window !== "object");
-const TRACKING_MODULE_CACHE_BUST = '20260321-8';
-
-function get_tracking_cache_bust() {
-  try {
-    if (self && self.SA_CACHE_BUST) return String(self.SA_CACHE_BUST);
-  } catch (e) {}
-  return TRACKING_MODULE_CACHE_BUST;
-}
-
-function with_tracking_cache_bust(url) {
-  if (!url || /[?&]v=/.test(url) || /^(data|blob|javascript):/i.test(url)) return url;
-  return url + ((url.indexOf('?') === -1) ? '?' : '&') + 'v=' + encodeURIComponent(get_tracking_cache_bust());
-}
 
 function path_adjusted(url) {
   if (is_worker) {
@@ -39,21 +26,13 @@ async function load_scripts(url) {
     if (!/^\w+\:/i.test(url) && !/^\.\.\//.test(url)) {
       url = url.replace(/^(\.\/)?/, '../')
     }
-    url = with_tracking_cache_bust(url);
-    try {
-      importScripts(url)
-    }
-    catch (err) {
-      throw new Error('Failed to import script: ' + url + ((err && err.message) ? (' (' + err.message + ')') : ''));
-    }
+    importScripts(url)
   }
   else {
     return new Promise((resolve, reject) => {
       let script = document.createElement('script');
       script.onload = () => { resolve() };
-      let resolvedUrl = with_tracking_cache_bust(path_adjusted(url));
-      script.onerror = () => { reject(new Error('Failed to load script: ' + resolvedUrl)); };
-      script.src = resolvedUrl;
+      script.src = path_adjusted(url);
       document.head.appendChild(script);
     });
   }

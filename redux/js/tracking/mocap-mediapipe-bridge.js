@@ -1,43 +1,6 @@
 // mocap-mediapipe-bridge.js — ML model loading: MediaPipe, TF.js, Human.js
 // Extracted from mocap_lib_module.js (Step 2B)
 
-function _privacy_local_only_url(url) {
-  if (/^https?:\/\//i.test(url)) {
-    throw new Error('External script URL blocked by privacy mode: ' + url);
-  }
-  return url;
-}
-
-function wait_for_tasks_vision_loader() {
-  return new Promise((resolve, reject) => {
-    const start = Date.now();
-    const timerID = setInterval(() => {
-      if (self.__saTasksVisionLoaderError) {
-        clearInterval(timerID);
-        reject(self.__saTasksVisionLoaderError);
-        return;
-      }
-
-      if (self.__saTasksVisionLoaderPromise) {
-        clearInterval(timerID);
-        Promise.resolve(self.__saTasksVisionLoaderPromise).then(resolve).catch(reject);
-        return;
-      }
-
-      if ('FilesetResolver' in self) {
-        clearInterval(timerID);
-        resolve();
-        return;
-      }
-
-      if ((Date.now() - start) > 10000) {
-        clearInterval(timerID);
-        reject(new Error('Timed out waiting for MediaPipe Tasks loader'));
-      }
-    }, 50);
-  });
-}
-
 /**
  * Load MediaPipe Vision common dependencies.
  * @param {Object} S - Shared state object
@@ -45,7 +8,15 @@ function wait_for_tasks_vision_loader() {
  */
 export async function load_vision_common(S) {
   await S.load_scripts('@mediapipe/tasks/tasks-vision/XRA_module_loader.js');
-  await wait_for_tasks_vision_loader();
+
+  await new Promise((resolve)=>{
+const timerID = setInterval(()=>{
+  if ('FilesetResolver' in self) {
+    clearInterval(timerID);
+    resolve();
+  }
+}, 100);
+  });
 
   const vision = await FilesetResolver.forVisionTasks(
 // path/to/wasm/root
@@ -54,39 +25,6 @@ S.path_adjusted('@mediapipe/tasks/tasks-vision/wasm')
   );
 
   return vision;
-}
-
-function get_tasks_vision_delegate(options) {
-  const requested = String((options && (options.model_inference_device || options.delegate)) || '').toUpperCase();
-  if (requested === 'CPU' || requested === 'GPU') return requested;
-
-  const ua = String((self && self.navigator && self.navigator.userAgent) || '').toLowerCase();
-  const vendor = String((self && self.navigator && self.navigator.vendor) || '').toLowerCase();
-  const isiPadLike = /ipad|iphone|ipod/.test(ua) || (/macintosh/.test(ua) && 'ontouchend' in self);
-  const isWebKitSafari = /apple/.test(vendor) && /safari/.test(ua) && !/crios|fxios|edgios|chrome|android/.test(ua);
-
-  return (isiPadLike || isWebKitSafari) ? 'CPU' : 'GPU';
-}
-
-function get_tasks_vision_video_input(detector, input) {
-  if (typeof ImageData !== 'undefined' && input instanceof ImageData) {
-    let canvas = detector.__saVideoInputCanvas;
-    if (!canvas || canvas.width !== input.width || canvas.height !== input.height) {
-      canvas = (typeof OffscreenCanvas !== 'undefined')
-        ? new OffscreenCanvas(input.width, input.height)
-        : self.document.createElement('canvas');
-      canvas.width = input.width;
-      canvas.height = input.height;
-      detector.__saVideoInputCanvas = canvas;
-    }
-    detector.__saVideoInputCanvas.getContext('2d').putImageData(input, 0, 0);
-    return detector.__saVideoInputCanvas;
-  }
-  return input;
-}
-
-function run_tasks_vision_detection(detector, input, nowInMs) {
-  return detector.detectForVideo(get_tasks_vision_video_input(detector, input), nowInMs);
 }
 
 
@@ -100,7 +38,6 @@ export function create_mediapipe_hand_landmarker(S) {
 
     load: async function () {
   const vision = await load_vision_common(S);
-  const delegate = get_tasks_vision_delegate(S.worker_options || {});
 
   const f = [];
   const score_list = [0.5, 0.1];//0.3, 0.1];
@@ -111,7 +48,7 @@ vision,
 {
   baseOptions: {
     modelAssetPath: S.path_adjusted('@mediapipe/tasks/hand_landmarker.task'),
-    delegate: delegate
+    delegate: "GPU"
   },
   runningMode: 'VIDEO',
 
@@ -122,8 +59,6 @@ vision,
 }
     );
   }
-
-  console.log('Hand Landmarker delegate:' + delegate);
 
   let f_index = 0;
 
@@ -163,11 +98,11 @@ estimateHands: (()=>{
     if (!initialized) {
       initialized = true;
       f.forEach(d=>{
-        result = run_tasks_vision_detection(d, video, nowInMs);
+        result = d.detectForVideo(video, nowInMs);
       });
     }
     else {
-      result = run_tasks_vision_detection(f[f_index], video, nowInMs);
+      result = f[f_index].detectForVideo(video, nowInMs);
     }
 //console.log(result)
 
@@ -213,9 +148,6 @@ for (const d of ['Left', 'Right']) {
  * @param {Object} options - Detection options
  */
 export async function PoseAT_load_lib(S, options) {
-options = options || {};
-S.worker_options = options;
-
 if (options.use_holistic_legacy && !S.holistic_initialized) {
   try {
     await S.load_scripts('@mediapipe/holistic/holistic.js');
@@ -270,7 +202,7 @@ if (!S.use_mediapipe_pose_landmarker && !options.use_holistic && S.use_tfjs && !
   if (!(((S.use_mediapipe && S.use_blazepose) || S.use_human_pose) && S.use_mediapipe_hands)) {
 // https://blog.tensorflow.org/2020/03/face-and-hand-tracking-in-browser-with-mediapipe-and-tensorflowjs.html
     let tfjs_version = '';//'@3.9.0';//'@3.5.0';//'@3.3.0';//@2.8.5';
-    await S.load_scripts(_privacy_local_only_url('https://cdn.jsdelivr.net/npm/@tensorflow/tfjs' + tfjs_version));
+    await S.load_scripts('https://cdn.jsdelivr.net/npm/@tensorflow/tfjs' + tfjs_version);
     console.log('Use TFJS (pose/hands)')
   }
 }
@@ -345,7 +277,6 @@ if ((options.use_holistic_landmarker) ? !S.holistic_initialized : !S.posenet_ini
 */
   if (S.use_mediapipe_pose_landmarker) {
     const vision = await load_vision_common(S);
-    const delegate = get_tasks_vision_delegate(options);
 
     if (options.use_holistic_landmarker) {
       S.holistic_landmarker = await HolisticLandmarker.createFromOptions(
@@ -353,15 +284,13 @@ vision,
 {
   baseOptions: {
     modelAssetPath: S.path_adjusted('@mediapipe/tasks/' + 'holistic_landmarker' + '.task'),
-    delegate: delegate
+    delegate: "GPU"
   },
   runningMode: 'VIDEO',
 
   outputFaceBlendshapes: true
 }
       );
-
-  console.log('Holistic Landmarker delegate:' + delegate);
 
       S.mediapipe_hand_landmarker.setup();
     }
@@ -372,14 +301,13 @@ vision,
 {
   baseOptions: {
     modelAssetPath: S.path_adjusted('@mediapipe/tasks/pose_landmarker_full.task'),
-    delegate: delegate
+    delegate: "GPU"
   },
   runningMode: 'VIDEO',
 //minPoseDetectionConfidence:0.8, minPosePresenceConfidence:0.8, minTrackingConfidence:0.8,
   numPoses: 1
 }
       );
-      console.log('Pose Landmarker delegate:' + delegate);
       console.log('Pose model quality:' + (S.pose_model_quality||'Normal'));
     }
 
@@ -397,7 +325,7 @@ vision,
     S.posenet = {
 estimatePoses: function (video, dummy, nowInMs) {
   const landmarker = (options.use_holistic_landmarker) ? S.holistic_landmarker : S.pose_landmarker;
-  let result = run_tasks_vision_detection(landmarker, video, nowInMs);
+  let result = landmarker.detectForVideo(video, nowInMs);
 //console.log(result)
 
   let pose_names;
@@ -440,26 +368,6 @@ estimatePoses: function (video, dummy, nowInMs) {
   }
 
 //console.log(Object.assign(result, { poseLandmarks:result[pose_names[0]][0], za:result[pose_names[1]][0] }, result_face, result_hands))
-
-  if (!S._ep_found) {
-    S._ep_frames = (S._ep_frames || 0) + 1;
-    var _lm0 = result[pose_names[0]];
-    var _wl0 = result[pose_names[1]];
-    if (_lm0?.length > 0) {
-      S._ep_found = true;
-      console.warn('[estimatePoses] FIRST DETECTION at frame ' + S._ep_frames + ':', JSON.stringify({
-        landmarks_len: _lm0.length,
-        landmarks0_len: _lm0[0]?.length || 0,
-        worldLandmarks_len: _wl0?.length || 0,
-        worldLandmarks0_len: _wl0?.[0]?.length || 0,
-        poseLandmarks_final: !!(_lm0[0]),
-        za_final: !!(_wl0?.[0])
-      }));
-    } else if (S._ep_frames === 60) {
-      console.error('[estimatePoses] NO PERSON DETECTED after 60 frames! PoseLandmarker returning empty landmarks every frame.');
-    }
-  }
-
   return Promise.resolve(Object.assign(result, { poseLandmarks:result[pose_names[0]][0], za:result[pose_names[1]][0] }, result_face, result_hands));
 }
     };
@@ -473,7 +381,7 @@ estimatePoses: function (video, dummy, nowInMs) {
     }
   }
   else if (S.use_movenet) {
-    await S.load_scripts((S.use_mediapipe && S.use_blazepose)?'@mediapipe/pose-detection.js':_privacy_local_only_url('https://cdn.jsdelivr.net/npm/@tensorflow-models/pose-detection'));
+    await S.load_scripts((S.use_mediapipe && S.use_blazepose)?'@mediapipe/pose-detection.js':'https://cdn.jsdelivr.net/npm/@tensorflow-models/pose-detection');
 
     if (S.use_blazepose) {
       const detectorConfig = (S.use_mediapipe) ?
@@ -503,7 +411,7 @@ estimatePoses: function (video, dummy, nowInMs) {
     }
   }
   else {
-    await S.load_scripts(_privacy_local_only_url('https://cdn.jsdelivr.net/npm/@tensorflow-models/posenet'));
+    await S.load_scripts('https://cdn.jsdelivr.net/npm/@tensorflow-models/posenet');
 
     S.posenet_model = await S.posenet.load((S.use_mobilenet) ?
 {

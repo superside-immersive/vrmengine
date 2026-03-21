@@ -10,7 +10,6 @@
     if (!src || !window.SA_CACHE_BUST) return src;
     if (!/^https?\:/i.test(location.protocol)) return src;
     if (/^(data|blob|javascript):/i.test(src)) return src;
-    if (/[?&]v=/.test(src)) return src;
 
     var hash = '';
     var hashIndex = src.indexOf('#');
@@ -77,7 +76,7 @@
       script.onerror = function (err) {
         _registry[resolvedSrc].status = 'error';
         console.error('[SA.loader] Failed to load: ' + resolvedSrc);
-        reject(new Error('Failed to load script: ' + resolvedSrc + ((err && err.message) ? (' (' + err.message + ')') : '')));
+        reject(new Error('Failed to load script: ' + resolvedSrc));
       };
 
       document.head.appendChild(script);

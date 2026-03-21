@@ -2,7 +2,6 @@
 // Extracted from mocap_lib_module.js (Step 2B)
 
 import { BLAZEPOSE_KEYPOINTS, get_pose_index } from './mocap-constants.js';
-console.log('[mocap-pose-processor] v20260321-8 loaded');
 
 /**
  * Adjust raw pose data into normalized format.
@@ -15,47 +14,6 @@ console.log('[mocap-pose-processor] v20260321-8 loaded');
  */
 export function pose_adjust(S, pose, w, h, options) {
     S.shoulder_width = Math.max(w,h)/7;
-
-    function synthesize_keypoints3D_from_pose_landmarks(landmarks) {
-      if (!landmarks || !landmarks.length) return null;
-
-      const hipL = landmarks[23] || landmarks[0];
-      const hipR = landmarks[24] || hipL;
-      const hipCenter = {
-        x: (hipL.x + hipR.x) / 2,
-        y: (hipL.y + hipR.y) / 2,
-        z: (hipL.z + hipR.z) / 2,
-      };
-
-      return landmarks.map((landmark, i) => ({
-        x: landmark.x - hipCenter.x,
-        y: hipCenter.y - landmark.y,
-        z: landmark.z - hipCenter.z,
-        name: BLAZEPOSE_KEYPOINTS[i]
-      }));
-    }
-
-    if (!window._pa_found) {
-      window._pa_frames = (window._pa_frames || 0) + 1;
-      var _hasPL = !!(pose && pose.poseLandmarks?.length);
-      if (_hasPL) {
-        window._pa_found = true;
-        console.warn('[pose_adjust] FIRST LANDMARKS at frame ' + window._pa_frames + ':', JSON.stringify({
-          use_movenet: !!S.use_movenet,
-          use_mediapipe_pose_landmarker: !!S.use_mediapipe_pose_landmarker,
-          poseLandmarks_len: pose.poseLandmarks.length,
-          za: !!(pose.za),
-          ea: !!(pose.ea),
-          result_keys: Object.keys(pose).slice(0,15)
-        }));
-      } else if (window._pa_frames === 60) {
-        console.error('[pose_adjust] NO poseLandmarks after 60 frames. Last flags:', JSON.stringify({
-          pose_truthy: !!pose, use_movenet: !!S.use_movenet,
-          use_mediapipe_pose_landmarker: !!S.use_mediapipe_pose_landmarker,
-          result_keys: pose ? Object.keys(pose).slice(0,15) : []
-        }));
-      }
-    }
 
     if (!pose || !S.use_movenet) return pose
 
@@ -74,7 +32,7 @@ export function pose_adjust(S, pose, w, h, options) {
       const _result = pose
 //console.log(_result)
       _keypoints3D = _result.ea || _result.za;
-      if (_result.poseLandmarks?.length) {
+      if (_keypoints3D?.length && _result.poseLandmarks?.length) {
 // https://github.com/tensorflow/tfjs-models/blob/master/pose-detection/src/blazepose_mediapipe/detector.ts
 
         const iw = _result.image?.width  || w;
@@ -89,14 +47,6 @@ z: landmark.z * iw,
 name: BLAZEPOSE_KEYPOINTS[i]
   })),
         }];
-
-        if (!_keypoints3D?.length) {
-          _keypoints3D = synthesize_keypoints3D_from_pose_landmarks(_result.poseLandmarks);
-          if (_keypoints3D && !window._synth3d_logged) {
-            window._synth3d_logged = true;
-            console.warn('[mocap-pose-processor] worldLandmarks missing — using synthesized keypoints3D fallback (' + _keypoints3D.length + ' pts)');
-          }
-        }
       }
       else {
         pose = []

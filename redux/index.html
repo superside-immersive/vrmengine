@@ -16,13 +16,13 @@
 <link rel="stylesheet" href="css/main.css" type="text/css" />
 
 <script language="javascript">
-var SA_CACHE_BUST = '20260321-8';
+var SA_CACHE_BUST = '20260320-13';
 
 (function () {
 	if (!window.Element || !Element.prototype || Element.prototype.__saCacheBustPatched) return;
 
 	var originalAppendChild = Element.prototype.appendChild;
-	var trackingScriptPattern = /(?:^|\/)js\/(?:(?:tracking\/)?(?:pose_lib|facemesh_lib|hands_lib)|@mediapipe\/tasks\/tasks-vision\/XRA_module_loader)\.js(?:[?#].*)?$/i;
+	var trackingScriptPattern = /(?:^|\/)js\/(?:tracking\/)?(?:pose_lib|facemesh_lib)\.js(?:[?#].*)?$/i;
 
 	function withBust(src) {
 		if (!src || !window.SA_CACHE_BUST || !trackingScriptPattern.test(src)) return src;
@@ -49,11 +49,11 @@ var XRA_AUTO_START_STREAMER = true;
 var XRA_PORTRAIT_FIRST = true;
 var XRA_DEBUG_MODE = false;
 </script>
-<script type="text/javascript" language="javascript" src="js/globals.js?v=20260321-8"></script>
-<script type="text/javascript" language="javascript" src="js/module-loader.js?v=20260321-8"></script>
-<script type="text/javascript" language="javascript" src="js/core.js?v=20260321-8"></script>
-<script type="text/javascript" language="javascript" src="js/core_extra.js?v=20260321-8"></script>
-<script type="text/javascript" language="javascript" src="js/ui/mobile-shell.js?v=20260321-8"></script>
+<script type="text/javascript" language="javascript" src="js/globals.js?v=20260320-13"></script>
+<script type="text/javascript" language="javascript" src="js/module-loader.js?v=20260320-13"></script>
+<script type="text/javascript" language="javascript" src="js/core.js?v=20260320-13"></script>
+<script type="text/javascript" language="javascript" src="js/core_extra.js?v=20260320-13"></script>
+<script type="text/javascript" language="javascript" src="js/ui/mobile-shell.js?v=20260320-13"></script>
 <script language="javascript">
 SA_load_scripts()
 </script>

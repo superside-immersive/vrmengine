@@ -201,15 +201,12 @@
           Object.keys(System._browser.camera.poseNet.frames.skin).length > 0); } catch(e) {}
         var _bonesAvail = false;
         try { _bonesAvail = !!(THREE.MMD.getModels()[0].mesh.bones_by_name); } catch(e) {}
-        var _pfKeys = [];
-        try { if (VRMDirectSolver._poseFrames) _pfKeys = Object.keys(VRMDirectSolver._poseFrames); } catch(e) {}
         console.log('[VRMDirect] Body diag:', {
           bodyDataKeys:      bodyData ? Object.keys(bodyData) : null,
           pose2_enabled:     window.VRMDirectPoseSolver ? VRMDirectPoseSolver.isEnabled() : 'absent',
           frames_skin_ok:    _skinAvail,
           bones_by_name_ok:  _bonesAvail,
-          poseFrames:        _pfKeys.length > 0 ? _pfKeys : false,
-          bodyDataBoneCount: bodyData ? Object.keys(bodyData).length : 0
+          poseFrames:        window.VRMDirectSolver ? !!VRMDirectSolver._poseFrames : 'absent'
         });
       }
     }
