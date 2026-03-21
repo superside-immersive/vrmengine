@@ -1047,6 +1047,55 @@
 .perf-warm { color: #ffe65e; }
 .perf-loaded { color: #6ec9e8; }
 
+/* ── ML Model Toggle Buttons ── */
+.perf-toggle-bar {
+  display: flex;
+  gap: 3px;
+  padding: 5px 8px 4px;
+  border-top: 1px solid rgba(81, 198, 226, 0.12);
+  flex-wrap: wrap;
+  justify-content: center;
+}
+.perf-toggle-btn {
+  appearance: none;
+  -webkit-appearance: none;
+  border: 1px solid rgba(81, 198, 226, 0.25);
+  border-radius: 4px;
+  background: rgba(255,255,255,0.04);
+  color: rgba(255,255,255,0.35);
+  font-family: inherit;
+  font-size: 8.5px;
+  font-weight: 700;
+  letter-spacing: 0.6px;
+  padding: 3px 6px;
+  cursor: pointer;
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+  transition: background 0.15s, color 0.15s, border-color 0.15s;
+  min-width: 32px;
+  text-align: center;
+}
+.perf-toggle-btn.is-on {
+  background: rgba(94, 255, 126, 0.15);
+  border-color: rgba(94, 255, 126, 0.5);
+  color: #5eff7e;
+}
+.perf-toggle-btn.is-off {
+  background: rgba(255, 94, 94, 0.08);
+  border-color: rgba(255, 94, 94, 0.3);
+  color: rgba(255, 94, 94, 0.6);
+}
+.perf-toggle-btn:active {
+  transform: scale(0.93);
+}
+@media (hover: hover) {
+  .perf-toggle-btn:hover {
+    background: rgba(81, 198, 226, 0.15);
+    border-color: rgba(81, 198, 226, 0.5);
+    color: #6ec9e8;
+  }
+}
+
 /* Mobile & iPad: fit smaller viewports */
 @media (max-width: 1024px) {
   #xra_perf_overlay {

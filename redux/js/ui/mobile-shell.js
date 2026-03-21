@@ -223,6 +223,7 @@
       updateLoadingMessage('Final touches…');
       scheduleTrackingDefaults();
       syncCameraPreview();
+      patchCameraConstraints();
       setTimeout(finishLoadingShell, 900);
     });
 
@@ -339,6 +340,7 @@
     if (!options || !device) return;
     options.streamer_mode.camera_preference = Object.assign(options.streamer_mode.camera_preference || {}, {
       label: device.label || '',
+      deviceId: device.deviceId || '',
       selection_source: source || 'auto'
     });
   }
@@ -456,6 +458,7 @@
     if (select && select.selectedOptions && select.selectedOptions[0]) {
       options.streamer_mode.camera_preference = Object.assign(options.streamer_mode.camera_preference || {}, {
         label: select.selectedOptions[0].dataset.label || select.selectedOptions[0].textContent,
+        deviceId: select.value || '',
         video_flipped: !!(flip && flip.checked),
         selection_source: 'manual'
       });
@@ -542,8 +545,73 @@
 
   async function restartCapture() {
     applyCaptureSettings();
+    // Stop existing stream so a fresh getUserMedia picks up the new deviceId
+    try {
+      var camera = window.System && System._browser && System._browser.camera;
+      if (camera && camera.stream) {
+        camera.stream.getTracks().forEach(function (t) { t.stop(); });
+        camera.video_track = null;
+        camera.stream = null;
+        if (camera.video) camera.video.srcObject = null;
+        camera.initialized = false;
+        console.log('[MobileShell] stopped existing stream for camera switch');
+      }
+    } catch (e) {}
     state.autoStartAttempted = false;
     await attemptAutoStart();
+  }
+
+  /**
+   * Monkey-patch System._browser.camera.set_constraints so that when a deviceId
+   * is stored in camera_preference, it's injected into the constraints object.
+   * On mobile Safari, getUserMedia can't have both deviceId and facingMode,
+   * so we also need to ensure the SA start() path removes facingMode when
+   * a specific deviceId is requested.
+   */
+  function patchCameraConstraints() {
+    var tries = 0;
+    var timer = setInterval(function () {
+      tries += 1;
+      var camera = window.System && System._browser && System._browser.camera;
+      if (camera && typeof camera.set_constraints === 'function' && !camera._xra_patched_constraints) {
+        clearInterval(timer);
+        var _orig = camera.set_constraints.bind(camera);
+        camera.set_constraints = function (extra) {
+          var result = _orig(extra);
+          try {
+            var pref = MMD_SA_options.user_camera.streamer_mode.camera_preference;
+            if (pref && pref.deviceId && pref.selection_source === 'manual') {
+              result.deviceId = { exact: pref.deviceId };
+              // deviceId and facingMode are mutually exclusive in getUserMedia
+              delete result.facingMode;
+            }
+          } catch (e) {}
+          return result;
+        };
+        camera._xra_patched_constraints = true;
+        console.log('[MobileShell] camera.set_constraints patched for deviceId injection');
+
+        // Also wrap navigator.mediaDevices.getUserMedia to strip facingMode
+        // when deviceId is present (SA's mobile path adds facingMode:"user"
+        // AFTER set_constraints, which conflicts with deviceId).
+        if (navigator.mediaDevices && !navigator.mediaDevices._xra_patched_gum) {
+          var _origGUM = navigator.mediaDevices.getUserMedia.bind(navigator.mediaDevices);
+          navigator.mediaDevices.getUserMedia = function (constraints) {
+            try {
+              if (constraints && constraints.video && typeof constraints.video === 'object') {
+                if (constraints.video.deviceId && constraints.video.facingMode) {
+                  delete constraints.video.facingMode;
+                  console.log('[MobileShell] stripped facingMode from getUserMedia (deviceId present)');
+                }
+              }
+            } catch (e) {}
+            return _origGUM(constraints);
+          };
+          navigator.mediaDevices._xra_patched_gum = true;
+        }
+      }
+      if (tries > 120) clearInterval(timer);
+    }, 250);
   }
 
   function patchSettingsLauncher() {

@@ -1,6 +1,7 @@
 // ============================================================
 // XRA Performance Overlay — always-visible on-screen HUD
 // Shows FPS, frame time, GPU, memory, Three.js stats, MediaPipe status
+// Includes ML model toggle buttons (Pose / Face / Hands / Holistic)
 // ============================================================
 (function () {
   'use strict';
@@ -58,16 +59,25 @@
     return null;
   }
 
+  // ── Get SA camera object ──
+  function _getCam() {
+    try {
+      return window.System && System._browser && System._browser.camera;
+    } catch (e) {}
+    return null;
+  }
+
   // ── Get tracking state from SA camera ──
   function _getTrackingInfo() {
     var info = {
-      pose:  { loaded: false, enabled: false, fps: 0 },
-      face:  { loaded: false, enabled: false, fps: 0 },
-      hands: { loaded: false, enabled: false, fps: 0 },
+      pose:     { loaded: false, enabled: false, fps: 0 },
+      face:     { loaded: false, enabled: false, fps: 0 },
+      hands:    { loaded: false, enabled: false, fps: 0 },
+      holistic: false,
       ml_fps: 0
     };
     try {
-      var cam = window.System && System._browser && System._browser.camera;
+      var cam = _getCam();
       if (!cam) return info;
 
       // Pose
@@ -75,6 +85,7 @@
         info.pose.loaded  = !!(cam.poseNet.model || cam.poseNet.pose_landmarker || cam.poseNet.posenet_initialized || cam.poseNet.initialized);
         info.pose.enabled = !!cam.poseNet.enabled;
         info.pose.fps     = cam.poseNet.fps || 0;
+        info.holistic     = !!(cam.poseNet.use_holistic || cam.poseNet.use_holistic_legacy);
       }
       // Face
       if (cam.facemesh) {
@@ -92,6 +103,52 @@
       if (cam.ML_fps != null) info.ml_fps = cam.ML_fps;
     } catch (e) {}
     return info;
+  }
+
+  // ── Toggle ML model on/off ──
+  function _toggleModel(which) {
+    try {
+      var cam = _getCam();
+      if (!cam) return;
+      var xr = window.MMD_SA && MMD_SA.WebXR && MMD_SA.WebXR.user_camera;
+
+      if (which === 'pose') {
+        var v = !cam.poseNet.enabled;
+        cam.poseNet.enabled = v;
+        if (xr && xr.poseNet) xr.poseNet.enabled = v;
+      }
+      else if (which === 'face') {
+        var v = !cam.facemesh.enabled;
+        cam.facemesh.enabled = v;
+        if (xr && xr.facemesh) xr.facemesh.enabled = v;
+      }
+      else if (which === 'hands') {
+        var v = !cam.handpose.enabled;
+        cam.handpose.enabled = v;
+        if (xr && xr.handpose) xr.handpose.enabled = v;
+      }
+      else if (which === 'holistic') {
+        var isHol = !!(cam.poseNet.use_holistic || cam.poseNet.use_holistic_legacy);
+        var newVal = !isHol;
+        cam.poseNet.use_holistic = newVal;
+        cam.poseNet.use_holistic_legacy = newVal;
+        if (xr && xr.poseNet) {
+          xr.poseNet.use_holistic = newVal;
+          xr.poseNet.use_holistic_legacy = newVal;
+        }
+        // Holistic means all three are on
+        if (newVal) {
+          cam.poseNet.enabled = true;
+          cam.facemesh.enabled = true;
+          cam.handpose.enabled = true;
+          if (xr) {
+            if (xr.poseNet) xr.poseNet.enabled = true;
+            if (xr.facemesh) xr.facemesh.enabled = true;
+            if (xr.handpose) xr.handpose.enabled = true;
+          }
+        }
+      }
+    } catch (e) { console.warn('[PerfOverlay] toggle error:', e); }
   }
 
   // ── Build the panel DOM ──
@@ -155,6 +212,37 @@
       body.appendChild(row);
       _rows[s.id] = val || row;
     });
+
+    // ── ML Model Toggle Buttons ──
+    var toggleBar = document.createElement('div');
+    toggleBar.id = 'xra_perf_toggles';
+    toggleBar.className = 'perf-toggle-bar';
+
+    var toggles = [
+      { id: 'pose',     label: 'POSE' },
+      { id: 'face',     label: 'FACE' },
+      { id: 'hands',    label: 'HANDS' },
+      { id: 'holistic', label: 'HOL' },
+    ];
+
+    toggles.forEach(function (t) {
+      var btn = document.createElement('button');
+      btn.type = 'button';
+      btn.className = 'perf-toggle-btn';
+      btn.id = 'perf_tog_' + t.id;
+      btn.textContent = t.label;
+      btn.setAttribute('data-model', t.id);
+      function doToggle(e) {
+        e.preventDefault();
+        e.stopPropagation();
+        _toggleModel(t.id);
+      }
+      btn.addEventListener('click', doToggle);
+      btn.addEventListener('touchend', doToggle);
+      toggleBar.appendChild(btn);
+    });
+
+    body.appendChild(toggleBar);
 
     document.body.appendChild(_panel);
   }
@@ -220,6 +308,31 @@
     if (enabled && fps > 0)  return '<span class="perf-on">' + fps.toFixed(0) + ' fps</span>';
     if (enabled)             return '<span class="perf-warm">INIT...</span>';
     return '<span class="perf-off">--</span>';
+  }
+
+  // ── Update toggle button states ──
+  function _updateToggles(track) {
+    var btnPose = document.getElementById('perf_tog_pose');
+    var btnFace = document.getElementById('perf_tog_face');
+    var btnHands = document.getElementById('perf_tog_hands');
+    var btnHol  = document.getElementById('perf_tog_holistic');
+
+    if (btnPose) {
+      btnPose.classList.toggle('is-on', track.pose.enabled);
+      btnPose.classList.toggle('is-off', !track.pose.enabled);
+    }
+    if (btnFace) {
+      btnFace.classList.toggle('is-on', track.face.enabled);
+      btnFace.classList.toggle('is-off', !track.face.enabled);
+    }
+    if (btnHands) {
+      btnHands.classList.toggle('is-on', track.hands.enabled);
+      btnHands.classList.toggle('is-off', !track.hands.enabled);
+    }
+    if (btnHol) {
+      btnHol.classList.toggle('is-on', !!track.holistic);
+      btnHol.classList.toggle('is-off', !track.holistic);
+    }
   }
 
   // ── Update tick ──
@@ -296,6 +409,9 @@
         el.textContent = '--';
     }
 
+    // Update toggle button visual states
+    _updateToggles(track);
+
     // FPS graph
     _drawGraph(_smoothFps);
   }
@@ -361,6 +477,7 @@
       if (_panel) _panel.style.display = (_panel.style.display === 'none') ? '' : 'none';
     },
     show: function () { if (_panel) _panel.style.display = ''; },
-    hide: function () { if (_panel) _panel.style.display = 'none'; }
+    hide: function () { if (_panel) _panel.style.display = 'none'; },
+    toggleModel: _toggleModel
   };
 })();
