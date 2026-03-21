@@ -26,16 +26,27 @@
   }
 
   function resolve_bundle_url() {
-    var baseUrl = self.location && self.location.href;
+    // 1) Main thread: document.currentScript gives the real path to XRA_module_loader.js
     try {
       if (typeof document === 'object' && document.currentScript && document.currentScript.src) {
-        baseUrl = document.currentScript.src;
+        return new URL('./vision_bundle.mjs', document.currentScript.src).href;
       }
     } catch (e) {}
 
-    // No cache-bust on vision_bundle.mjs — dynamic import() with query params
-    // fails in Chrome desktop workers
-    return new URL('./vision_bundle.mjs', baseUrl).href;
+    // 2) Worker context: self.location.href points to the WORKER script (e.g. tracking/pose_worker.js),
+    //    NOT to @mediapipe/tasks/tasks-vision/. We must build the correct absolute path.
+    try {
+      // Derive site base from worker URL: strip everything after /redux/js/
+      var loc = self.location.href;
+      var jsIdx = loc.indexOf('/js/');
+      if (jsIdx !== -1) {
+        var base = loc.substring(0, jsIdx) + '/js/@mediapipe/tasks/tasks-vision/';
+        return base + 'vision_bundle.mjs';
+      }
+    } catch (e) {}
+
+    // 3) Last resort: relative to self.location (works if loader is in same dir)
+    return new URL('./vision_bundle.mjs', self.location.href).href;
   }
 
   function load_module(m) {
