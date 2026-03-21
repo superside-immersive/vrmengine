@@ -22,9 +22,9 @@ export async function fm_load_scripts(S, url) {
 
   var cacheBust = '';
   try {
-    cacheBust = String((self && self.SA_CACHE_BUST) || '20260321-3');
+    cacheBust = String((self && self.SA_CACHE_BUST) || '20260321-4');
   } catch (e) {
-    cacheBust = '20260321-3';
+    cacheBust = '20260321-4';
   }
 
   function withCacheBust(src) {

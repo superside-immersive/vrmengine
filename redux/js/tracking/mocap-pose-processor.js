@@ -15,6 +15,25 @@ import { BLAZEPOSE_KEYPOINTS, get_pose_index } from './mocap-constants.js';
 export function pose_adjust(S, pose, w, h, options) {
     S.shoulder_width = Math.max(w,h)/7;
 
+    function synthesize_keypoints3D_from_pose_landmarks(landmarks) {
+      if (!landmarks || !landmarks.length) return null;
+
+      const hipL = landmarks[23] || landmarks[0];
+      const hipR = landmarks[24] || hipL;
+      const hipCenter = {
+        x: (hipL.x + hipR.x) / 2,
+        y: (hipL.y + hipR.y) / 2,
+        z: (hipL.z + hipR.z) / 2,
+      };
+
+      return landmarks.map((landmark, i) => ({
+        x: landmark.x - hipCenter.x,
+        y: hipCenter.y - landmark.y,
+        z: landmark.z - hipCenter.z,
+        name: BLAZEPOSE_KEYPOINTS[i]
+      }));
+    }
+
     if (!pose || !S.use_movenet) return pose
 
 // latest human
@@ -32,7 +51,7 @@ export function pose_adjust(S, pose, w, h, options) {
       const _result = pose
 //console.log(_result)
       _keypoints3D = _result.ea || _result.za;
-      if (_keypoints3D?.length && _result.poseLandmarks?.length) {
+      if (_result.poseLandmarks?.length) {
 // https://github.com/tensorflow/tfjs-models/blob/master/pose-detection/src/blazepose_mediapipe/detector.ts
 
         const iw = _result.image?.width  || w;
@@ -47,6 +66,10 @@ z: landmark.z * iw,
 name: BLAZEPOSE_KEYPOINTS[i]
   })),
         }];
+
+        if (!_keypoints3D?.length) {
+          _keypoints3D = synthesize_keypoints3D_from_pose_landmarks(_result.poseLandmarks);
+        }
       }
       else {
         pose = []
