@@ -955,11 +955,14 @@
    ============================================================ */
 #xra_perf_overlay {
   position: fixed;
-  top: 8px;
-  right: 8px;
+  top: calc(8px + env(safe-area-inset-top, 0px));
+  right: calc(8px + env(safe-area-inset-right, 0px));
   z-index: 10000;
   min-width: 180px;
   max-width: 240px;
+  max-height: calc(100vh - 16px - env(safe-area-inset-top, 0px) - env(safe-area-inset-bottom, 0px));
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
   background: rgba(6, 8, 14, 0.92);
   color: #b8cce0;
   border: 1px solid rgba(81, 198, 226, 0.18);
@@ -970,10 +973,11 @@
   backdrop-filter: blur(14px);
   -webkit-backdrop-filter: blur(14px);
   box-shadow: 0 4px 20px rgba(0,0,0,0.55);
-  overflow: hidden;
   pointer-events: auto;
   user-select: none;
   -webkit-user-select: none;
+  -webkit-touch-callout: none;
+  touch-action: pan-y;
 }
 
 #xra_perf_overlay_title {
@@ -1043,17 +1047,27 @@
 .perf-warm { color: #ffe65e; }
 .perf-loaded { color: #6ec9e8; }
 
-/* Mobile: slightly smaller */
-@media (max-width: 600px) {
+/* Mobile & iPad: fit smaller viewports */
+@media (max-width: 1024px) {
   #xra_perf_overlay {
-    top: 4px;
-    right: 4px;
-    min-width: 150px;
-    max-width: 190px;
-    font-size: 9px;
+    top: calc(4px + env(safe-area-inset-top, 0px));
+    right: calc(4px + env(safe-area-inset-right, 0px));
+    min-width: 155px;
+    max-width: 200px;
+    font-size: 9.5px;
     border-radius: 8px;
   }
   #xra_perf_graph {
-    height: 24px;
+    height: 26px;
+  }
+}
+@media (max-width: 600px) {
+  #xra_perf_overlay {
+    min-width: 140px;
+    max-width: 175px;
+    font-size: 9px;
+  }
+  #xra_perf_graph {
+    height: 22px;
   }
 }

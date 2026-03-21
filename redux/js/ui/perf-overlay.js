@@ -17,20 +17,25 @@
   var _collapsed = false;
 
   // ── Detect GPU once ──
+  var _glContext = null; // keep reference for memory queries
   function _detectGPU() {
     try {
       var cv = document.createElement('canvas');
       var gl = cv.getContext('webgl2') || cv.getContext('webgl') || cv.getContext('experimental-webgl');
       if (!gl) return '(no WebGL)';
-      var ext = gl.getExtension('WEBGL_debug_renderer_info');
-      if (ext) {
-        var r = gl.getParameter(ext.UNMASKED_RENDERER_WEBGL) || '';
-        // Shorten ANGLE strings
-        r = r.replace(/^ANGLE \(/, '').replace(/\)$/, '').replace(/,\s*Direct3D.*$/, '').replace(/,\s*OpenGL.*$/, '');
-        if (r.length > 50) r = r.substring(0, 47) + '...';
-        return r;
-      }
-      return gl.getParameter(gl.RENDERER) || '?';
+      _glContext = gl;
+      // Try unmasked renderer (Chrome/Firefox)
+      var r = '';
+      try {
+        var ext = gl.getExtension('WEBGL_debug_renderer_info');
+        if (ext) r = gl.getParameter(ext.UNMASKED_RENDERER_WEBGL) || '';
+      } catch (e) {}
+      // Fallback: gl.RENDERER (Safari returns "Apple GPU")
+      if (!r) r = gl.getParameter(gl.RENDERER) || '';
+      // Shorten ANGLE strings
+      r = r.replace(/^ANGLE \(/, '').replace(/\)$/, '').replace(/,\s*Direct3D.*$/, '').replace(/,\s*OpenGL.*$/, '');
+      if (r.length > 40) r = r.substring(0, 37) + '...';
+      return r || '?';
     } catch (e) { return '?'; }
   }
 
@@ -100,12 +105,14 @@
     var titleBar = document.createElement('div');
     titleBar.id = 'xra_perf_overlay_title';
     titleBar.innerHTML = '<span class="perf-icon">&#9881;</span> PERF';
-    titleBar.addEventListener('click', function () {
+    function _toggleCollapse() {
       _collapsed = !_collapsed;
       var body = document.getElementById('xra_perf_overlay_body');
       if (body) body.style.display = _collapsed ? 'none' : '';
       titleBar.querySelector('.perf-icon').textContent = _collapsed ? '\u25B6' : '\u2699';
-    });
+    }
+    titleBar.addEventListener('click', _toggleCollapse);
+    titleBar.addEventListener('touchend', function (e) { e.preventDefault(); _toggleCollapse(); });
     _panel.appendChild(titleBar);
 
     var body = document.createElement('div');
@@ -160,19 +167,30 @@
   function _createGraph() {
     _graphCanvas = document.createElement('canvas');
     _graphCanvas.id = 'xra_perf_graph';
-    _graphCanvas.width  = 140;
-    _graphCanvas.height = 32;
+    // Scale for retina displays (iPad = 2x or 3x)
+    var dpr = window.devicePixelRatio || 1;
+    var logicalW = 160, logicalH = 32;
+    _graphCanvas.width  = logicalW * dpr;
+    _graphCanvas.height = logicalH * dpr;
+    _graphCanvas.style.width  = logicalW + 'px';
+    _graphCanvas.style.height = logicalH + 'px';
     var body = document.getElementById('xra_perf_overlay_body');
     if (body) body.insertBefore(_graphCanvas, body.firstChild);
     _graphCtx = _graphCanvas.getContext('2d');
+    _graphCtx.scale(dpr, dpr);
+    _graphLogicalW = logicalW;
+    _graphLogicalH = logicalH;
   }
+  var _graphLogicalW = 160;
+  var _graphLogicalH = 32;
 
   function _drawGraph(fps) {
     if (!_graphCtx) return;
     _graphData.push(Math.min(fps, 120));
-    if (_graphData.length > 140) _graphData.shift();
+    var maxBars = _graphLogicalW;
+    if (_graphData.length > maxBars) _graphData.shift();
 
-    var w = _graphCanvas.width, h = _graphCanvas.height;
+    var w = _graphLogicalW, h = _graphLogicalH;
     _graphCtx.clearRect(0, 0, w, h);
 
     // 60 FPS guide line
@@ -229,7 +247,7 @@
     el = document.getElementById('perf_v_gpu');
     if (el) el.textContent = _gpu || '--';
 
-    // Memory
+    // Memory — Chrome has performance.memory; Safari uses WebGL memory estimate
     el = document.getElementById('perf_v_mem');
     if (el) {
       if (window.performance && performance.memory) {
@@ -237,7 +255,14 @@
         var total = (performance.memory.jsHeapSizeLimit / 1048576).toFixed(0);
         el.textContent = used + ' / ' + total + ' MB';
       } else {
-        el.textContent = 'N/A';
+        // Fallback: show WebGL resource counts from Three.js renderer
+        var renderer_ = _getRenderer();
+        if (renderer_ && renderer_.info && renderer_.info.memory) {
+          var mi = renderer_.info.memory;
+          el.textContent = 'G:' + (mi.geometries||0) + ' T:' + (mi.textures||0);
+        } else {
+          el.textContent = '(Safari)';
+        }
       }
     }
 
