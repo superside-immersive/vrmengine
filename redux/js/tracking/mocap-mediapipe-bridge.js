@@ -34,6 +34,18 @@ S.path_adjusted('@mediapipe/tasks/tasks-vision/wasm')
   return vision;
 }
 
+function get_tasks_vision_delegate(options) {
+  const requested = String((options && (options.model_inference_device || options.delegate)) || '').toUpperCase();
+  if (requested === 'CPU' || requested === 'GPU') return requested;
+
+  const ua = String((self && self.navigator && self.navigator.userAgent) || '').toLowerCase();
+  const vendor = String((self && self.navigator && self.navigator.vendor) || '').toLowerCase();
+  const isiPadLike = /ipad|iphone|ipod/.test(ua) || (/macintosh/.test(ua) && 'ontouchend' in self);
+  const isWebKitSafari = /apple/.test(vendor) && /safari/.test(ua) && !/crios|fxios|edgios|chrome|android/.test(ua);
+
+  return (isiPadLike || isWebKitSafari) ? 'CPU' : 'GPU';
+}
+
 
 /**
  * Create MediaPipe hand landmarker adapter.
@@ -45,6 +57,7 @@ export function create_mediapipe_hand_landmarker(S) {
 
     load: async function () {
   const vision = await load_vision_common(S);
+  const delegate = get_tasks_vision_delegate(S.worker_options || {});
 
   const f = [];
   const score_list = [0.5, 0.1];//0.3, 0.1];
@@ -55,7 +68,7 @@ vision,
 {
   baseOptions: {
     modelAssetPath: S.path_adjusted('@mediapipe/tasks/hand_landmarker.task'),
-    delegate: "GPU"
+    delegate: delegate
   },
   runningMode: 'VIDEO',
 
@@ -66,6 +79,8 @@ vision,
 }
     );
   }
+
+  console.log('Hand Landmarker delegate:' + delegate);
 
   let f_index = 0;
 
@@ -155,6 +170,9 @@ for (const d of ['Left', 'Right']) {
  * @param {Object} options - Detection options
  */
 export async function PoseAT_load_lib(S, options) {
+options = options || {};
+S.worker_options = options;
+
 if (options.use_holistic_legacy && !S.holistic_initialized) {
   try {
     await S.load_scripts('@mediapipe/holistic/holistic.js');
@@ -284,6 +302,7 @@ if ((options.use_holistic_landmarker) ? !S.holistic_initialized : !S.posenet_ini
 */
   if (S.use_mediapipe_pose_landmarker) {
     const vision = await load_vision_common(S);
+    const delegate = get_tasks_vision_delegate(options);
 
     if (options.use_holistic_landmarker) {
       S.holistic_landmarker = await HolisticLandmarker.createFromOptions(
@@ -291,13 +310,15 @@ vision,
 {
   baseOptions: {
     modelAssetPath: S.path_adjusted('@mediapipe/tasks/' + 'holistic_landmarker' + '.task'),
-    delegate: "GPU"
+    delegate: delegate
   },
   runningMode: 'VIDEO',
 
   outputFaceBlendshapes: true
 }
       );
+
+  console.log('Holistic Landmarker delegate:' + delegate);
 
       S.mediapipe_hand_landmarker.setup();
     }
@@ -308,13 +329,14 @@ vision,
 {
   baseOptions: {
     modelAssetPath: S.path_adjusted('@mediapipe/tasks/pose_landmarker_full.task'),
-    delegate: "GPU"
+    delegate: delegate
   },
   runningMode: 'VIDEO',
 //minPoseDetectionConfidence:0.8, minPosePresenceConfidence:0.8, minTrackingConfidence:0.8,
   numPoses: 1
 }
       );
+      console.log('Pose Landmarker delegate:' + delegate);
       console.log('Pose model quality:' + (S.pose_model_quality||'Normal'));
     }
 
