@@ -33,7 +33,9 @@
       }
     } catch (e) {}
 
-    return with_cache_bust(new URL('./vision_bundle.mjs', baseUrl).href);
+    // No cache-bust on vision_bundle.mjs — dynamic import() with query params
+    // fails in Chrome desktop workers
+    return new URL('./vision_bundle.mjs', baseUrl).href;
   }
 
   function load_module(m) {
