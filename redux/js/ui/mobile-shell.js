@@ -61,8 +61,16 @@
     if (isIpadDesktopRuntime()) {
       MMD_SA_options.user_camera.ML_models.worker_disabled = true;
       MMD_SA_options.user_camera.ML_models.facemesh.worker_disabled = true;
+      MMD_SA_options.user_camera.ML_models.use_holistic = false;
+      try {
+        if (window.System && System._browser && System._browser.camera && System._browser.camera.poseNet) {
+          System._browser.camera.poseNet._use_holistic_ = false;
+          System._browser.camera.poseNet.use_holistic = false;
+          System._browser.camera.poseNet.use_holistic_legacy = false;
+        }
+      } catch (e) {}
       if (!MMD_SA_options.user_camera.streamer_mode.mocap_type) {
-        MMD_SA_options.user_camera.streamer_mode.mocap_type = 'Face';
+        MMD_SA_options.user_camera.streamer_mode.mocap_type = 'Full Body';
       }
     }
 
